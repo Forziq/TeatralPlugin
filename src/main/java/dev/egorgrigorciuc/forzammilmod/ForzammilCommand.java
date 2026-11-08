@@ -93,8 +93,8 @@ public final class ForzammilCommand implements TabExecutor {
             p.sendMessage(lang.msg(p, "vehicle.unavailable"));
             return;
         }
-        if (PadRules.check(new double[0], vehicles.vehicles().size()) == PadRules.Verdict.FULL) {
-            p.sendMessage(lang.msg(p, "vehicle.pad-full", "max", PadRules.MAX_VEHICLES));
+        if (PadRules.check(new double[0], vehicles.vehicles().size(), VehicleSettings.maxVehicles(plugin)) == PadRules.Verdict.FULL) {
+            p.sendMessage(lang.msg(p, "vehicle.pad-full", "max", VehicleSettings.maxVehicles(plugin)));
             return;
         }
         RayTraceResult hit = p.rayTraceBlocks(SPAWN_REACH, FluidCollisionMode.NEVER);
@@ -135,10 +135,10 @@ public final class ForzammilCommand implements TabExecutor {
                 default -> 0f;
             };
         }
-        PadRules.Verdict verdict = PadRules.check(vehicles.distancesTo(at), vehicles.vehicles().size());
+        PadRules.Verdict verdict = PadRules.check(vehicles.distancesTo(at), vehicles.vehicles().size(), VehicleSettings.maxVehicles(plugin));
         if (verdict != PadRules.Verdict.OK) {
             String key = verdict == PadRules.Verdict.OCCUPIED ? "vehicle.pad-occupied" : "vehicle.pad-full";
-            tellNearby(at, key, "max", PadRules.MAX_VEHICLES);
+            tellNearby(at, key, "max", VehicleSettings.maxVehicles(plugin));
             return;
         }
         switch (vehicles.spawn(type, at, yaw)) {

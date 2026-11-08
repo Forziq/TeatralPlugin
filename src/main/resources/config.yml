@@ -1,3 +1,9 @@
 # GitHub personal access token with read access to the private repo Forziq/TeatralPlugin.
 # Used only to download plugin updates. Leave empty to disable updates.
 github-token: ""
+
+# Most vehicles that can be out on the server at once. Pads refuse above this. Minimum 1.
+max-vehicles: 10
+
+# Minutes a vehicle can stand with nobody driving before it disappears. 0 = never.
+idle-despawn-minutes: 10

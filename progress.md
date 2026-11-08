@@ -61,6 +61,7 @@ T49|S|haiku-scout|T48|todo|Publish v1.0.0 for the final gate
 G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
 
 ## log (newest first, keep 8)
+- 2026-11-08 After T26, Egor asked for the vehicle cap and idle time to be settable: config.yml now has `max-vehicles` (default 10, minimum 1) and `idle-despawn-minutes` (default 10, 0 = never). Older config files pick up the keys on restart. Read live, so edits apply without a restart. 130 tests pass, not tried in game.
 - 2026-11-08 T26: command blocks spawn vehicles (`fmod vehicle spawn tank|jeep`), 2 blocks up, facing the block. Refused within 3 blocks or at 10 out. Idle 10 min despawns ('Idle check:'). 126 tests pass, not tried in game. manual.md 'Vehicle pads'.
 - 2026-11-08 G2 passed ("all fine, carry on"). T21: planned phases 3 to 6 as T26 to T50 with gates G3 to G7. Decided with Egor: vehicles come from command-block pads with a button, block damage and protected zones are parked, planes get their own keep-or-drop test (G6). Added T50, the group's own greeting emote with its name and sound in config.yml. Egor then dropped the other planned emotes and the emote menu (old T27, T29, T30, T31): the greeting is the only new emote.
 - 2026-11-08 Fix: barrel model tilted the wrong way (shells were fine), BARREL_PITCH_SIGN now -1f. v0.3.3 released, pack SHA-1 de475fe9. Turret visibly moves in game on v0.3.2; no-shot-on-mount not yet confirmed.
@@ -68,7 +69,6 @@ G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
 - 2026-11-08 Fix: couldn't get into vehicles ("not ready") because seat lookup used p_driver; BetterModel strips the p_ tag, so it's now "driver". v0.3.1 released, pack SHA-1 d8b739cb. Seat failures now log a 'Driver check:' warning. Server: /fmod update, then restart.
 - 2026-11-08 T20: v0.3.0 released (tank and jeep). Pack forzammilmod-pack-0.3.0.zip, SHA-1 de83929d. manual.md G2 has the checklist and commands. Server needs /fmod update and a restart first.
 - 2026-11-08 T19: jeep wheels spin with speed (radius 5 px, roll about X). No gun, so no turret. 116 tests pass, not tried in game. Watch 'Wheel check:' log; if backwards, flip WHEEL_SPIN_SIGN in BetterModelHook.
-- 2026-11-08 T18: tank fires on left-click. Shells reach 150 blocks, explode at power 2.5, credited to driver. 4 s reload. Not tried in game. Check 'Fire check:' log for the click path. Known: mounting may fire; walls hurt driver.
 
 ## blockers
 none

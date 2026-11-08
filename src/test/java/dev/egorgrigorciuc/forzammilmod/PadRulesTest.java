@@ -40,4 +40,18 @@ class PadRulesTest {
         assertEquals(PadRules.Verdict.OCCUPIED, PadRules.check(new double[]{1}, 10));
         assertEquals(PadRules.Verdict.OCCUPIED, PadRules.check(new double[]{1}, 25));
     }
+
+    @Test
+    void customCap() {
+        assertEquals(PadRules.Verdict.OK, PadRules.check(new double[]{}, 4, 5));
+        assertEquals(PadRules.Verdict.FULL, PadRules.check(new double[]{}, 5, 5));
+        assertEquals(PadRules.Verdict.OK, PadRules.check(new double[]{}, 19, 20));
+    }
+
+    @Test
+    void capBelowOneBecomesOne() {
+        assertEquals(1, PadRules.sanitiseMax(0));
+        assertEquals(1, PadRules.sanitiseMax(-3));
+        assertEquals(7, PadRules.sanitiseMax(7));
+    }
 }

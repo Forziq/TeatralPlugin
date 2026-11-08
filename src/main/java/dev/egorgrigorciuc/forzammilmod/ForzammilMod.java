@@ -55,6 +55,8 @@ public final class ForzammilMod extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
+        getConfig().options().copyDefaults(true); // add new keys to an older config.yml
+        saveConfig();
         installModels();
         lang = Lang.load(this);
         updates = new UpdateService(this);

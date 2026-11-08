@@ -203,6 +203,7 @@ What to expect:
 - Pressing again while a vehicle is still on the pad says "There's already a vehicle on the pad".
 - At 10 vehicles on the server, the pad refuses.
 - A vehicle nobody drives for 10 minutes disappears.
+- Both numbers live in `plugins/forzammilmod/config.yml`: `max-vehicles` (at least 1) and `idle-despawn-minutes` (0 means never). They show up there after the first restart on the new version. Changes take effect straight away, no restart needed.
 - Anyone can press the button. Only Forzammil can type the spawn command by hand.
 
 Local test: on the local server, set `enable-command-block=true` in `server/server.properties`, restart, then follow the same steps. Join as Forzammil for the `/give`.

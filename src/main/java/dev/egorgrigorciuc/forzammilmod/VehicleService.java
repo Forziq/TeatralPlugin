@@ -206,12 +206,14 @@ public final class VehicleService {
 
     private void checkIdle() {
         long now = System.currentTimeMillis();
+        int minutes = VehicleSettings.idleMinutes(plugin);
+        long limit = IdleTimer.limitMillis(minutes);
         for (Vehicle v : new ArrayList<>(vehicles)) {
-            if (!v.idle.update(v.driver() != null, now)) continue;
+            if (!v.idle.update(v.driver() != null, now, limit)) continue;
             VehicleMover.State s = v.state();
             plugin.getLogger().info("Idle check: removed " + v.type.id + " at " + v.world.getName() + " "
                     + (long) Math.floor(s.x()) + " " + (long) Math.floor(s.y()) + " " + (long) Math.floor(s.z())
-                    + " after 10 min with no driver");
+                    + " after " + minutes + " min with no driver");
             remove(v);
         }
     }

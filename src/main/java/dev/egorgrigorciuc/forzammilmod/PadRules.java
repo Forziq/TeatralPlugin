@@ -7,17 +7,27 @@ public final class PadRules {
 
     /** A vehicle closer than this to the spawn point blocks the spawn. */
     public static final double OCCUPIED_RADIUS = 3;
-    public static final int MAX_VEHICLES = 10;
+    /** Used when config.yml has no max-vehicles value. */
+    public static final int DEFAULT_MAX_VEHICLES = 10;
     /** Players this close to the spawn point get the pad messages. */
     public static final double NOTIFY_RADIUS = 6;
 
     private PadRules() {
     }
 
-    /** @param distances distance from each existing vehicle (same world) to the spawn point */
+    /** Config value to a usable cap: anything below 1 counts as 1. */
+    public static int sanitiseMax(int raw) {
+        return Math.max(1, raw);
+    }
+
     public static Verdict check(double[] distances, int totalVehicles) {
+        return check(distances, totalVehicles, DEFAULT_MAX_VEHICLES);
+    }
+
+    /** @param distances distance from each existing vehicle (same world) to the spawn point */
+    public static Verdict check(double[] distances, int totalVehicles, int maxVehicles) {
         for (double d : distances) if (d < OCCUPIED_RADIUS) return Verdict.OCCUPIED;
-        if (totalVehicles >= MAX_VEHICLES) return Verdict.FULL;
+        if (totalVehicles >= maxVehicles) return Verdict.FULL;
         return Verdict.OK;
     }
 }
