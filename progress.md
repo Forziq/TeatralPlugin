@@ -35,6 +35,7 @@ G2|-|egor|T20|gate|Gate 2: tank test with friends (manual.md G2)
 T21|L|main|G2|todo|Plan phases 3 to 6 from the gate notes
 
 ## log (newest first, keep 8)
+- 2026-11-08 Fix: turret, barrel and jeep wheels didn't move (BetterModel caches modifier rotation with no animation; we now write lastModifiedRotation + firstTick by reflection, barrel carries turret yaw). Clicks within 0.5 s of mounting ignored, so getting in no longer fires. v0.3.2 released, pack SHA-1 583df984. Not tried in game.
 - 2026-11-08 Fix: couldn't get into vehicles ("not ready") because seat lookup used p_driver; BetterModel strips the p_ tag, so it's now "driver". v0.3.1 released, pack SHA-1 d8b739cb. Seat failures now log a 'Driver check:' warning. Server: /fmod update, then restart.
 - 2026-11-08 T20: v0.3.0 released (tank and jeep). Pack forzammilmod-pack-0.3.0.zip, SHA-1 de83929d. manual.md G2 has the checklist and commands. Server needs /fmod update and a restart first.
 - 2026-11-08 T19: jeep wheels spin with speed (radius 5 px, roll about X). No gun, so no turret. 116 tests pass, not tried in game. Watch 'Wheel check:' log; if backwards, flip WHEEL_SPIN_SIGN in BetterModelHook.
@@ -42,7 +43,6 @@ T21|L|main|G2|todo|Plan phases 3 to 6 from the gate notes
 - 2026-11-08 T17: turret and barrel follow the driver's look. Unit tests pass (104), not tried in game. Watch 'Turret check' lines on tank spawn; if wrong way, flip TURRET_YAW_SIGN or BARREL_PITCH_SIGN in BetterModelHook. T18: use Vehicle.muzzle().
 - 2026-11-08 T16: driving. /fmod vehicle spawn tank|jeep, remove (owner), list. Driver in p_driver seat, controller NONE. Untested: check the three "Driver check:" log lines. See docs/notes/vehicles.md. T17 builds on Vehicle/VehicleRig.
 - 2026-11-08 T15: tank and jeep placeholder models. Tank: hull > turret > barrel > muzzle (points -Z), p_driver under hull. Jeep: body, wheel_fl/fr/rl/rr, p_driver. No h_/b_ tags, so no head tracking. T16: confirm BetterModel.model("tank") resolves.
-- 2026-11-08 T14: plan in docs/notes/vehicles.md. Invisible ArmorStand anchor, seat bones, input from getCurrentInput(). Test in T16: idle-bone rotation, rider left-click, arm swing while riding. No free tank plugin, so no M04.
 
 ## blockers
 none
