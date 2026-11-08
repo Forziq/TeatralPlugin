@@ -243,3 +243,20 @@ Emotes crashed with "Emotes aren't available right now" because of a bug in Bett
 4. Watch the arm: it should rise in front of you to about 45 degrees, not behind you.
 5. Type `/emote wave`, or wait for the emote to end. Your friend should see the sword and armour come back straight away.
 6. Swap items in your hotbar during an emote. Your friend should still see nothing in your hands until the emote stops.
+
+## G3 Gate 3: greeting test with friends (after T32)
+
+Get ready:
+1. In game, type `/fmod update`, then restart the server from the exaroton panel. The server must be on v0.4.0 or later.
+2. Build one tank pad and one jeep pad, following "Vehicle pads" above.
+
+Check each of these and jot down a few words for each:
+- The greeting matches the real gesture from someone else's view
+- Changing its name and sound in `config.yml`, then `/fmod reload`, works
+- The cooldown feels right (3 seconds)
+- The sound is at the right volume
+- Held items and armour look right: hidden from others while emoting, back after
+- Pads spawn vehicles for friends, and refuse a second one on a full pad
+- The Russian text reads naturally
+
+Then type `/next`.
