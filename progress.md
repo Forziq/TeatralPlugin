@@ -1,5 +1,5 @@
 # progress
-now: G3 gate | G1 passed | G2 passed
+now: T33 todo | G1 passed | G2 passed | G3 passed
 updated: 2026-11-08
 
 ## tasks
@@ -37,7 +37,7 @@ T26|M|sonnet-builder|G2|done|Vehicle spawn pads (command block and button)
 T50|M|sonnet-builder|T26|done|Our own greeting emote, configurable name and sound
 T28|M|sonnet-builder|T50|done|Held items and armour during emotes
 T32|S|haiku-scout|T28|done|Publish v0.4.0 for Gate 3
-G3|-|egor|T32|gate|Gate 3: greeting test with friends (manual.md G3)
+G3|-|egor|T32|done|Gate 3: greeting test with friends (manual.md G3)
 T33|L|sonnet-builder|G3|todo|Vehicle health, damage and repairs
 T34|L|sonnet-builder|T33|todo|Crew seats: gunner and passengers
 T35|L|opus-deep|T34|todo|Proper tank and jeep models, with track animation
@@ -61,6 +61,7 @@ T49|S|haiku-scout|T48|todo|Publish v1.0.0 for the final gate
 G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
 
 ## log (newest first, keep 8)
+- 2026-11-08 G3 passed, no notes from Egor. Next: T33 vehicle health, damage and repairs.
 - 2026-11-08 T32: v0.4.0 released for Gate 3, pack SHA-1 ad7aec7e. manual.md G3 has the checklist. Server: /fmod update, then restart.
 - 2026-11-08 T28: others see an emoter's hands and armour empty while emoting, restored on stop; re-hidden after swaps, clicks, joins. HiddenGear is the state class. 153 tests pass, not tried in game. Greeting arm angle flipped, needs new jar.
 - 2026-11-08 v0.3.4 test release with the greeting emote, pack SHA-1 c1e6df52. Server: /fmod update, then restart. Not a gate release.
@@ -68,7 +69,6 @@ G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
 - 2026-11-08 After T26, Egor asked for the vehicle cap and idle time to be settable: config.yml now has `max-vehicles` (default 10, minimum 1) and `idle-despawn-minutes` (default 10, 0 = never). Older config files pick up the keys on restart. Read live, so edits apply without a restart. 130 tests pass, not tried in game.
 - 2026-11-08 T26: command blocks spawn vehicles (`fmod vehicle spawn tank|jeep`), 2 blocks up, facing the block. Refused within 3 blocks or at 10 out. Idle 10 min despawns ('Idle check:'). 126 tests pass, not tried in game. manual.md 'Vehicle pads'.
 - 2026-11-08 G2 passed ("all fine, carry on"). T21: planned phases 3 to 6 as T26 to T50 with gates G3 to G7. Decided with Egor: vehicles come from command-block pads with a button, block damage and protected zones are parked, planes get their own keep-or-drop test (G6). Added T50, the group's own greeting emote with its name and sound in config.yml. Egor then dropped the other planned emotes and the emote menu (old T27, T29, T30, T31): the greeting is the only new emote.
-- 2026-11-08 Fix: barrel model tilted the wrong way (shells were fine), BARREL_PITCH_SIGN now -1f. v0.3.3 released, pack SHA-1 de475fe9. Turret visibly moves in game on v0.3.2; no-shot-on-mount not yet confirmed.
 
 ## blockers
 none
@@ -76,6 +76,7 @@ none
 ## gate notes
 G1: -
 G2: passed. Egor: all fine, carry on.
+G3: passed. Egor gave no notes on the checklist items.
 
 ## parked (not planned yet, ask Egor before starting)
 - Block damage on the real world: protected zones and blocks growing back. Egor: "we will work on that later".
