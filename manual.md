@@ -102,21 +102,39 @@ Claude Code will add any BetterModel setting the server needs here (T07 and T09 
 10. Watch for these and note anything odd: a track that cuts out early, two tracks playing at once, or a player who gets no sound after rejoining.
 11. Type `stop` in the server window when you're finished.
 
-## G1 Gate 1: emote test with friends (after T13)
+## G1 Gate 1: emote and radio test with friends (after T13)
+
+Update the server first:
+1. In game on the exaroton server, type `/forzammilmod update`.
+2. Restart the server from the exaroton panel.
+3. Type `/forzammilmod version`. It should say 0.2.0. If it doesn't, tell Claude.
 
 Get ready:
-1. On the exaroton server type `/forzammilmod update`, then restart it.
-2. Each friend needs TLauncher on 1.21.4 and should set a skin with `/skin <name>` once they're in.
-3. Get at least two friends on, ideally one with the game set to Russian.
+- Each friend needs TLauncher on 1.21.4 and should set a skin with `/skin <name>` once they're in.
+- Get at least two friends on, ideally one with the game set to Russian.
 
-Check each of these and jot down a few words for each:
+Jot down a few words for each check:
+
+Skins and model:
 - Your SkinsRestorer skin shows on the emote model, not Steve
 - Changing your skin with `/skin` updates the model
 - Others see the wave play smoothly (note any flicker at the start or end)
+- `/emote stop`, walking, taking damage or teleporting all end the wave
 - How it looks to you in first person and in F5
 - What happens to held items and armour
 - The Russian text reads naturally
-- `/forzammilmod music shuffle` plays for everyone, and the Jukebox/Note Blocks volume slider turns it up and down
+
+Emotes:
+- `/emote` lists the emotes, `/emote wave` starts one, `/emote stop` stops it
+- Walking cancels a wave, and so does taking damage
+- Does the arm wave outward, not across the body? Does the player look normal afterwards? Does a second `/emote wave` straight after the first work? Does looking around keep it going?
+
+Radio:
+- `/forzammilmod music list` shows the tracks in English and Russian
+- `/forzammilmod music play stalnoy_marsh` plays for everyone. `loop` and `shuffle` change the state, and `stop` stops it for everyone
+- `/forzammilmod music play nope` gives a clear error, not a crash
+- A player who joins mid-track gets a chat note and hears the next track
+- The Jukebox or Note Blocks volume slider in Options changes the radio volume
 - The comic song's words come through clearly enough to be funny
 
 Then type `/next` in Claude Code. It'll ask whether the gate passed and take your notes.
