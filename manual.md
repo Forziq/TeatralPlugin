@@ -167,16 +167,12 @@ What to watch for and tell Claude Code:
 
 ## G2 Gate 2: tank test with friends (after T20)
 
-Switch the server to /fmod (v0.2.1):
-The server is still on the old version, so it only knows the long command this one time.
-1. In game on the exaroton server, type `/forzammilmod update`.
-2. Restart the server from the exaroton panel.
-3. From now on every command is `/fmod` (for example `/fmod update` or `/fmod music list`). `/emote` stays the same.
+Get the server ready:
+1. The server must be on v0.2.1 or later. In game, type `/fmod update`, then restart the server from the exaroton panel.
+2. Commands you need: `/fmod vehicle spawn tank`, `/fmod vehicle spawn jeep`, `/fmod vehicle remove`, `/fmod vehicle list`. Only you can spawn or remove; friends can drive what you spawn.
+3. Go well away from spawn, because shells break blocks.
 
-Get ready:
-1. Do the switch above first, so the server is on the latest version.
-2. Go well away from spawn, because shells break blocks.
-3. Only you can spawn vehicles (`/fmod vehicle spawn tank` or `jeep`, and `/fmod vehicle remove`), but friends can drive the ones you spawn.
+Controls: W/S drive, A/D turn the hull, left-click fires (4 second reload). The turret and barrel follow where you look.
 
 Check each of these and jot down a few words for each:
 - The delay between pressing a key and the tank moving
@@ -185,8 +181,14 @@ Check each of these and jot down a few words for each:
 - Whether turret aim feels natural
 - Whether the explosions and the amount of block damage feel right
 - Server TPS with two tanks firing
-- Whether the jeep is still playable at speed
+- Whether the jeep is still playable at speed (its wheels should spin with speed)
 - The Russian text reads naturally
+
+Known issues:
+- Mounting may fire a shell by accident.
+- Walls close to the tank can hurt the driver.
+
+If the turret or wheels turn the wrong way, or something looks off, check the server log for lines starting `Turret check`, `Fire check:`, `Wheel check:` or `Driver check:`, and tell Claude what they say.
 
 Then type `/next`. It'll take your notes and plan the next phase with you.
 
