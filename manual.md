@@ -184,3 +184,8 @@ Emotes crashed with "Emotes aren't available right now" because of a bug in Bett
 2. In Files > `plugins`, delete `BetterModel-2.2.0-spigot.jar`. Leave the `BetterModel` folder alone.
 3. Upload `/Users/egorgrigorciuc/Projectsnosync/TeatralPlugin/dist/BetterModel-2.2.0-spigot-fmod.jar`.
 4. Start the server and try `/emote wave` again. If it still fails, paste the log into Claude Code.
+
+## M05 (optional): look at the tank and jeep in Blockbench
+1. Open `src/main/resources/models/tank.bbmodel` and `jeep.bbmodel` in Blockbench (free, blockbench.net).
+2. Check they look like a tank and a jeep, and that the turret, barrel and wheels are separate parts you can select.
+3. Tell Claude Code if anything looks wrong.
