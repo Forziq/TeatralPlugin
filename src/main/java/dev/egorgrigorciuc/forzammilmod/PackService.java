@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import java.io.InputStream;
 import java.util.UUID;
 
-/** Sends the required resource pack on join and kicks players who refuse it. */
+/** Adds our required resource pack on join (stacked on top of any server pack) and kicks players who refuse it. */
 public final class PackService implements Listener {
 
     private final ForzammilMod plugin;
@@ -44,12 +44,14 @@ public final class PackService implements Listener {
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (!p.isOnline()) return;
             plugin.lang().setLocale(p.getUniqueId(), p.getLocale());
-            p.setResourcePack(packId, pack.url(), pack.sha1(), plugin.lang().msg(p, "pack.prompt"), true);
+            // add, not set: set would unload any pack the server itself sends (server.properties)
+            p.addResourcePack(packId, pack.url(), pack.sha1(), plugin.lang().msg(p, "pack.prompt"), true);
         }, 1L);
     }
 
     @EventHandler
     public void onStatus(PlayerResourcePackStatusEvent e) {
+        if (!packId.equals(e.getID())) return; // another pack (e.g. the server's own); not ours to police
         Player p = e.getPlayer();
         String key = switch (e.getStatus()) {
             case DECLINED -> "pack.kick-declined";
