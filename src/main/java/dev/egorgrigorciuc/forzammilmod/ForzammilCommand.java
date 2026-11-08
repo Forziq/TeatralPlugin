@@ -34,6 +34,7 @@ public final class ForzammilCommand implements TabExecutor {
             plugin.updates().checkFor(sender);
         });
         subs.put("pack", (sender, args) -> checkPack(sender));
+        subs.put("music", this::music);
     }
 
     /** Tells the player what their client reported for our pack, then plays one of our sounds as a hands-on test. */
@@ -63,6 +64,33 @@ public final class ForzammilCommand implements TabExecutor {
         p.playSound(p, TEST_SOUND, 1f, 1f);
     }
 
+    static final List<String> MUSIC_SUBS = List.of("play", "stop", "shuffle", "loop", "list");
+
+    private void music(CommandSender sender, String[] args) {
+        RadioService radio = plugin.radio();
+        String sub = args.length < 2 ? "" : args[1].toLowerCase(Locale.ROOT);
+        if (radio == null || !MUSIC_SUBS.contains(sub)) {
+            sender.sendMessage(plugin.lang().msg(sender, "music.usage", "label", "forzammilmod"));
+            return;
+        }
+        switch (sub) {
+            case "play" -> {
+                Track track = args.length < 3 ? null : radio.find(args[2]);
+                if (track == null) {
+                    if (args.length >= 3) sender.sendMessage(plugin.lang().msg(sender, "music.no-such-track"));
+                    else sender.sendMessage(plugin.lang().msg(sender, "music.usage", "label", "forzammilmod"));
+                    radio.sendList(sender);
+                    return;
+                }
+                radio.play(sender, track);
+            }
+            case "stop" -> radio.stop(sender);
+            case "shuffle" -> radio.shuffle(sender);
+            case "loop" -> radio.toggleLoop(sender);
+            default -> radio.sendList(sender);
+        }
+    }
+
     static final String TEST_SOUND = "forzammilmod:emote_cheer";
 
     @Override
@@ -85,6 +113,15 @@ public final class ForzammilCommand implements TabExecutor {
                 if (name.startsWith(prefix)) {
                     out.add(name);
                 }
+            }
+        }
+        if (args.length >= 2 && args[0].equalsIgnoreCase("music")) {
+            String prefix = args[1].toLowerCase(Locale.ROOT);
+            if (args.length == 2) {
+                for (String name : MUSIC_SUBS) if (name.startsWith(prefix)) out.add(name);
+            } else if (args.length == 3 && args[1].equalsIgnoreCase("play") && plugin != null && plugin.radio() != null) {
+                String p3 = args[2].toLowerCase(Locale.ROOT);
+                for (Track t : plugin.radio().tracks()) if (t.id().startsWith(p3)) out.add(t.id());
             }
         }
         return out;

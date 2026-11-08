@@ -88,6 +88,20 @@ Claude Code will add any BetterModel setting the server needs here (T07 and T09 
    - Does looking around without walking keep the wave going?
 8. Type `stop` in the server window when you're finished.
 
+### Music radio (after T23)
+
+1. Join the local server as before. Type `/forzammilmod music list`. You should see the track list with English and Russian names.
+2. Type `/forzammilmod music play stalnoy_marsh`. The track should start and everyone on the server should hear it.
+3. Type `/forzammilmod music loop` twice. Check the chat says the loop state changed each time, and that the track repeats when it ends.
+4. Type `/forzammilmod music shuffle`. Check the next track is different from the one playing.
+5. Type `/forzammilmod music stop`. The music should stop for everyone.
+6. Type `/forzammilmod music play nope`. You should get a clear error, not a crash.
+7. Tab completion: type `/forzammilmod mu` and press Tab. It should finish to `music`. Then check that `music` offers `play`, `stop`, `shuffle`, `loop` and `list`, and that `play` offers the track names.
+8. Late joiner: start a track, then join with a second account (offline mode, any name). The second account should get a chat note saying what is playing, and hear music from the next track, not the one already running.
+9. Volume: open the Jukebox or Note Blocks volume slider in the Options menu (Music or Blocks). Move it down and up. It should change the radio volume.
+10. Watch for these and note anything odd: a track that cuts out early, two tracks playing at once, or a player who gets no sound after rejoining.
+11. Type `stop` in the server window when you're finished.
+
 ## G1 Gate 1: emote test with friends (after T13)
 
 Get ready:

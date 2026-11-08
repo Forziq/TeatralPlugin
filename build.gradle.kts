@@ -25,6 +25,9 @@ tasks.withType<JavaCompile> {
 }
 
 tasks.processResources {
+    from("assets/music/tracks.yml") {
+        into("music")
+    }
     filesMatching("plugin.yml") {
         expand("version" to project.version)
     }

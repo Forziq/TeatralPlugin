@@ -18,7 +18,7 @@ class ForzammilCommandTabTest {
 
     @Test
     void emptyPrefixListsAllSubcommands() {
-        assertEquals(List.of("pack", "update", "version"), tab(""));
+        assertEquals(List.of("music", "pack", "update", "version"), tab(""));
     }
 
     @Test
@@ -44,5 +44,16 @@ class ForzammilCommandTabTest {
     @Test
     void noArgsGivesNoCompletions() {
         assertTrue(tab().isEmpty());
+    }
+
+    @Test
+    void musicSubcommands() {
+        assertEquals(List.of("play", "stop", "shuffle", "loop", "list"), tab("music", ""));
+        assertEquals(List.of("shuffle"), tab("music", "sh"));
+    }
+
+    @Test
+    void musicTrackArgWithoutPluginIsEmpty() {
+        assertTrue(tab("music", "play", "").isEmpty());
     }
 }
