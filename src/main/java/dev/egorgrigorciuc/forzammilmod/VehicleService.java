@@ -224,6 +224,7 @@ public final class VehicleService {
         }
         Terrain terrain = terrains.computeIfAbsent(v.world, BukkitTerrain::new);
         v.move(terrain, input);
+        v.spinWheels();
         if (v.driver() != null) {
             Player d = plugin.getServer().getPlayer(v.driver());
             if (d != null) v.aimTurret(d);

@@ -19,6 +19,9 @@ interface VehicleRig {
     /** Sets the drawn turret angle (relative to the hull) and barrel angle (up positive), in degrees. No-op without a turret. */
     void turret(float yawRel, float pitchUp);
 
+    /** Sets the roll angle of the wheel bones in degrees. No-op if the model has no wheels. */
+    default void wheels(float angleDeg) {}
+
     /** Removes the model, its seat entities and anyone sitting in them. */
     void close();
 }

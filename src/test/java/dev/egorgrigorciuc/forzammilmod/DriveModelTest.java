@@ -92,6 +92,16 @@ class DriveModelTest {
     }
 
     @Test
+    void jeepTurnScalesWithSpeed() {
+        VehicleType t = VehicleType.JEEP;
+        assertEquals((float) t.turnRate, DriveModel.step(t, D, t.maxSpeed, 0).yaw(), 1e-4);
+        double v = t.maxSpeed / 4;
+        double afterDrag = v - t.coastDrag;
+        float expected = (float) (t.turnRate * afterDrag / (t.maxSpeed * 0.5));
+        assertEquals(expected, DriveModel.step(t, D, v, 0).yaw(), 1e-4);
+    }
+
+    @Test
     void jeepDoesNotTurnStandingStillButDoesWhenMoving() {
         VehicleType t = VehicleType.JEEP;
         assertEquals(0f, DriveModel.step(t, D, 0, 0).yaw());

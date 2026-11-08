@@ -119,13 +119,41 @@ final class BetterModelHook {
         EntityTracker tracker = renderer.getOrCreate(BukkitAdapter.adapt(anchor));
         tracker.rotation(() -> new ModelRotation(0f, yaw.get()));
         tracker.update(TrackerUpdateAction.moveDuration(MOVE_TICKS));
-        return new BmRig(tracker, setupTurret(tracker, log), log);
+        return new BmRig(tracker, setupTurret(tracker, log), setupWheels(tracker, log), log);
     }
 
     /** Flip to -1f if the turret turns the wrong way in game. */
     static final float TURRET_YAW_SIGN = 1f;
     /** Flip to -1f if the barrel tilts the wrong way in game. */
     static final float BARREL_PITCH_SIGN = 1f;
+
+    /** Flip to -1f if the wheels roll backwards in game. */
+    static final float WHEEL_SPIN_SIGN = 1f;
+    private static final String[] WHEEL_BONES = {"wheel_fl", "wheel_fr", "wheel_rl", "wheel_rr"};
+
+    /** Roll angle the wheel modifiers read. */
+    private static final class Wheels {
+        volatile float angle;
+    }
+
+    /** Adds a roll modifier to each wheel bone. Returns null (and does nothing) if any of the four is missing. */
+    private static Wheels setupWheels(EntityTracker tracker, Logger log) {
+        RenderedBone[] bones = new RenderedBone[WHEEL_BONES.length];
+        for (int i = 0; i < bones.length; i++) {
+            bones[i] = tracker.bone(WHEEL_BONES[i]);
+            if (bones[i] == null) {
+                if (i > 0) log.info("Wheel check: wheel bone " + WHEEL_BONES[i] + " missing, no wheel spin");
+                return null;
+            }
+        }
+        Wheels w = new Wheels();
+        for (RenderedBone b : bones) {
+            // Forward is -Z, so wheels roll about X.
+            b.addRotationModifier(x -> true, q -> new Quaternionf(q).rotateX((float) Math.toRadians(w.angle * WHEEL_SPIN_SIGN)));
+        }
+        log.info("Wheel check: found 4 wheel bones, spin added");
+        return w;
+    }
 
     /** Angles the bone modifiers read; written by the main thread, read by BetterModel's thread. */
     private static final class Angles {
@@ -184,10 +212,10 @@ final class BetterModelHook {
      * and moves it with the anchor. We switch its controller to NONE so BetterModel never steers the anchor or
      * turns it to the rider's look; our tick loop does the driving.
      */
-    private record BmRig(EntityTracker tracker, Angles angles, Logger log, boolean[] logged) implements VehicleRig {
+    private record BmRig(EntityTracker tracker, Angles angles, Wheels wheels, Logger log, boolean[] logged) implements VehicleRig {
 
-        BmRig(EntityTracker tracker, Angles angles, Logger log) {
-            this(tracker, angles, log, new boolean[1]);
+        BmRig(EntityTracker tracker, Angles angles, Wheels wheels, Logger log) {
+            this(tracker, angles, wheels, log, new boolean[1]);
         }
 
         private HitBox seatBox() {
@@ -223,6 +251,16 @@ final class BetterModelHook {
             HitBox box = seatBox();
             if (box != null) box.dismount(BukkitAdapter.adapt(player));
             if (player.isInsideVehicle() && isSeated(player)) player.leaveVehicle();
+        }
+
+        @Override
+        public void wheels(float angleDeg) {
+            if (wheels == null || tracker.isClosed()) return;
+            wheels.angle = angleDeg;
+            for (String name : WHEEL_BONES) {
+                RenderedBone b = tracker.bone(name);
+                if (b != null) forceRefresh(b, log);
+            }
         }
 
         @Override
