@@ -67,9 +67,9 @@ You only do this once. After that the plugin updates itself.
    - Save it in 1Password as a new item called `forzammilmod GitHub token`. Don't paste it into any file in the project.
    - If the tab got closed before you copied it, delete `forzammilmod-server` at https://github.com/settings/personal-access-tokens and make a new one with the same settings (Only select repositories: TeatralPlugin; Contents: Read-only).
 6. Open `plugins/forzammilmod/config.yml` in exaroton's file editor. Paste the token between the quotes on the `github-token:` line (the key is `github-token`). Save.
-7. Start the server again and join. You should be asked to download the resource pack; accept it. Type `/forzammilmod version` and check it says 0.1.2. Then type `/forzammilmod pack`: you should hear a cheer, which means our pack loaded. If exaroton also forces its own resource pack, players get both, and ours loads on top.
+7. Start the server again and join. You should be asked to download the resource pack; accept it. Type `/fmod version` and check it says 0.1.2. Then type `/fmod pack`: you should hear a cheer, which means our pack loaded. If exaroton also forces its own resource pack, players get both, and ours loads on top.
 
-From now on, new versions download by themselves when the server starts and go live on the next restart. If you want one straight away, type `/forzammilmod update` in game and then restart the server from exaroton.
+From now on, new versions download by themselves when the server starts and go live on the next restart. If you want one straight away, type `/fmod update` in game and then restart the server from exaroton.
 
 Claude Code will add any BetterModel setting the server needs here (T07 and T09 find out).
 
@@ -90,13 +90,13 @@ Claude Code will add any BetterModel setting the server needs here (T07 and T09 
 
 ### Music radio (after T23)
 
-1. Join the local server as before. Type `/forzammilmod music list`. You should see the track list with English and Russian names.
-2. Type `/forzammilmod music play stalnoy_marsh`. The track should start and everyone on the server should hear it.
-3. Type `/forzammilmod music loop` twice. Check the chat says the loop state changed each time, and that the track repeats when it ends.
-4. Type `/forzammilmod music shuffle`. Check the next track is different from the one playing.
-5. Type `/forzammilmod music stop`. The music should stop for everyone.
-6. Type `/forzammilmod music play nope`. You should get a clear error, not a crash.
-7. Tab completion: type `/forzammilmod mu` and press Tab. It should finish to `music`. Then check that `music` offers `play`, `stop`, `shuffle`, `loop` and `list`, and that `play` offers the track names.
+1. Join the local server as before. Type `/fmod music list`. You should see the track list with English and Russian names.
+2. Type `/fmod music play stalnoy_marsh`. The track should start and everyone on the server should hear it.
+3. Type `/fmod music loop` twice. Check the chat says the loop state changed each time, and that the track repeats when it ends.
+4. Type `/fmod music shuffle`. Check the next track is different from the one playing.
+5. Type `/fmod music stop`. The music should stop for everyone.
+6. Type `/fmod music play nope`. You should get a clear error, not a crash.
+7. Tab completion: type `/fmod mu` and press Tab. It should finish to `music`. Then check that `music` offers `play`, `stop`, `shuffle`, `loop` and `list`, and that `play` offers the track names.
 8. Late joiner: start a track, then join with a second account (offline mode, any name). The second account should get a chat note saying what is playing, and hear music from the next track, not the one already running.
 9. Volume: open the Jukebox or Note Blocks volume slider in the Options menu (Music or Blocks). Move it down and up. It should change the radio volume.
 10. Watch for these and note anything odd: a track that cuts out early, two tracks playing at once, or a player who gets no sound after rejoining.
@@ -105,9 +105,9 @@ Claude Code will add any BetterModel setting the server needs here (T07 and T09 
 ## G1 Gate 1: emote and radio test with friends (after T13)
 
 Update the server first:
-1. In game on the exaroton server, type `/forzammilmod update`.
+1. In game on the exaroton server, type `/fmod update`.
 2. Restart the server from the exaroton panel.
-3. Type `/forzammilmod version`. It should say 0.2.0. If it doesn't, tell Claude.
+3. Type `/fmod version`. It should say 0.2.0. If it doesn't, tell Claude.
 
 Get ready:
 - Each friend needs TLauncher on 1.21.4 and should set a skin with `/skin <name>` once they're in.
@@ -129,9 +129,9 @@ Emotes:
 - Does the arm wave outward, not across the body? Does the player look normal afterwards? Does a second `/emote wave` straight after the first work? Does looking around keep it going?
 
 Radio:
-- `/forzammilmod music list` shows the tracks in English and Russian
-- `/forzammilmod music play stalnoy_marsh` plays for everyone. `loop` and `shuffle` change the state, and `stop` stops it for everyone
-- `/forzammilmod music play nope` gives a clear error, not a crash
+- `/fmod music list` shows the tracks in English and Russian
+- `/fmod music play stalnoy_marsh` plays for everyone. `loop` and `shuffle` change the state, and `stop` stops it for everyone
+- `/fmod music play nope` gives a clear error, not a crash
 - A player who joins mid-track gets a chat note and hears the next track
 - The Jukebox or Note Blocks volume slider in Options changes the radio volume
 - The comic song's words come through clearly enough to be funny
@@ -145,17 +145,23 @@ T14 checks whether a free Spigot 1.21.4 plugin with drivable vehicles exists. If
 ## M05 Try the tank locally (optional, after T16 to T19)
 
 1. Start the local server and join `localhost` as `Forzammil`.
-2. `/forzammilmod vehicle spawn tank`, right-click it to get in, drive with W/A/S/D, sneak to get out.
+2. `/fmod vehicle spawn tank`, right-click it to get in, drive with W/A/S/D, sneak to get out.
 3. Try flat ground, a one-block step and a two-block wall.
 4. After T18, fire at a wall and type `/tps` to see how the server copes.
-5. After T19, try `/forzammilmod vehicle spawn jeep`.
+5. After T19, try `/fmod vehicle spawn jeep`.
 
 ## G2 Gate 2: tank test with friends (after T20)
 
+Switch the server to /fmod (v0.2.1):
+The server is still on the old version, so it only knows the long command this one time.
+1. In game on the exaroton server, type `/forzammilmod update`.
+2. Restart the server from the exaroton panel.
+3. From now on every command is `/fmod` (for example `/fmod update` or `/fmod music list`). `/emote` stays the same.
+
 Get ready:
-1. `/forzammilmod update` on exaroton, then restart.
+1. Do the switch above first, so the server is on the latest version.
 2. Go well away from spawn, because shells break blocks.
-3. Only you can spawn vehicles (`/forzammilmod vehicle spawn tank` or `jeep`, and `/forzammilmod vehicle remove`), but friends can drive the ones you spawn.
+3. Only you can spawn vehicles (`/fmod vehicle spawn tank` or `jeep`, and `/fmod vehicle remove`), but friends can drive the ones you spawn.
 
 Check each of these and jot down a few words for each:
 - The delay between pressing a key and the tank moving

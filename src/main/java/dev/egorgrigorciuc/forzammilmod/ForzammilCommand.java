@@ -70,7 +70,7 @@ public final class ForzammilCommand implements TabExecutor {
         RadioService radio = plugin.radio();
         String sub = args.length < 2 ? "" : args[1].toLowerCase(Locale.ROOT);
         if (radio == null || !MUSIC_SUBS.contains(sub)) {
-            sender.sendMessage(plugin.lang().msg(sender, "music.usage", "label", "forzammilmod"));
+            sender.sendMessage(plugin.lang().msg(sender, "music.usage", "label", "fmod"));
             return;
         }
         switch (sub) {
@@ -78,7 +78,7 @@ public final class ForzammilCommand implements TabExecutor {
                 Track track = args.length < 3 ? null : radio.find(args[2]);
                 if (track == null) {
                     if (args.length >= 3) sender.sendMessage(plugin.lang().msg(sender, "music.no-such-track"));
-                    else sender.sendMessage(plugin.lang().msg(sender, "music.usage", "label", "forzammilmod"));
+                    else sender.sendMessage(plugin.lang().msg(sender, "music.usage", "label", "fmod"));
                     radio.sendList(sender);
                     return;
                 }

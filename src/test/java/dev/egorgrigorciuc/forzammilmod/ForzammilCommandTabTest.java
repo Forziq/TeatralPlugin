@@ -13,7 +13,7 @@ class ForzammilCommandTabTest {
     private final ForzammilCommand cmd = new ForzammilCommand(null);
 
     private List<String> tab(String... args) {
-        return cmd.onTabComplete(null, null, "forzammilmod", args);
+        return cmd.onTabComplete(null, null, "fmod", args);
     }
 
     @Test

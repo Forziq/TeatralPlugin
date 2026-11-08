@@ -1,5 +1,5 @@
 # progress
-now: T25 todo | T14 todo | G2 todo
+now: T25 doing | G1 passed | G2 todo
 updated: 2026-11-08
 
 ## tasks
@@ -22,7 +22,7 @@ T24|M|sonnet-builder|T22|done|Swap two tracks for tragic, intense ones (Posledni
 T12|L|sonnet-builder|T11,T05|done|Emote commands and cancel rules
 T23|L|sonnet-builder|T24,T05|done|Server radio: /forzammilmod music play, stop, shuffle, loop, list
 T13|S|haiku-scout|T12,T23|done|Publish v0.2.0 for Gate 1
-T25|M|sonnet-builder|T13|todo|Rename the commands to /fmod and publish v0.2.1
+T25|M|sonnet-builder|T13|doing|Rename the commands to /fmod and publish v0.2.1
 G1|-|egor|T13,T25,M02|done|Gate 1: emote test with friends (manual.md G1)
 T14|S|haiku-scout|G1|todo|Research vehicle approach
 T15|M|sonnet-builder|T14|todo|Tank and jeep placeholder models

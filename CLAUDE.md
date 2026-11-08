@@ -3,15 +3,15 @@
 Private Spigot plugin for Egor's friends' server: emotes first, WWII-style vehicles second. Read this file, then `progress.md`. Read `docs/brief.md` only when planning a phase.
 
 ## Fixed decisions (override the brief where they differ)
-- Plugin name and command root: `forzammilmod`. Commands: `/forzammilmod <sub>`, plus `/emote wave|stop`.
+- Plugin name: `forzammilmod` (jar, data folder, sound keys). Command root: `/fmod` (from T25 on; older code used `/forzammilmod`). Commands: `/fmod <sub>`, plus `/emote wave|stop`.
 - Package `dev.egorgrigorciuc.forzammilmod`, Java 21, Gradle Kotlin DSL, Spigot API 1.21.4 (not Paper). Use only Spigot API, e.g. `PlayerInputEvent` / `Player#getCurrentInput()` for driving.
 - Rendering: BetterModel (version pinned in `docs/versions.md`). Skins: SkinsRestorer. No AuthMe, no whitelist, no test range world.
 - Server: exaroton, Spigot 1.21.4, offline mode. Egor deploys himself. Everyone must accept the resource pack (kick on decline).
-- Permissions during MVPs: emotes for everyone. Only the player named `Forzammil` may spawn or remove vehicles and run `/forzammilmod update`. Anyone may drive a spawned vehicle. Hard-code the name in one constant `Access.OWNER_NAME`.
+- Permissions during MVPs: emotes for everyone. Only the player named `Forzammil` may spawn or remove vehicles and run `/fmod update`. Anyone may drive a spawned vehicle. Hard-code the name in one constant `Access.OWNER_NAME`.
 - Languages: English and Russian, picked from the player's client locale (`ru_*` gets Russian, everything else English). No language command. Every player-facing string lives in `src/main/resources/lang/en.yml` and `ru.yml`. Russian uses proper plural forms (one / few / many). Item names in the resource pack use pack lang files.
 - Releases: private GitHub repo `Forziq/TeatralPlugin`. Jar and `release.json` go to GitHub Releases. The resource pack is published to the repo's GitHub Pages site (public URL) with its SHA-1.
-- Updates: the plugin checks GitHub on startup and downloads a newer jar into Bukkit's update folder (applied on next restart). `/forzammilmod update` does the same on demand. GitHub token lives in `plugins/forzammilmod/config.yml` on the server, never in the repo.
-- Music: a shared server radio (`/forzammilmod music play|stop|shuffle|loop|list`), anyone can use it, everyone hears it. Tracks and their English/Russian names live in `assets/music/tracks.yml`. Every new command goes under `/forzammilmod`; `/emote` is the only exception.
+- Updates: the plugin checks GitHub on startup and downloads a newer jar into Bukkit's update folder (applied on next restart). `/fmod update` does the same on demand. GitHub token lives in `plugins/forzammilmod/config.yml` on the server, never in the repo.
+- Music: a shared server radio (`/fmod music play|stop|shuffle|loop|list`), anyone can use it, everyone hears it. Tracks and their English/Russian names live in `assets/music/tracks.yml`. Every new command goes under `/fmod`; `/emote` is the only exception.
 - MVP rule: placeholder art, no GUI, values hard-coded. The only config value is the GitHub token.
 
 ## Agents and who does what

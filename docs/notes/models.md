@@ -6,7 +6,7 @@
   - `models/<anything else>` -> `plugins/BetterModel/models/<same path>` (normal models, e.g. vehicles later)
 - A file is written only when missing or when its SHA-1 differs (so hand edits on the server get overwritten on the next start). Writes go to a temp file and are moved in place. Each write is logged: `Installed model players/forzammil_player.bbmodel into BetterModel (new|updated)`, otherwise `BetterModel models are up to date`.
 - Pure logic (path mapping, SHA-1, what to copy) is in `ModelInstallPlan`; tests in `ModelInstallPlanTest` and `ModelInstallerTest`.
-- If BetterModel is missing or disabled we log a warning and skip. `plugin.yml` keeps `softdepend` (not `depend`) so our plugin, and with it `/forzammilmod update`, still loads if BetterModel ever fails. All BetterModel API calls live in `BetterModelHook`, which is only touched after checking BetterModel is enabled.
+- If BetterModel is missing or disabled we log a warning and skip. `plugin.yml` keeps `softdepend` (not `depend`) so our plugin, and with it `/fmod update`, still loads if BetterModel ever fails. All BetterModel API calls live in `BetterModelHook`, which is only touched after checking BetterModel is enabled.
 
 ## When BetterModel reloads
 - BetterModel 2.2.0 does its first model load on Bukkit's `ServerLoadEvent` (checked in the 2.2.0 jar: `BetterModelPlugin$onEnable$2.load`), which fires after every plugin's `onEnable`. So the copy runs on the main thread during our `onEnable` (startup only, no players or ticks yet) and BetterModel's own first load picks the files up. No extra reload is done at startup.
