@@ -1,5 +1,5 @@
 # progress
-now: T06 todo | G1 todo | G2 todo
+now: T07 todo | G1 todo | G2 todo
 updated: 2026-11-08
 
 ## tasks
@@ -10,7 +10,7 @@ T02|M|sonnet-builder|M01|done|Gradle scaffold and plugin skeleton
 T03|M|sonnet-builder|T02|done|Build and test the dashboard (/dashboard on/off)
 T04|M|sonnet-builder|T03|done|Generate the sound library with ElevenLabs
 T05|M|sonnet-builder|T02|done|Language system (English, Russian, plurals)
-T06|M|sonnet-builder|T02|todo|Local test server and smoke test script
+T06|M|sonnet-builder|T02|done|Local test server and smoke test script
 T07|M|sonnet-builder|T06|todo|Resource pack build and release pipeline (Pages)
 T08|L|sonnet-builder|T05,T07|todo|Updater, pack sender and owner check
 T09|S|haiku-scout|T08|todo|Publish starter release v0.1.0
@@ -31,6 +31,7 @@ G2|-|egor|T20|gate|Gate 2: tank test with friends (manual.md G2)
 T21|L|main|G2|todo|Plan phases 3 to 6 from the gate notes
 
 ## log (newest first, keep 8)
+- 2026-11-08 T06: local Spigot 1.21.4 test server in `server/`: `setup-server.sh`, `server-start.sh`, `smoke-test.sh [--fresh]` (PASS/FAIL). Needs Java 21. BetterModel pinned 2.2.0, not 3.x (needs Java 25). T10/T11 use the 2.2.0 API.
 - 2026-11-08 T05: `Lang` loads `lang/en.yml` and `ru.yml` from the jar; `ru*` locales get Russian. Add every message to both files (`LangTest` checks). Use `lang.msg` or `lang.plural` via `plugin.lang()`. Details: docs/notes/lang.md.
 - 2026-11-08 T04: 20 sounds, two takes each, made with ElevenLabs Sound Effects v2 through the creative flow (flow id `6EXEYeied2tVleSPsw1f`, prompt influence 0.5, the four engine and track sounds looped). About 330 credits, no quota errors. Take 1 is `assets/sounds/<name>.ogg`, take 2 is in `assets/sounds/alt/`, raw mp3s are in the ignored `assets/sounds/raw/`. Mono Vorbis q5 at 44.1 kHz: ffmpeg to wav, then `oggenc -q 5`, because Homebrew ffmpeg has no libvorbis. Installed vorbis-tools 1.4.3. Leading silence trimmed on one-shots only. `sounds.json` has 20 entries, `stream: false`. T07 must copy `assets/sounds/*.ogg` into `assets/forzammilmod/sounds/`. Egor has not listened yet: check the loop seams and swap any weak take (copy `alt/<name>.ogg` over `<name>.ogg`).
 - 2026-11-08 T03: live agent dashboard at http://localhost:4321, switched with `/dashboard on|off|status` (`.claude/dashboard/ctl.mjs`). Node built-ins only. `lib.mjs` attributes events to agents (the `agent` field, else a stack fed by Agent PreToolUse and popped by PostToolUse and SubagentStop) and parses progress.md. Five Node tests pass; run them with `node --test ".claude/dashboard/test/*.test.mjs"` (a bare directory path fails on Node 26). Sonnet-tester checked on, off and double-on. Known limit: two parallel subagents of the same type can be mixed up on the fallback path. The design-taste-frontend skill was not used, so the page is plain; Egor may want a polish later.
