@@ -62,6 +62,9 @@ public final class ShellService {
         this.lang = lang;
     }
 
+    /** Clicks this soon after getting in are ignored. */
+    static final long MOUNT_GRACE_MILLIS = 500;
+
     public void start() {
         task = plugin.getServer().getScheduler().runTaskTimer(plugin, this::tickAll, 1L, 1L);
     }
@@ -88,6 +91,8 @@ public final class ShellService {
         lastClick.put(p.getUniqueId(), tick);
         if (last != null && tick - last < CLICK_DEBOUNCE_TICKS) return;
         Vehicle v = vehicles.drivenBy(p);
+        // The right-click that seats the driver is followed by an arm swing; don't treat it as a shot.
+        if (System.currentTimeMillis() - v.mountedAtMillis < MOUNT_GRACE_MILLIS) return;
         TurretModel.Muzzle m = v.muzzle();
         if (m == null) return;
         if (!v.reload.tryFire(tick)) return;

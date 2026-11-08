@@ -137,6 +137,10 @@ final class BetterModelHook {
     /** Roll angle the wheel modifiers read. */
     private static final class Wheels {
         volatile float angle;
+
+        Quaternionf rotation() {
+            return new Quaternionf().rotateX((float) Math.toRadians(angle * WHEEL_SPIN_SIGN));
+        }
     }
 
     /** Adds a roll modifier to each wheel bone. Returns null (and does nothing) if any of the four is missing. */
@@ -152,7 +156,7 @@ final class BetterModelHook {
         Wheels w = new Wheels();
         for (RenderedBone b : bones) {
             // Forward is -Z, so wheels roll about X.
-            b.addRotationModifier(x -> true, q -> new Quaternionf(q).rotateX((float) Math.toRadians(w.angle * WHEEL_SPIN_SIGN)));
+            b.addRotationModifier(x -> true, q -> new Quaternionf(q).mul(w.rotation()));
         }
         log.info("Wheel check: found 4 wheel bones, spin added");
         return w;
@@ -162,6 +166,20 @@ final class BetterModelHook {
     private static final class Angles {
         volatile float yaw;
         volatile float pitch;
+
+        /** MC yaw grows clockwise seen from above, a positive rotateY turns anticlockwise, hence the minus. */
+        Quaternionf turret() {
+            return new Quaternionf().rotateY((float) Math.toRadians(-yaw * TURRET_YAW_SIGN));
+        }
+
+        /**
+         * BetterModel does not pass a parent's modifier rotation on to its children (it divides it back out), so
+         * the barrel carries the turret's turn itself, then tilts about its own X axis (it points -Z, so a
+         * positive rotateX raises it).
+         */
+        Quaternionf barrel() {
+            return turret().rotateX((float) Math.toRadians(pitch * BARREL_PITCH_SIGN));
+        }
     }
 
     /**
@@ -174,24 +192,26 @@ final class BetterModelHook {
         RenderedBone barrel = tracker.bone("barrel");
         if (turret == null || barrel == null) return null;
         Angles a = new Angles();
-        // MC yaw grows clockwise seen from above, a positive rotateY turns anticlockwise, hence the minus.
-        turret.addRotationModifier(b -> true, q -> new Quaternionf(q).rotateY((float) Math.toRadians(-a.yaw * TURRET_YAW_SIGN)));
-        // The barrel points -Z, so a positive rotateX raises it.
-        barrel.addRotationModifier(b -> true, q -> new Quaternionf(q).rotateX((float) Math.toRadians(a.pitch * BARREL_PITCH_SIGN)));
+        turret.addRotationModifier(b -> true, q -> new Quaternionf(q).mul(a.turret()));
+        barrel.addRotationModifier(b -> true, q -> new Quaternionf(q).mul(a.barrel()));
         log.info("Turret check: found the turret and barrel bones, rotation modifiers added");
         return a;
     }
 
-    // BetterModel only re-applies a bone's rotation modifier when the bone's animation state ticks (see
-    // docs/notes/vehicles.md). With no animation running that never happens, so we poke the bone's private flags.
-    // This reaches into BetterModel 2.2.0 internals and is a guess until tried in game.
-    private static Field fGlobalState, fFirstTick, fUpdateAfter;
+    // BetterModel 2.2.0 only re-runs a bone's rotation modifier while an animation is playing on it; with none
+    // running (interpolation 0) it reuses the cached RenderedBone.lastModifiedRotation and never sends a new
+    // transform. So we write that cache ourselves and set the bone's firstTick flag, which makes the next
+    // BetterModel tick send the bone again. Do NOT touch updateAfter: tick() must flip it false -> true itself,
+    // or it skips sending (that was the T17 bug). This reaches into BetterModel internals; re-check after updates.
+    private static Field fLastRotation, fGlobalState, fFirstTick;
     private static boolean refreshBroken;
 
-    private static void forceRefresh(RenderedBone bone, Logger log) {
-        if (refreshBroken) return;
+    private static void forceRotation(RenderedBone bone, Quaternionf rotation, Logger log) {
+        if (refreshBroken || bone == null) return;
         try {
-            if (fGlobalState == null) {
+            if (fLastRotation == null) {
+                fLastRotation = RenderedBone.class.getDeclaredField("lastModifiedRotation");
+                fLastRotation.setAccessible(true);
                 fGlobalState = RenderedBone.class.getDeclaredField("globalState");
                 fGlobalState.setAccessible(true);
             }
@@ -199,14 +219,12 @@ final class BetterModelHook {
             if (fFirstTick == null) {
                 fFirstTick = handler.getClass().getDeclaredField("firstTick");
                 fFirstTick.setAccessible(true);
-                fUpdateAfter = handler.getClass().getDeclaredField("updateAfter");
-                fUpdateAfter.setAccessible(true);
             }
+            fLastRotation.set(bone, rotation);
             fFirstTick.setBoolean(handler, true);
-            ((java.util.concurrent.atomic.AtomicBoolean) fUpdateAfter.get(handler)).set(true);
         } catch (ReflectiveOperationException | RuntimeException e) {
             refreshBroken = true;
-            log.warning("Turret check: could not force a bone refresh (" + e + "); the turret may stay still");
+            log.warning("Turret check: could not force a bone refresh (" + e + "); the turret and wheels may stay still");
         }
     }
 
@@ -275,10 +293,7 @@ final class BetterModelHook {
         public void wheels(float angleDeg) {
             if (wheels == null || tracker.isClosed()) return;
             wheels.angle = angleDeg;
-            for (String name : WHEEL_BONES) {
-                RenderedBone b = tracker.bone(name);
-                if (b != null) forceRefresh(b, log);
-            }
+            for (String name : WHEEL_BONES) forceRotation(tracker.bone(name), wheels.rotation(), log);
         }
 
         @Override
@@ -292,10 +307,8 @@ final class BetterModelHook {
             if (Math.abs(angles.yaw - yawRel) < 0.01f && Math.abs(angles.pitch - pitchUp) < 0.01f) return;
             angles.yaw = yawRel;
             angles.pitch = pitchUp;
-            RenderedBone turretBone = tracker.bone("turret");
-            RenderedBone barrelBone = tracker.bone("barrel");
-            if (turretBone != null) forceRefresh(turretBone, log);
-            if (barrelBone != null) forceRefresh(barrelBone, log);
+            forceRotation(tracker.bone("turret"), angles.turret(), log);
+            forceRotation(tracker.bone("barrel"), angles.barrel(), log);
             if (!logged[0]) {
                 logged[0] = true;
                 RenderedBone muzzle = tracker.bone("muzzle");

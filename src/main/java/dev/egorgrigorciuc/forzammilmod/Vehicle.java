@@ -65,7 +65,11 @@ final class Vehicle {
 
     void driver(UUID id) {
         this.driver = id;
+        if (id != null) mountedAtMillis = System.currentTimeMillis();
     }
+
+    /** When the current driver got in; the right-click that seats them also swings their arm. */
+    long mountedAtMillis;
 
     boolean owns(Entity e) {
         UUID id = e.getUniqueId();
