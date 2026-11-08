@@ -35,7 +35,7 @@ G2|-|egor|T20|gate|Gate 2: tank test with friends (manual.md G2)
 T21|L|main|G2|todo|Plan phases 3 to 6 from the gate notes
 
 ## log (newest first, keep 8)
-- 2026-11-08 Fix: barrel model tilted the wrong way (shells were fine), BARREL_PITCH_SIGN now -1f. v0.3.3 released, pack SHA-1 de475fe9. Turret turning and no-shot-on-mount confirmed working in game on v0.3.2.
+- 2026-11-08 Fix: barrel model tilted the wrong way (shells were fine), BARREL_PITCH_SIGN now -1f. v0.3.3 released, pack SHA-1 de475fe9. Turret visibly moves in game on v0.3.2; no-shot-on-mount not yet confirmed.
 - 2026-11-08 Fix: turret, barrel and jeep wheels didn't move (BetterModel caches modifier rotation with no animation; we now write lastModifiedRotation + firstTick by reflection, barrel carries turret yaw). Clicks within 0.5 s of mounting ignored, so getting in no longer fires. v0.3.2 released, pack SHA-1 583df984. Not tried in game.
 - 2026-11-08 Fix: couldn't get into vehicles ("not ready") because seat lookup used p_driver; BetterModel strips the p_ tag, so it's now "driver". v0.3.1 released, pack SHA-1 d8b739cb. Seat failures now log a 'Driver check:' warning. Server: /fmod update, then restart.
 - 2026-11-08 T20: v0.3.0 released (tank and jeep). Pack forzammilmod-pack-0.3.0.zip, SHA-1 de83929d. manual.md G2 has the checklist and commands. Server needs /fmod update and a restart first.
