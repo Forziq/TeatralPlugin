@@ -1,0 +1,12 @@
+name: forzammilmod
+version: ${version}
+main: dev.egorgrigorciuc.forzammilmod.ForzammilMod
+api-version: '1.21'
+softdepend: [BetterModel, SkinsRestorer]
+commands:
+  forzammilmod:
+    description: Forzammilmod main command
+    usage: /<command> <version>
+  emote:
+    description: Play an emote
+    usage: /<command> <wave|stop>
