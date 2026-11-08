@@ -57,7 +57,7 @@ You only do this once. After that the plugin updates itself.
 1. On exaroton, open the server's Software page and make sure it's Spigot 1.21.4. If it's on Paper or another version, tell Claude Code before going further.
 2. In Options or server.properties, check `online-mode` is `false`.
 3. Open the Files page, go into `plugins`, and upload these three jars (uploading doesn't work on exaroton's free trial):
-   - `/Users/egorgrigorciuc/Desktop/Projects/TeatralPlugin/dist/forzammilmod-0.1.1.jar`
+   - `/Users/egorgrigorciuc/Desktop/Projects/TeatralPlugin/dist/forzammilmod-0.1.2.jar`
    - `BetterModel-2.2.0-spigot.jar` from `/Users/egorgrigorciuc/Desktop/Projects/TeatralPlugin/server/plugins/`
    - `SkinsRestorer-15.12.6.jar` from the same folder
    (exact versions are in `docs/versions.md`)
@@ -67,7 +67,7 @@ You only do this once. After that the plugin updates itself.
    - Save it in 1Password as a new item called `forzammilmod GitHub token`. Don't paste it into any file in the project.
    - If the tab got closed before you copied it, delete `forzammilmod-server` at https://github.com/settings/personal-access-tokens and make a new one with the same settings (Only select repositories: TeatralPlugin; Contents: Read-only).
 6. Open `plugins/forzammilmod/config.yml` in exaroton's file editor. Paste the token between the quotes on the `github-token:` line (the key is `github-token`). Save.
-7. Start the server again and join. You should be asked to download the resource pack; accept it. Type `/forzammilmod version` and check it says 0.1.1. If exaroton also forces its own resource pack, players get both, and ours loads on top.
+7. Start the server again and join. You should be asked to download the resource pack; accept it. Type `/forzammilmod version` and check it says 0.1.2. Then type `/forzammilmod pack`: you should hear a cheer, which means our pack loaded. If exaroton also forces its own resource pack, players get both, and ours loads on top.
 
 From now on, new versions download by themselves when the server starts and go live on the next restart. If you want one straight away, type `/forzammilmod update` in game and then restart the server from exaroton.
 
