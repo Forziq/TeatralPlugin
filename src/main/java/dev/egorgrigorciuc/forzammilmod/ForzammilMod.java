@@ -12,6 +12,7 @@ public final class ForzammilMod extends JavaPlugin {
     private Lang lang;
     private UpdateService updates;
     private PackService pack;
+    private EmoteService emotes;
     /** Set when the server-load event fires after our enable; BetterModel loads its models on that event. */
     private volatile boolean serverLoadSeen;
 
@@ -33,6 +34,11 @@ public final class ForzammilMod extends JavaPlugin {
     }
 
     @Override
+    public void onDisable() {
+        if (emotes != null) emotes.stopAll();
+    }
+
+    @Override
     public void onEnable() {
         saveDefaultConfig();
         installModels();
@@ -45,7 +51,9 @@ public final class ForzammilMod extends JavaPlugin {
         updates.checkOnStartup();
         getServer().getPluginManager().registerEvents(new LangListener(lang), this);
         register("forzammilmod", new ForzammilCommand(this));
-        register("emote", new EmoteCommand(lang));
+        emotes = new EmoteService(this);
+        getServer().getPluginManager().registerEvents(new EmoteListener(emotes, lang), this);
+        register("emote", new EmoteCommand(lang, emotes));
     }
 
     /**

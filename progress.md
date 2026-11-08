@@ -1,5 +1,5 @@
 # progress
-now: T12 todo | G1 todo | G2 todo
+now: T23 todo | G1 todo | G2 todo
 updated: 2026-11-08
 
 ## tasks
@@ -19,7 +19,7 @@ T10|S|haiku-scout|T06|done|Research BetterModel player-model API
 T11|L|opus-deep|T10|done|Model installer and the wave animation
 T22|M|sonnet-builder|T04|done|WWII-style music with ElevenLabs (5 instrumentals, 1 comic song)
 T24|M|sonnet-builder|T22|done|Swap two tracks for tragic, intense ones (Posledniy Rubezh, Pepel Goroda)
-T12|L|sonnet-builder|T11,T05|todo|Emote commands and cancel rules
+T12|L|sonnet-builder|T11,T05|done|Emote commands and cancel rules
 T23|L|sonnet-builder|T24,T05|todo|Server radio: /forzammilmod music play, stop, shuffle, loop, list
 T13|S|haiku-scout|T12,T23|todo|Publish v0.2.0 for Gate 1
 G1|-|egor|T13,M02|gate|Gate 1: emote test with friends (manual.md G1)
@@ -34,6 +34,7 @@ G2|-|egor|T20|gate|Gate 2: tank test with friends (manual.md G2)
 T21|L|main|G2|todo|Plan phases 3 to 6 from the gate notes
 
 ## log (newest first, keep 8)
+- 2026-11-08 T12: /emote, /emote wave, /emote stop. One emote each. Walking (over 0.05 sideways, or onto a new block), damage, death, teleport or quit ends it. Each stop closes the BetterModel tracker. 54 tests pass; server loads it. Not tried in game (M03). BetterModel errors on shutdown: theirs, not ours.
 - 2026-11-08 T24: two cheerful tracks swapped for tragic ones: posledniy_rubezh and pepel_goroda. Still 7 tracks. Music runs cost 4x the estimate (4 takes per run), see docs/notes. Nobody has listened yet. T23 unblocked.
 - 2026-11-08 T22: seven tracks in assets/music (five instrumentals, two Russian comic songs). tracks.yml lists ids and names. Sounds are forzammilmod:music.<id>. Pack now 15.3 MB. Nobody has listened yet. T23: 7 tracks, not 6.
 - 2026-11-08 T11: models copy into BetterModel on startup (SHA-1 checked). `forzammil_player` has a 2 s `wave`. T12: use `BetterModel.limb("forzammil_player")`; `stopAnimation` skips onEnd. Not seen in game yet. Notes: docs/notes/models.md
@@ -41,7 +42,6 @@ T21|L|main|G2|todo|Plan phases 3 to 6 from the gate notes
 - 2026-11-08 M02 done: Egor uploaded 0.1.2 (with BetterModel and SkinsRestorer) to exaroton, set the token, and checked `/forzammilmod version` and `/forzammilmod pack` in game.
 - 2026-11-08 v0.1.2: new `/forzammilmod pack` (anyone) reports what the client said about our pack (loaded, downloading, failed, not reported) and plays `forzammilmod:emote_cheer` as a hands-on test. PackService keeps each player's last status for our pack. Released with release.sh; pack at forziq.github.io/TeatralPlugin/pack/forzammilmod-pack-0.1.2.zip. M02 now points at dist/forzammilmod-0.1.2.jar. Not tried in game yet.
 - 2026-11-08 Pack fix (after T09): PackService now uses `addResourcePack`, so our pack stacks on top of the server.properties pack Egor's exaroton server already forces (160 MB), and the kick listener only reacts to our pack's UUID. Shipped as v0.1.1 (release.sh ran end to end, including the gh-pages push, after the postBuffer fix). Pack: forziq.github.io/TeatralPlugin/pack/forzammilmod-pack-0.1.1.zip. M02 now points at dist/forzammilmod-0.1.1.jar; the 0.1.0 copy was removed. Not checked live with both packs yet: check at M02.
-- 2026-11-08 T09: v0.1.0 released: GitHub release with jar and release.json, copy in dist/forzammilmod-0.1.0.jar. Pack returns 200 at forziq.github.io/TeatralPlugin/pack/forzammilmod-pack-0.1.0.zip. GitHub token `forzammilmod-server` made later the same day (read-only, TeatralPlugin only, expires 2027-11-08). The `op` CLI wasn't signed in, so Egor copies it into 1Password himself (M02 step 5).
 ## blockers
 none
 

@@ -2,7 +2,12 @@ version: "&7forzammilmod &fv{version}"
 usage: "&eИспользуй: &f/{label} <{subs}>"
 no-permission: "&cТебе это нельзя."
 emote:
-  soon: "&7Эмоции скоро появятся."
+  started: "&7Эмоция запущена. Сделай шаг, чтобы остановить."
+  stopped: "&7Эмоция остановлена."
+  not-playing: "&7Ты сейчас ничего не показываешь."
+  unknown: "&cТакой эмоции нет."
+  already-playing: "&cТы уже показываешь эмоцию. Сначала /emote stop."
+  unavailable: "&cЭмоции сейчас недоступны."
   count:
     one: "&7Доступна {n} эмоция."
     few: "&7Доступны {n} эмоции."

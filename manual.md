@@ -75,11 +75,18 @@ Claude Code will add any BetterModel setting the server needs here (T07 and T09 
 
 ## M03 Try the wave locally (optional, after T12)
 
-1. Ask Claude Code to start the local test server, or run `scripts/server-start.sh` in Terminal.
+1. Run `scripts/server-start.sh` in Terminal, or ask Claude Code to start the local test server.
 2. Open Minecraft 1.21.4 in TLauncher, go to Multiplayer and add the server `localhost`.
-3. Type `/emote wave`, then walk to check it stops. `/emote stop` should also stop it.
-4. Open `src/main/resources/models/players/forzammil_player.bbmodel` in Blockbench, go to the Animate tab and play `wave` once. Check that only the right arm moves: it should rise out to the side and over the head, wave side to side three times, then drop back down by the 2-second mark. If it swings into the head or across the body instead, tell Claude the arm goes the wrong way.
-5. Type `stop` in the server window when you're finished.
+3. Type `/emote` to list the emotes, then `/emote wave` to start one.
+4. Type `/emote stop` to stop it. Start a wave again and walk a few steps: walking should cancel it.
+5. Start a wave again and take damage (fall off a block, or hit the player with a second account): damage should cancel it.
+6. Open `src/main/resources/models/players/forzammil_player.bbmodel` in Blockbench, go to the Animate tab and play `wave` once. Check that only the right arm moves: it should rise out to the side and over the head, wave side to side three times, then drop back down by the 2-second mark. If it swings into the head or across the body instead, tell Claude the arm goes the wrong way.
+7. Watch for these in game and note anything odd:
+   - Does the arm wave outward? If it swings across the body, the Z signs need flipping.
+   - After the wave ends or is stopped, does the player look normal again, with no leftover or half-shown model?
+   - Does a second `/emote wave` straight after the first work?
+   - Does looking around without walking keep the wave going?
+8. Type `stop` in the server window when you're finished.
 
 ## G1 Gate 1: emote test with friends (after T13)
 

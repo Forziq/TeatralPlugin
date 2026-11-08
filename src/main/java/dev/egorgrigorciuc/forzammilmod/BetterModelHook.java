@@ -2,6 +2,10 @@ package dev.egorgrigorciuc.forzammilmod;
 
 import kr.toxicity.model.api.BetterModel;
 import kr.toxicity.model.api.BetterModelPlatform.ReloadResult;
+import kr.toxicity.model.api.animation.AnimationModifier;
+import kr.toxicity.model.api.bukkit.platform.BukkitAdapter;
+import kr.toxicity.model.api.tracker.EntityTracker;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
@@ -62,5 +66,21 @@ final class BetterModelHook {
         } else if (result instanceof ReloadResult.Failure f) {
             plugin.getLogger().log(Level.WARNING, "BetterModel reload failed", f.throwable());
         }
+    }
+
+    /**
+     * Starts a play-once animation on the player's model. Returns a handle (close it to stop the emote and
+     * give the player their normal look back), or null if the model or animation is unavailable.
+     * {@code onFinish} may run on any thread.
+     */
+    static AutoCloseable play(Player player, String animation, Runnable onFinish) {
+        EntityTracker tracker = BetterModel.limb(PLAYER_MODELS.get(0))
+                .map(r -> r.getOrCreate(BukkitAdapter.adapt(player))).orElse(null);
+        if (tracker == null) return null;
+        if (!tracker.animate(animation, AnimationModifier.DEFAULT_WITH_PLAY_ONCE, onFinish)) {
+            tracker.close();
+            return null;
+        }
+        return tracker;
     }
 }

@@ -2,7 +2,12 @@ version: "&7forzammilmod &fv{version}"
 usage: "&eUsage: &f/{label} <{subs}>"
 no-permission: "&cYou can't do that."
 emote:
-  soon: "&7Emotes are coming soon."
+  started: "&7Emote started. Move to stop it."
+  stopped: "&7Emote stopped."
+  not-playing: "&7You're not doing an emote."
+  unknown: "&cNo such emote."
+  already-playing: "&cYou're already doing an emote. Use /emote stop first."
+  unavailable: "&cEmotes aren't available right now."
   count:
     one: "&7{n} emote available."
     other: "&7{n} emotes available."
