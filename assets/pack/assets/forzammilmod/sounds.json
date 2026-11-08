@@ -158,5 +158,61 @@
         "stream": false
       }
     ]
+  },
+  "music.stalnoy_marsh": {
+    "sounds": [
+      {
+        "name": "forzammilmod:music/stalnoy_marsh",
+        "stream": true
+      }
+    ]
+  },
+  "music.okopny_vals": {
+    "sounds": [
+      {
+        "name": "forzammilmod:music/okopny_vals",
+        "stream": true
+      }
+    ]
+  },
+  "music.tankovy_proryv": {
+    "sounds": [
+      {
+        "name": "forzammilmod:music/tankovy_proryv",
+        "stream": true
+      }
+    ]
+  },
+  "music.nochnoy_konvoy": {
+    "sounds": [
+      {
+        "name": "forzammilmod:music/nochnoy_konvoy",
+        "stream": true
+      }
+    ]
+  },
+  "music.polevaya_kukhnya": {
+    "sounds": [
+      {
+        "name": "forzammilmod:music/polevaya_kukhnya",
+        "stream": true
+      }
+    ]
+  },
+  "music.okopnye_chastushki": {
+    "sounds": [
+      {
+        "name": "forzammilmod:music/okopnye_chastushki",
+        "stream": true
+      }
+    ]
+  },
+  "music.pesnya_pro_adama": {
+    "sounds": [
+      {
+        "name": "forzammilmod:music/pesnya_pro_adama",
+        "stream": true
+      }
+    ]
   }
 }

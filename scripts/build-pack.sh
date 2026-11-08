@@ -27,6 +27,8 @@ cp "$STAGE/pack.mcmeta" build/pack/bm-pack.mcmeta
 [ -d assets/pack ] && cp -R assets/pack/. "$STAGE/"
 mkdir -p "$STAGE/assets/forzammilmod/sounds"
 cp assets/sounds/*.ogg "$STAGE/assets/forzammilmod/sounds/"
+mkdir -p "$STAGE/assets/forzammilmod/sounds/music"
+cp assets/music/*.ogg "$STAGE/assets/forzammilmod/sounds/music/"
 
 echo "==> Writing pack.mcmeta (BetterModel overlays kept)"
 node -e '

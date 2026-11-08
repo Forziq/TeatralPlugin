@@ -1,0 +1,36 @@
+tracks:
+  - id: stalnoy_marsh
+    en: "Stalnoy Marsh"
+    ru: "Стальной марш"
+    length_ms: 117475
+    vocals: false
+  - id: okopny_vals
+    en: "Okopny Vals"
+    ru: "Окопный вальс"
+    length_ms: 117834
+    vocals: false
+  - id: tankovy_proryv
+    en: "Tankovy Proryv"
+    ru: "Танковый прорыв"
+    length_ms: 118527
+    vocals: false
+  - id: nochnoy_konvoy
+    en: "Nochnoy Konvoy"
+    ru: "Ночной конвой"
+    length_ms: 143221
+    vocals: false
+  - id: polevaya_kukhnya
+    en: "Polevaya Kukhnya"
+    ru: "Полевая кухня"
+    length_ms: 88799
+    vocals: false
+  - id: okopnye_chastushki
+    en: "Okopnye Chastushki"
+    ru: "Окопные частушки"
+    length_ms: 118107
+    vocals: true
+  - id: pesnya_pro_adama
+    en: "Pesnya pro Adama"
+    ru: "Песня про Адама"
+    length_ms: 117440
+    vocals: true

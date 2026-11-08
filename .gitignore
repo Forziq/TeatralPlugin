@@ -17,3 +17,5 @@ token.txt
 plugins/
 config.local.yml
 .claude/settings.json.bak-*
+
+assets/music/raw/
