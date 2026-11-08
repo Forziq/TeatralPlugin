@@ -62,14 +62,10 @@ You only do this once. After that the plugin updates itself.
    - `SkinsRestorer-15.12.6.jar` from the same folder
    (exact versions are in `docs/versions.md`)
 4. Start the server, wait until it's fully up, then stop it.
-5. Make the GitHub token first, if you haven't already. GitHub asked for a security code when Claude Code tried, so you need to do this yourself:
-   - Go to https://github.com/settings/personal-access-tokens/new while signed in as Forziq.
-   - Enter your sudo code if GitHub asks for it.
-   - Token name: `forzammilmod-server`. Resource owner: Forziq. Expiration: 1 year (custom date 2027-11-08 if needed).
-   - Repository access: "Only select repositories", then pick `TeatralPlugin`.
-   - Permissions: Contents, set to Read-only. Metadata stays read-only automatically.
-   - Click Generate token and copy it straight away.
+5. Save the GitHub token. Claude Code made it on 2026-11-08 (`forzammilmod-server`, read-only, TeatralPlugin only, expires 2027-11-08) and left the GitHub tab open in Chrome:
+   - Click the copy icon next to the token on that page. GitHub only shows it once.
    - Save it in 1Password as a new item called `forzammilmod GitHub token`. Don't paste it into any file in the project.
+   - If the tab got closed before you copied it, delete `forzammilmod-server` at https://github.com/settings/personal-access-tokens and make a new one with the same settings (Only select repositories: TeatralPlugin; Contents: Read-only).
 6. Open `plugins/forzammilmod/config.yml` in exaroton's file editor. Paste the token between the quotes on the `github-token:` line (the key is `github-token`). Save.
 7. Start the server again and join. You should be asked to download the resource pack; accept it. Type `/forzammilmod version` and check it says 0.1.0.
 

@@ -31,7 +31,7 @@ G2|-|egor|T20|gate|Gate 2: tank test with friends (manual.md G2)
 T21|L|main|G2|todo|Plan phases 3 to 6 from the gate notes
 
 ## log (newest first, keep 8)
-- 2026-11-08 T09: v0.1.0 released: GitHub release with jar and release.json, copy in dist/forzammilmod-0.1.0.jar. Pack returns 200 at forziq.github.io/TeatralPlugin/pack/forzammilmod-pack-0.1.0.zip. GitHub token NOT made (sudo code). M02 has the steps.
+- 2026-11-08 T09: v0.1.0 released: GitHub release with jar and release.json, copy in dist/forzammilmod-0.1.0.jar. Pack returns 200 at forziq.github.io/TeatralPlugin/pack/forzammilmod-pack-0.1.0.zip. GitHub token `forzammilmod-server` made later the same day (read-only, TeatralPlugin only, expires 2027-11-08). The `op` CLI wasn't signed in, so Egor copies it into 1Password himself (M02 step 5).
 - 2026-11-08 T08: updater checks GitHub with the config.yml token and fetches newer jars into the update folder. `/forzammilmod update` is owner-only. Packs are forced on join. Untested live: T09 checks it. Notes: docs/notes/updater.md.
 - 2026-11-08 T07: `scripts/build-pack.sh <v>` makes build/pack/forzammilmod-pack-<v>.zip. `scripts/release.sh <v> [--dry-run]` puts pack.properties in the jar, publishes to Pages and creates the GitHub release. Live publish untested until T09.
 - 2026-11-08 T06: local Spigot 1.21.4 test server in `server/`: `setup-server.sh`, `server-start.sh`, `smoke-test.sh [--fresh]` (PASS/FAIL). Needs Java 21. BetterModel pinned 2.2.0, not 3.x (needs Java 25). T10/T11 use the 2.2.0 API.
