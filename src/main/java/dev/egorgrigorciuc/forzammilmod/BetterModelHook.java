@@ -99,8 +99,11 @@ final class BetterModelHook {
 
     // ---- vehicles ----
 
-    /** Driver seat bone in our vehicle models (BetterModel "p" tag = seat). */
-    static final String SEAT_BONE = "p_driver";
+    /**
+     * Driver seat bone. The group is named {@code p_driver} in the models ("p" tag = seat), but BetterModel
+     * strips tags off the name, so lookups must use the bare name.
+     */
+    static final String SEAT_BONE = "driver";
     /** Display movement interpolation in ticks, per docs/notes/vehicles.md section 4. */
     static final int MOVE_TICKS = 2;
 
@@ -215,7 +218,7 @@ final class BetterModelHook {
     private record BmRig(EntityTracker tracker, Angles angles, Wheels wheels, Logger log, boolean[] logged) implements VehicleRig {
 
         BmRig(EntityTracker tracker, Angles angles, Wheels wheels, Logger log) {
-            this(tracker, angles, wheels, log, new boolean[1]);
+            this(tracker, angles, wheels, log, new boolean[2]);
         }
 
         private HitBox seatBox() {
@@ -227,10 +230,25 @@ final class BetterModelHook {
         @Override
         public boolean seat(Player player) {
             HitBox box = seatBox();
-            if (box == null) return false;
+            if (box == null) {
+                if (!logged[1]) {
+                    logged[1] = true;
+                    String why = tracker.isClosed() ? "the model is closed"
+                            : tracker.bone(SEAT_BONE) == null ? "the model has no " + SEAT_BONE + " seat bone"
+                            : "BetterModel has not built the seat yet";
+                    log.warning("Driver check: could not seat " + player.getName() + ": " + why);
+                }
+                return false;
+            }
             box.mountController(MountControllers.NONE);
             box.mount(BukkitAdapter.adapt(player));
-            return isSeated(player);
+            boolean seated = isSeated(player);
+            if (!seated && !logged[1]) {
+                logged[1] = true;
+                log.warning("Driver check: mounted " + player.getName() + " on the seat but they are not riding it"
+                        + " (riding " + player.getVehicle() + ")");
+            }
+            return seated;
         }
 
         @Override
