@@ -8,9 +8,9 @@ import java.util.Locale;
  * vehicle does not snag on blocks it only grazes.
  */
 public enum VehicleType {
-    //    id      max   rev   accel   brake  coast  turn  onSpot step  halfW halfL height
-    TANK("tank", 0.18, 0.08, 0.006, 0.025, 0.010, 2.5, true, 1.0, 1.45, 2.50, 1.7),
-    JEEP("jeep", 0.42, 0.14, 0.014, 0.040, 0.012, 4.5, false, 1.0, 0.95, 1.55, 1.2);
+    //    id      max   rev   accel   brake  coast  turn  onSpot step  halfW halfL height hp
+    TANK("tank", 0.18, 0.08, 0.006, 0.025, 0.010, 2.5, true, 1.0, 1.45, 2.50, 1.7, 100),
+    JEEP("jeep", 0.42, 0.14, 0.014, 0.040, 0.012, 4.5, false, 1.0, 0.95, 1.55, 1.2, 40);
 
     public final String id;
     public final double maxSpeed;
@@ -27,10 +27,11 @@ public enum VehicleType {
     public final double halfWidth;
     public final double halfLength;
     public final double height;
+    public final int maxHealth;
 
     VehicleType(String id, double maxSpeed, double reverseMax, double acceleration, double braking, double coastDrag,
                 double turnRate, boolean turnsOnSpot, double stepHeight, double halfWidth, double halfLength,
-                double height) {
+                double height, int maxHealth) {
         this.id = id;
         this.maxSpeed = maxSpeed;
         this.reverseMax = reverseMax;
@@ -43,6 +44,7 @@ public enum VehicleType {
         this.halfWidth = halfWidth;
         this.halfLength = halfLength;
         this.height = height;
+        this.maxHealth = maxHealth;
     }
 
     /** BetterModel model name (file name of the .bbmodel). */

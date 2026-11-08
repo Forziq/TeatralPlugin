@@ -65,6 +65,10 @@ vehicle:
   pad-occupied: "&cThere's already a vehicle on the pad."
   pad-full: "&cToo many vehicles out ({max}). Get rid of one first."
   pad-arrived: "&a{type} has arrived."
+  damaged: "&cHull: {percent}%"
+  destroyed: "&cYour vehicle was destroyed!"
+  repaired: "&aRepaired to {percent}%."
+  already-full: "&7Already fully repaired."
   list-empty: "&7No vehicles out right now."
   list-header:
     one: "&7{n} vehicle:"

@@ -34,9 +34,14 @@ final class Vehicle {
     /** Gun reload clock (ticks of ShellService) and the last whole second shown on the action bar. */
     final ReloadTimer reload = new ReloadTimer(ShellService.RELOAD_TICKS);
     int shownSeconds;
+    final VehicleHealth health;
+    /** Set once the vehicle has blown up, so it cannot blow up twice. */
+    boolean destroyed;
+    int smokeTick;
 
     Vehicle(VehicleType type, ArmorStand anchor, Interaction clickBox, VehicleMover.State state) {
         this.type = type;
+        this.health = new VehicleHealth(type.maxHealth);
         this.anchor = anchor;
         this.clickBox = clickBox;
         this.world = anchor.getWorld();
@@ -108,6 +113,10 @@ final class Vehicle {
         if (rig == null || type.turnsOnSpot || state.speed() == 0) return;
         wheelAngle = WheelSpin.advance(wheelAngle, state.speed(), WheelSpin.JEEP_WHEEL_RADIUS);
         rig.wheels(wheelAngle);
+    }
+
+    HullBox hull() {
+        return new HullBox(state.x(), state.y(), state.z(), state.yaw(), type.halfWidth, type.halfLength, type.height);
     }
 
     boolean hasTurret() {

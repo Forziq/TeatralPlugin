@@ -34,16 +34,21 @@ public final class ShellService {
     static final int CLICK_DEBOUNCE_TICKS = 5;
     static final float EXPLOSION_POWER = 2.5f;
     static final double SHELL_RAY_SIZE = 0.3;
+    /** A shell cannot hurt the vehicle that fired it until it has flown this far. */
+    static final double ORIGIN_SAFE_BLOCKS = 10.0;
 
     private static final class Shell {
         final ShellModel model;
         final World world;
         final UUID driver;
+        /** The firing vehicle; it cannot be hit by its own shell near the muzzle. */
+        final Vehicle origin;
 
-        Shell(ShellModel model, World world, UUID driver) {
+        Shell(ShellModel model, World world, UUID driver, Vehicle origin) {
             this.model = model;
             this.world = world;
             this.driver = driver;
+            this.origin = origin;
         }
     }
 
@@ -103,7 +108,7 @@ public final class ShellService {
     private void launch(Player p, Vehicle v, TurretModel.Muzzle m) {
         World w = v.world;
         Location at = new Location(w, m.x(), m.y(), m.z());
-        shells.add(new Shell(new ShellModel(m.x(), m.y(), m.z(), m.dx(), m.dy(), m.dz()), w, p.getUniqueId()));
+        shells.add(new Shell(new ShellModel(m.x(), m.y(), m.z(), m.dx(), m.dy(), m.dz()), w, p.getUniqueId(), v));
         w.playSound(at, Sound.ENTITY_GENERIC_EXPLODE, 1.5f, 1.6f);
         w.playSound(at, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 1.5f, 0.8f);
         w.spawnParticle(Particle.LARGE_SMOKE, at, 6, 0.15, 0.15, 0.15, 0.02);
@@ -140,11 +145,40 @@ public final class ShellService {
                 && vehicles.find(e) == null
                 && !(e instanceof ArmorStand); // BetterModel hitboxes and our anchors are armour stands
         RayTraceResult hit = w.rayTrace(start, dir, seg.length(), FluidCollisionMode.NEVER, true, SHELL_RAY_SIZE, filter);
-        if (hit != null) {
-            Location boom = hit.getHitPosition().toLocation(w);
-            if (hit.getHitBlockFace() != null) boom.add(hit.getHitBlockFace().getDirection().multiply(0.1));
+        // Closest vehicle hull along the path (the firing vehicle is skipped while the shell is still near it).
+        boolean skipOrigin = s.model.travelled() < ORIGIN_SAFE_BLOCKS + seg.length();
+        Vehicle hitVehicle = null;
+        double vehicleDist = Double.MAX_VALUE;
+        for (Vehicle v : vehicles.vehicles()) {
+            if (!v.world.equals(w) || v.destroyed || (skipOrigin && v == s.origin)) continue;
+            double t = v.hull().rayHit(seg.x(), seg.y(), seg.z(), seg.dx(), seg.dy(), seg.dz(), seg.length());
+            if (t >= 0 && t < vehicleDist) {
+                vehicleDist = t;
+                hitVehicle = v;
+            }
+        }
+        if (hitVehicle != null && hit != null && hit.getHitPosition().distance(start.toVector()) < vehicleDist) {
+            hitVehicle = null; // a block or mob was in the way
+        }
+        if (hitVehicle != null || hit != null) {
+            Location boom;
+            if (hitVehicle != null) {
+                boom = start.clone().add(dir.clone().multiply(vehicleDist));
+            } else {
+                boom = hit.getHitPosition().toLocation(w);
+                if (hit.getHitBlockFace() != null) boom.add(hit.getHitBlockFace().getDirection().multiply(0.1));
+            }
             Player shooter = plugin.getServer().getPlayer(s.driver);
             w.createExplosion(boom, EXPLOSION_POWER, false, true, shooter);
+            if (hitVehicle != null) {
+                HitSide side = HitSide.classify(hitVehicle.state().yaw(), seg.dx(), seg.dz());
+                vehicles.damage(hitVehicle, DamageRules.shell(hitVehicle.type, side));
+            }
+            for (Vehicle v : vehicles.vehicles()) {
+                if (v == hitVehicle || !v.world.equals(w) || v.destroyed || (skipOrigin && v == s.origin)) continue;
+                int dmg = DamageRules.splash(v.hull().distanceTo(boom.getX(), boom.getY(), boom.getZ()));
+                if (dmg > 0) vehicles.damage(v, dmg);
+            }
             return false;
         }
         for (double d = 0; d < seg.length(); d += 0.5) {

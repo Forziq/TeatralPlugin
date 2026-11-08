@@ -1,7 +1,11 @@
 package dev.egorgrigorciuc.forzammilmod;
 
 import org.bukkit.Input;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
@@ -12,6 +16,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.BoundingBox;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,12 +39,18 @@ public final class VehicleService {
     private final List<Vehicle> vehicles = new ArrayList<>();
     private final Map<World, Terrain> terrains = new HashMap<>();
     private BukkitTask task;
+    private Lang lang;
     private boolean loggedSeated;
     private boolean loggedPolledInput;
     private boolean loggedInputEvent;
 
     public VehicleService(JavaPlugin plugin) {
         this.plugin = plugin;
+    }
+
+    /** Needed for the damage and wreck messages; set before the first tick. */
+    public void lang(Lang lang) {
+        this.lang = lang;
     }
 
     public void start() {
@@ -176,6 +187,54 @@ public final class VehicleService {
                 + ", back=" + in.isBackward() + ", left=" + in.isLeft() + ", right=" + in.isRight() + ")");
     }
 
+    /** Applies damage; shows the driver the hull state and blows the vehicle up at 0. Returns true if it was destroyed. */
+    public boolean damage(Vehicle v, int amount) {
+        if (amount <= 0 || v.destroyed || !vehicles.contains(v)) return false;
+        v.health.damage(amount);
+        if (v.health.isDestroyed()) {
+            destroy(v);
+            return true;
+        }
+        Player d = v.driver() == null ? null : plugin.getServer().getPlayer(v.driver());
+        if (d != null && lang != null) {
+            d.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                    TextComponent.fromLegacyText(lang.msg(d, "vehicle.damaged", "percent", v.health.percent())));
+        }
+        return false;
+    }
+
+    /** Big blast (particles and sound only, no block damage), crew thrown out and hurt, vehicle removed. */
+    private void destroy(Vehicle v) {
+        v.destroyed = true;
+        Location at = v.location().add(0, v.type.height / 2, 0);
+        World w = v.world;
+        w.spawnParticle(Particle.EXPLOSION_EMITTER, at, 1);
+        w.spawnParticle(Particle.LARGE_SMOKE, at, 30, 1.0, 0.6, 1.0, 0.05);
+        w.playSound(at, Sound.ENTITY_GENERIC_EXPLODE, 2.0f, 0.7f);
+        Player d = v.driver() == null ? null : plugin.getServer().getPlayer(v.driver());
+        if (d != null) {
+            v.driver(null);
+            try {
+                v.rig().unseat(d);
+            } catch (RuntimeException | LinkageError ignored) {
+                // the seat is going away with the vehicle anyway
+            }
+            d.teleport(at.clone().add(0, 0.5, 0));
+            d.setVelocity(new Vector((Math.random() - 0.5) * 0.6, 0.5, (Math.random() - 0.5) * 0.6));
+            d.damage(6.0);
+            if (lang != null) d.sendMessage(lang.msg(d, "vehicle.destroyed"));
+        }
+        remove(v);
+    }
+
+    /** Iron ingot repair: returns true if it restored health, false if the vehicle was already full. */
+    public boolean repair(Vehicle v) {
+        if (v.health.isFull()) return false;
+        v.health.repair(VehicleHealth.repairAmount(v.health.max()));
+        v.world.playSound(v.location(), Sound.BLOCK_ANVIL_USE, 0.6f, 1.4f);
+        return true;
+    }
+
     public void remove(Vehicle v) {
         vehicles.remove(v);
         v.remove();
@@ -254,6 +313,10 @@ public final class VehicleService {
         if (v.driver() != null) {
             Player d = plugin.getServer().getPlayer(v.driver());
             if (d != null) v.aimTurret(d);
+        }
+        if (v.health.fraction() < DamageRules.SMOKE_BELOW && ++v.smokeTick >= 10) {
+            v.smokeTick = 0;
+            v.world.spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, v.location().add(0, v.type.height, 0), 3, 0.3, 0.1, 0.3, 0.02);
         }
         if (v.state().y() < v.world.getMinHeight() - 64) remove(v); // fell out of the world
     }

@@ -1,6 +1,14 @@
 package dev.egorgrigorciuc.forzammilmod;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -42,6 +50,7 @@ public final class VehicleListener implements Listener {
         e.setCancelled(true);
         if (e.getHand() != EquipmentSlot.HAND) return;
         Player p = e.getPlayer();
+        if (tryRepair(p, v)) return;
         switch (vehicles.mount(p, v)) {
             case MOUNTED -> p.sendMessage(lang.msg(p, "vehicle.entered"));
             case HAS_DRIVER -> p.sendMessage(lang.msg(p, "vehicle.has-driver"));
@@ -50,9 +59,38 @@ public final class VehicleListener implements Listener {
         }
     }
 
+    /** Iron ingot in the main hand beats mounting. Both click events fire for one click, so repeats within 150 ms are ignored. */
+    private boolean tryRepair(Player p, Vehicle v) {
+        ItemStack hand = p.getInventory().getItemInMainHand();
+        if (hand.getType() != Material.IRON_INGOT || p.getUniqueId().equals(v.driver())) return false;
+        long now = System.currentTimeMillis();
+        Long last = lastRepair.put(p.getUniqueId(), now);
+        if (last != null && now - last < 150) return true;
+        if (vehicles.repair(v)) {
+            if (hand.getAmount() <= 1) p.getInventory().setItemInMainHand(null);
+            else hand.setAmount(hand.getAmount() - 1);
+            p.sendMessage(lang.msg(p, "vehicle.repaired", "percent", v.health.percent()));
+        } else {
+            p.sendMessage(lang.msg(p, "vehicle.already-full"));
+        }
+        return true;
+    }
+
+    private final Map<UUID, Long> lastRepair = new HashMap<>();
+
+    /** Vanilla damage never lands on vehicle entities; players and arrows do our own small damage. */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDamage(EntityDamageEvent e) {
-        if (vehicles.find(e.getEntity()) != null) e.setCancelled(true);
+        Vehicle v = vehicles.find(e.getEntity());
+        if (v == null) return;
+        e.setCancelled(true);
+        if (!(e instanceof EntityDamageByEntityEvent by)) return;
+        if (by.getDamager() instanceof Player p) {
+            if (p.getUniqueId().equals(v.driver())) return;
+            vehicles.damage(v, DamageRules.melee(v.type));
+        } else if (by.getDamager() instanceof Projectile) {
+            vehicles.damage(v, DamageRules.arrow(v.type));
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -62,6 +100,7 @@ public final class VehicleListener implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
+        lastRepair.remove(e.getPlayer().getUniqueId());
         vehicles.driverGone(e.getPlayer());
     }
 

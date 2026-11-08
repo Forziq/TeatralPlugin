@@ -80,6 +80,7 @@ public final class ForzammilMod extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new EmoteListener(this, emotes, lang), this);
         register("emote", new EmoteCommand(lang, emotes));
         vehicles = new VehicleService(this);
+        vehicles.lang(lang);
         getServer().getPluginManager().registerEvents(new VehicleListener(vehicles, lang), this);
         vehicles.start();
         shells = new ShellService(this, vehicles, lang);
