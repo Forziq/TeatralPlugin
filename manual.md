@@ -119,7 +119,6 @@ Skins and model:
 - Your SkinsRestorer skin shows on the emote model, not Steve
 - Changing your skin with `/skin` updates the model
 - Others see the wave play smoothly (note any flicker at the start or end)
-- `/emote stop`, walking, taking damage or teleporting all end the wave
 - How it looks to you in first person and in F5
 - What happens to held items and armour
 - The Russian text reads naturally

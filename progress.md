@@ -35,8 +35,7 @@ G2|-|egor|T20|gate|Gate 2: tank test with friends (manual.md G2)
 T21|L|main|G2|todo|Plan phases 3 to 6 from the gate notes
 
 ## log (newest first, keep 8)
-- 2026-11-08 T13: v0.2.0 released (jar and release.json on GitHub, pack at forziq.github.io/TeatralPlugin/pack/forzammilmod-pack-0.2.0.zip). G1 in manual.md now has the update steps and an emote-cancel check. Not tried in game yet. Note: release.sh needs a clean tree, so stash progress.md first.
-- 2026-11-08 T13: v0.2.0 released (jar, release.json, pack at https://forziq.github.io/TeatralPlugin/pack/forzammilmod-pack-0.2.0.zip, live). manual.md G1 has the checklist and update steps. Nobody has tried it in game yet.
+- 2026-11-08 T13: v0.2.0 released (jar and release.json on GitHub, pack at forziq.github.io/TeatralPlugin/pack/forzammilmod-pack-0.2.0.zip). manual.md G1 is one checklist: update steps, skins, emotes, radio. Not tried in game yet. Note: release.sh needs a clean tree, so stash progress.md first.
 - 2026-11-08 T23: radio at /forzammilmod music (play, stop, shuffle, loop, list), on the Jukebox/Note Blocks slider. Late joiners get a chat note, next track only. Not tried in game (M03). BetterModel 2.2.0 errors on shutdown, not ours.
 - 2026-11-08 T12: /emote, /emote wave, /emote stop. One emote each. Walking (over 0.05 sideways or a new block), damage, death, teleport or quit ends it. Each stop closes the BetterModel tracker. 54 tests pass. Not tried in game (M03).
 - 2026-11-08 T24: two cheerful tracks swapped for tragic ones: posledniy_rubezh and pepel_goroda. Still 7 tracks. Music runs cost 4x the estimate (4 takes per run), see docs/notes. Nobody has listened yet. T23 unblocked.
