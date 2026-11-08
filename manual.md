@@ -58,7 +58,7 @@ You only do this once. After that the plugin updates itself.
 2. In Options or server.properties, check `online-mode` is `false`.
 3. Open the Files page, go into `plugins`, and upload these three jars (uploading doesn't work on exaroton's free trial):
    - `/Users/egorgrigorciuc/Desktop/Projects/TeatralPlugin/dist/forzammilmod-0.1.2.jar`
-   - `BetterModel-2.2.0-spigot.jar` from `/Users/egorgrigorciuc/Desktop/Projects/TeatralPlugin/server/plugins/`
+   - `BetterModel-2.2.0-spigot-fmod.jar` from `/Users/egorgrigorciuc/Projectsnosync/TeatralPlugin/dist/` (our patched copy; the plain Modrinth jar crashes emotes on Spigot)
    - `SkinsRestorer-15.12.6.jar` from the same folder
    (exact versions are in `docs/versions.md`)
 4. Start the server, wait until it's fully up, then stop it.
@@ -171,3 +171,10 @@ Then type `/next`. It'll take your notes and plan the next phase with you.
 
 ## Added by Claude Code
 (nothing yet)
+
+## Swap in the patched BetterModel (2026-11-08)
+Emotes crashed with "Emotes aren't available right now" because of a bug in BetterModel's Spigot jar. Claude Code made a fixed copy.
+1. Stop the exaroton server.
+2. In Files > `plugins`, delete `BetterModel-2.2.0-spigot.jar`. Leave the `BetterModel` folder alone.
+3. Upload `/Users/egorgrigorciuc/Projectsnosync/TeatralPlugin/dist/BetterModel-2.2.0-spigot-fmod.jar`.
+4. Start the server and try `/emote wave` again. If it still fails, paste the log into Claude Code.

@@ -38,6 +38,17 @@ fetch() { # file url
   if [ -f "$SRV/plugins/$1" ]; then echo "$1 already present."; else
     curl -fL -o "$SRV/plugins/$1" "$2"; fi
 }
-fetch "$BM_FILE" "$BM_URL"
 fetch "$SR_FILE" "$SR_URL"
+
+# BetterModel: download the original into cache/, patch it for Spigot, load only the patched copy
+BM_PATCHED="BetterModel-2.2.0-spigot-fmod.jar"
+mkdir -p "$SRV/cache" "$ROOT/dist"
+[ -f "$SRV/cache/$BM_FILE" ] || curl -fL -o "$SRV/cache/$BM_FILE" "$BM_URL"
+rm -f "$SRV/plugins/$BM_FILE"
+if [ ! -f "$SRV/plugins/$BM_PATCHED" ]; then
+  "$ROOT/scripts/patch-bettermodel.sh" "$SRV/cache/$BM_FILE" "$SRV/plugins/$BM_PATCHED"
+else
+  echo "$BM_PATCHED already present."
+fi
+cp "$SRV/plugins/$BM_PATCHED" "$ROOT/dist/$BM_PATCHED"
 echo "Server ready."

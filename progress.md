@@ -1,5 +1,5 @@
 # progress
-now: G1 gate | G1 todo | G2 todo
+now: T25 todo | G1 todo | G2 todo
 updated: 2026-11-08
 
 ## tasks
@@ -35,6 +35,7 @@ G2|-|egor|T20|gate|Gate 2: tank test with friends (manual.md G2)
 T21|L|main|G2|todo|Plan phases 3 to 6 from the gate notes
 
 ## log (newest first, keep 8)
+- 2026-11-08 BM fix: emotes crash on Spigot (BetterModel reads EntityHuman.bW). scripts/patch-bettermodel.sh makes BetterModel-2.2.0-spigot-fmod.jar; setup-server.sh applies it. Swapped on exaroton, emotes work. Re-patch on BetterModel update.
 - 2026-11-08 T13: v0.2.0 released (jar and release.json on GitHub, pack at forziq.github.io/TeatralPlugin/pack/forzammilmod-pack-0.2.0.zip). manual.md G1 is one checklist: update steps, skins, emotes, radio. Not tried in game yet. Note: release.sh needs a clean tree, so stash progress.md first.
 - 2026-11-08 T23: radio at /forzammilmod music (play, stop, shuffle, loop, list), on the Jukebox/Note Blocks slider. Late joiners get a chat note, next track only. Not tried in game (M03). BetterModel 2.2.0 errors on shutdown, not ours.
 - 2026-11-08 T12: /emote, /emote wave, /emote stop. One emote each. Walking (over 0.05 sideways or a new block), damage, death, teleport or quit ends it. Each stop closes the BetterModel tracker. 54 tests pass. Not tried in game (M03).
