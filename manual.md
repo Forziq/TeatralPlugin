@@ -78,7 +78,7 @@ Claude Code will add any BetterModel setting the server needs here (T07 and T09 
 1. Ask Claude Code to start the local test server, or run `scripts/server-start.sh` in Terminal.
 2. Open Minecraft 1.21.4 in TLauncher, go to Multiplayer and add the server `localhost`.
 3. Type `/emote wave`, then walk to check it stops. `/emote stop` should also stop it.
-4. If you like, open `src/main/resources/models/players/forzammil_player.bbmodel` in Blockbench, go to the Animate tab and play `wave`.
+4. Open `src/main/resources/models/players/forzammil_player.bbmodel` in Blockbench, go to the Animate tab and play `wave` once. Check that only the right arm moves: it should rise out to the side and over the head, wave side to side three times, then drop back down by the 2-second mark. If it swings into the head or across the body instead, tell Claude the arm goes the wrong way.
 5. Type `stop` in the server window when you're finished.
 
 ## G1 Gate 1: emote test with friends (after T13)
@@ -95,6 +95,8 @@ Check each of these and jot down a few words for each:
 - How it looks to you in first person and in F5
 - What happens to held items and armour
 - The Russian text reads naturally
+- `/forzammilmod music shuffle` plays for everyone, and the Jukebox/Note Blocks volume slider turns it up and down
+- The comic song's words come through clearly enough to be funny
 
 Then type `/next` in Claude Code. It'll ask whether the gate passed and take your notes.
 
