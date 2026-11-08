@@ -1,5 +1,5 @@
 # progress
-now: T09 todo | G1 todo | G2 todo
+now: T09 doing | G1 todo | G2 todo
 updated: 2026-11-08
 
 ## tasks
@@ -13,7 +13,7 @@ T05|M|sonnet-builder|T02|done|Language system (English, Russian, plurals)
 T06|M|sonnet-builder|T02|done|Local test server and smoke test script
 T07|M|sonnet-builder|T06|done|Resource pack build and release pipeline (Pages)
 T08|L|sonnet-builder|T05,T07|done|Updater, pack sender and owner check
-T09|S|haiku-scout|T08|todo|Publish starter release v0.1.0
+T09|S|haiku-scout|T08|doing|Publish starter release v0.1.0
 M02|-|egor|T09|manual|Upload the starter to exaroton (manual.md M02)
 T10|S|haiku-scout|T06|todo|Research BetterModel player-model API
 T11|L|opus-deep|T10|todo|Model installer and the wave animation
