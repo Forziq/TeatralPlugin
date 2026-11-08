@@ -14,7 +14,7 @@ Private Spigot plugin for Egor's friends' server: emotes first, WWII-style vehic
 - Music: a shared server radio (`/fmod music play|stop|shuffle|loop|list`), anyone can use it, everyone hears it. Tracks and their English/Russian names live in `assets/music/tracks.yml`. Every new command goes under `/fmod`; `/emote` is the only exception.
 - MVP rule (MVPs passed at G2): placeholder art and hard-coded values until a task says otherwise. Phase tasks may add menus, real models and sounds. Config holds only the GitHub token and, from T50, the greeting emote's id, names and sound.
 - Getting vehicles (from T26): command-block pads. A command block running `fmod vehicle spawn <type>` with a button spawns the vehicle 2 blocks above it, for anyone. Typing the command yourself stays owner-only.
-- Parked until Egor says otherwise: protected zones and block regrowth (shells keep today's block damage), tank ammo, two-player emotes.
+- Parked until Egor says otherwise: protected zones and block regrowth (shells keep today's block damage), tank ammo. No other new emotes or emote menu: the greeting (T50) is the only one Egor wants.
 
 ## Agents and who does what
 - **Main session (Opus, medium effort):** reads the task, plans, writes a brief, delegates, reviews. Keep your own turns few: Egor is on Pro.

@@ -34,14 +34,10 @@ T20|S|haiku-scout|T18,T19|done|Publish v0.3.0 for Gate 2
 G2|-|egor|T20|done|Gate 2: tank test with friends (manual.md G2)
 T21|L|main|G2|done|Plan phases 3 to 6 from the gate notes
 T26|M|sonnet-builder|G2|todo|Vehicle spawn pads (command block and button)
-T27|M|sonnet-builder|T26|todo|Emote list, cooldowns and sounds
-T28|M|sonnet-builder|T27|todo|Held items and armour during emotes
-T29|L|opus-deep|T27|todo|Emote animations, batch 1: salute, clap, cheer, bow
-T30|L|sonnet-builder|T29|todo|Emote animations, batch 2: point, facepalm, dance, sit
-T50|M|sonnet-builder|T30|todo|Our own greeting emote, configurable name and sound
-T31|M|sonnet-builder|T50|todo|Emote menu
-T32|S|haiku-scout|T28,T31|todo|Publish v0.4.0 for Gate 3
-G3|-|egor|T32|gate|Gate 3: emote test with friends (manual.md G3)
+T50|M|sonnet-builder|T26|todo|Our own greeting emote, configurable name and sound
+T28|M|sonnet-builder|T50|todo|Held items and armour during emotes
+T32|S|haiku-scout|T28|todo|Publish v0.4.0 for Gate 3
+G3|-|egor|T32|gate|Gate 3: greeting test with friends (manual.md G3)
 T33|L|sonnet-builder|G3|todo|Vehicle health, damage and repairs
 T34|L|sonnet-builder|T33|todo|Crew seats: gunner and passengers
 T35|L|opus-deep|T34|todo|Proper tank and jeep models, with track animation
@@ -65,7 +61,7 @@ T49|S|haiku-scout|T48|todo|Publish v1.0.0 for the final gate
 G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
 
 ## log (newest first, keep 8)
-- 2026-11-08 G2 passed ("all fine, carry on"). T21: planned phases 3 to 6 as T26 to T50 with gates G3 to G7. Decided with Egor: vehicles come from command-block pads with a button, block damage and protected zones are parked, planes get their own keep-or-drop test (G6). Added T50, the group's own greeting emote with its name and sound in config.yml.
+- 2026-11-08 G2 passed ("all fine, carry on"). T21: planned phases 3 to 6 as T26 to T50 with gates G3 to G7. Decided with Egor: vehicles come from command-block pads with a button, block damage and protected zones are parked, planes get their own keep-or-drop test (G6). Added T50, the group's own greeting emote with its name and sound in config.yml. Egor then dropped the other planned emotes and the emote menu (old T27, T29, T30, T31): the greeting is the only new emote.
 - 2026-11-08 Fix: barrel model tilted the wrong way (shells were fine), BARREL_PITCH_SIGN now -1f. v0.3.3 released, pack SHA-1 de475fe9. Turret visibly moves in game on v0.3.2; no-shot-on-mount not yet confirmed.
 - 2026-11-08 Fix: turret, barrel and jeep wheels didn't move (BetterModel caches modifier rotation with no animation; we now write lastModifiedRotation + firstTick by reflection, barrel carries turret yaw). Clicks within 0.5 s of mounting ignored, so getting in no longer fires. v0.3.2 released, pack SHA-1 583df984. Not tried in game.
 - 2026-11-08 Fix: couldn't get into vehicles ("not ready") because seat lookup used p_driver; BetterModel strips the p_ tag, so it's now "driver". v0.3.1 released, pack SHA-1 d8b739cb. Seat failures now log a 'Driver check:' warning. Server: /fmod update, then restart.
@@ -84,4 +80,3 @@ G2: passed. Egor: all fine, carry on.
 ## parked (not planned yet, ask Egor before starting)
 - Block damage on the real world: protected zones and blocks growing back. Egor: "we will work on that later".
 - Tank ammo limits (reload timer only for now).
-- Two-player emotes (handshake, hug).
