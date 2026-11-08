@@ -99,7 +99,7 @@ fi
 mkdir -p "$WT/pack"
 cp "$ZIP" "$WT/pack/"
 touch "$WT/.nojekyll"
-(cd "$WT" && git add -A && git commit -q -m "pack $VERSION" && git push origin gh-pages)
+(cd "$WT" && git add -A && git commit -q -m "pack $VERSION" && git -c http.postBuffer=524288000 push origin gh-pages)
 git worktree remove --force "$WT"
 
 echo "==> Making sure GitHub Pages is on"
