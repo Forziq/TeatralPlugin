@@ -1,0 +1,3 @@
+# GitHub personal access token with read access to the private repo Forziq/TeatralPlugin.
+# Used only to download plugin updates. Leave empty to disable updates.
+github-token: ""

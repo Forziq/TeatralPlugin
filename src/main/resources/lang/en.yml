@@ -6,3 +6,13 @@ emote:
   count:
     one: "&7{n} emote available."
     other: "&7{n} emotes available."
+update:
+  checking: "&7Checking for updates..."
+  up-to-date: "&aAlready up to date (v{version})."
+  downloaded: "&aDownloaded v{version}. Restart the server from exaroton to apply it."
+  no-token: "&cNo GitHub token set in config.yml."
+  error: "&cUpdate failed: {reason}"
+pack:
+  prompt: "The resource pack is required to play here."
+  kick-declined: "&cYou need the resource pack to play here. Rejoin and accept it."
+  kick-failed: "&cThe resource pack failed to download. Try rejoining."

@@ -25,6 +25,13 @@ public final class ForzammilCommand implements TabExecutor {
         this.plugin = plugin;
         subs.put("version", (sender, args) ->
                 sender.sendMessage(plugin.lang().msg(sender, "version", "version", plugin.getDescription().getVersion())));
+        subs.put("update", (sender, args) -> {
+            if (!Access.isOwner(sender)) {
+                sender.sendMessage(plugin.lang().msg(sender, "no-permission"));
+                return;
+            }
+            plugin.updates().checkFor(sender);
+        });
     }
 
     @Override

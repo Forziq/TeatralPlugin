@@ -18,7 +18,7 @@ class ForzammilCommandTabTest {
 
     @Test
     void emptyPrefixListsAllSubcommands() {
-        assertEquals(List.of("version"), tab(""));
+        assertEquals(List.of("update", "version"), tab(""));
     }
 
     @Test

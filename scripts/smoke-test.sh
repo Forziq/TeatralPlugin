@@ -6,7 +6,7 @@ cd "$ROOT" || exit 1
 [ -f server/spigot-1.21.4.jar ] || { echo "FAIL: run scripts/setup-server.sh first"; exit 1; }
 ./gradlew build -q || { echo "FAIL: build failed"; exit 1; }
 rm -f server/plugins/forzammilmod*.jar
-JAR=$(ls build/libs/forzammilmod*.jar | grep -v -E -- '-(sources|javadoc|plain)\.jar$' | head -1)
+JAR=$(ls -t build/libs/forzammilmod*.jar | grep -v -E -- '-(sources|javadoc|plain)\.jar$' | head -1)
 cp "$JAR" server/plugins/
 if [ "${1:-}" = "--fresh" ]; then rm -rf server/world server/world_nether server/world_the_end; fi
 
