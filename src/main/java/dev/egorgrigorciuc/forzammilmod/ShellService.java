@@ -80,24 +80,30 @@ public final class ShellService {
         lastClick.clear();
     }
 
-    /** True if this player is driving a tank, so their left-click is a fire click. */
-    boolean isTankDriver(Player p) {
-        Vehicle v = vehicles.drivenBy(p);
+    /** True if this player sits in a tank (any seat), so their left-click never hits blocks or mobs. */
+    boolean isTankCrew(Player p) {
+        Vehicle v = vehicles.boardedBy(p);
         return v != null && v.type == VehicleType.TANK;
+    }
+
+    /** True if this player aims and fires the tank gun: the gunner, or the driver when there is no gunner. */
+    boolean isTurretOperator(Player p) {
+        Vehicle v = vehicles.boardedBy(p);
+        return v != null && v.type == VehicleType.TANK && p.getUniqueId().equals(v.turretOperator());
     }
 
     /** Handles a fire click from one of the three paths ("interact", "swing", "hit"). */
     void fireClick(Player p, String path) {
-        if (!isTankDriver(p)) return;
+        if (!isTurretOperator(p)) return;
         if (loggedPaths.add(p.getUniqueId() + path)) {
             plugin.getLogger().info("Fire check: click seen via " + path);
         }
         Long last = lastClick.get(p.getUniqueId());
         lastClick.put(p.getUniqueId(), tick);
         if (last != null && tick - last < CLICK_DEBOUNCE_TICKS) return;
-        Vehicle v = vehicles.drivenBy(p);
-        // The right-click that seats the driver is followed by an arm swing; don't treat it as a shot.
-        if (System.currentTimeMillis() - v.mountedAtMillis < MOUNT_GRACE_MILLIS) return;
+        Vehicle v = vehicles.boardedBy(p);
+        // The right-click that seats a crew member is followed by an arm swing; don't treat it as a shot.
+        if (System.currentTimeMillis() - v.joinedMillis(p.getUniqueId()) < MOUNT_GRACE_MILLIS) return;
         TurretModel.Muzzle m = v.muzzle();
         if (m == null) return;
         if (!v.reload.tryFire(tick)) return;
@@ -190,10 +196,10 @@ public final class ShellService {
         return true;
     }
 
-    /** Action bar countdown while the driver's gun reloads, then "ready" once. */
+    /** Action bar countdown while the gun reloads, shown to whoever fires it, then "ready" once. */
     private void showReload(Vehicle v) {
-        if (v.driver() == null || !v.hasTurret()) return;
-        Player d = plugin.getServer().getPlayer(v.driver());
+        if (v.turretOperator() == null || !v.hasTurret()) return;
+        Player d = plugin.getServer().getPlayer(v.turretOperator());
         if (d == null) return;
         int left = v.reload.remainingSeconds(tick);
         if (left == v.shownSeconds) return;

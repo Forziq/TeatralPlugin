@@ -1,17 +1,18 @@
 package dev.egorgrigorciuc.forzammilmod;
 
+import dev.egorgrigorciuc.forzammilmod.CrewSeats.Seat;
 import org.bukkit.entity.Player;
 
-/** The rendered model and its driver seat. Implemented in {@link BetterModelHook} so BetterModel types stay there. */
+/** The rendered model and its seats. Implemented in {@link BetterModelHook} so BetterModel types stay there. */
 interface VehicleRig {
 
-    /** Puts the player in the driver seat. False if the seat isn't there (yet) or mounting failed. */
-    boolean seat(Player player);
+    /** Puts the player in the seat. False if the seat isn't there (yet) or mounting failed. */
+    boolean seat(Player player, Seat seat);
 
-    /** True while the player sits in this rig's driver seat. */
-    boolean isSeated(Player player);
+    /** True while the player sits in this rig's given seat. */
+    boolean isSeated(Player player, Seat seat);
 
-    void unseat(Player player);
+    void unseat(Player player, Seat seat);
 
     /** True if the model has a turret bone (the jeep does not). */
     boolean hasTurret();

@@ -1,5 +1,6 @@
 package dev.egorgrigorciuc.forzammilmod;
 
+import dev.egorgrigorciuc.forzammilmod.CrewSeats.Seat;
 import org.bukkit.Input;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -16,6 +17,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.BoundingBox;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -31,7 +33,7 @@ public final class VehicleService {
 
     public enum SpawnResult { SPAWNED, UNAVAILABLE, MODEL_MISSING }
 
-    public enum MountResult { MOUNTED, ALREADY_DRIVING, HAS_DRIVER, NOT_READY }
+    public enum MountResult { MOUNTED, ALREADY_ABOARD, FULL, NOT_READY }
 
     static final String TAG = "forzammilmod_vehicle";
 
@@ -120,9 +122,17 @@ public final class VehicleService {
         return null;
     }
 
+    /** Vehicle where this player is the driver. */
     public Vehicle drivenBy(Player p) {
         UUID id = p.getUniqueId();
         for (Vehicle v : vehicles) if (id.equals(v.driver())) return v;
+        return null;
+    }
+
+    /** Vehicle where this player sits in any seat. */
+    public Vehicle boardedBy(Player p) {
+        UUID id = p.getUniqueId();
+        for (Vehicle v : vehicles) if (v.seatOf(id) != null) return v;
         return null;
     }
 
@@ -140,40 +150,56 @@ public final class VehicleService {
         return best;
     }
 
-    public MountResult mount(Player p, Vehicle v) {
-        if (p.getUniqueId().equals(v.driver())) return MountResult.ALREADY_DRIVING;
-        if (v.driver() != null) {
-            Player current = plugin.getServer().getPlayer(v.driver());
-            if (current != null && v.rig().isSeated(current)) return MountResult.HAS_DRIVER;
-            v.driver(null);
-        }
-        Vehicle other = drivenBy(p);
-        if (other != null) driverGone(p);
-        if (p.isInsideVehicle()) p.leaveVehicle();
-        boolean ok;
-        try {
-            ok = v.rig().seat(p);
-        } catch (RuntimeException | LinkageError e) {
-            plugin.getLogger().log(Level.WARNING, "Could not seat " + p.getName() + " in the " + v.type.id, e);
-            ok = false;
-        }
-        if (!ok) return MountResult.NOT_READY;
-        v.driver(p.getUniqueId());
-        if (!loggedSeated) {
-            loggedSeated = true;
-            plugin.getLogger().info("Driver check: " + p.getName() + " is seated in the " + v.type.id
-                    + " (BetterModel seat). Next lines say whether W/A/S/D arrive while riding.");
-        }
-        return MountResult.MOUNTED;
+    /** Seat the player took on the last successful {@link #mount}. */
+    public Seat seatOf(Player p, Vehicle v) {
+        return v.seatOf(p.getUniqueId());
     }
 
-    /** Driver quit, died or teleported away: take them out without moving them. */
-    public void driverGone(Player p) {
-        Vehicle v = drivenBy(p);
+    /** Puts the player in the first free seat (driver, gunner, passengers). */
+    public MountResult mount(Player p, Vehicle v) {
+        Seat mine = v.seatOf(p.getUniqueId());
+        if (mine != null) {
+            if (v.rig().isSeated(p, mine)) return MountResult.ALREADY_ABOARD;
+            v.vacate(mine);
+        }
+        // Forget seats whose occupant is gone or climbed out since the last tick.
+        for (Seat seat : v.takenSeats()) {
+            Player current = plugin.getServer().getPlayer(v.occupant(seat));
+            if (current == null || !v.rig().isSeated(current, seat)) v.vacate(seat);
+        }
+        List<Seat> free = CrewSeats.freeSeats(v.type, v.takenSeats());
+        if (free.isEmpty()) return MountResult.FULL;
+        Vehicle other = boardedBy(p);
+        if (other != null) crewGone(p);
+        if (p.isInsideVehicle()) p.leaveVehicle();
+        for (Seat seat : free) {
+            boolean ok;
+            try {
+                ok = v.rig().seat(p, seat);
+            } catch (RuntimeException | LinkageError e) {
+                plugin.getLogger().log(Level.WARNING, "Could not seat " + p.getName() + " in the " + v.type.id, e);
+                ok = false;
+            }
+            if (!ok) continue;
+            v.occupy(seat, p.getUniqueId());
+            if (!loggedSeated) {
+                loggedSeated = true;
+                plugin.getLogger().info("Seat check: " + p.getName() + " is seated as " + seat + " in the " + v.type.id
+                        + " (BetterModel seat). Next lines say whether W/A/S/D arrive while riding.");
+            }
+            return MountResult.MOUNTED;
+        }
+        return MountResult.NOT_READY;
+    }
+
+    /** Crew member quit, died or teleported away: take them out of their seat without moving them. */
+    public void crewGone(Player p) {
+        Vehicle v = boardedBy(p);
         if (v == null) return;
-        v.driver(null);
+        Seat seat = v.seatOf(p.getUniqueId());
+        v.vacate(seat);
         try {
-            v.rig().unseat(p);
+            v.rig().unseat(p, seat);
         } catch (RuntimeException | LinkageError ignored) {
             // nothing more we can do
         }
@@ -195,10 +221,13 @@ public final class VehicleService {
             destroy(v);
             return true;
         }
-        Player d = v.driver() == null ? null : plugin.getServer().getPlayer(v.driver());
-        if (d != null && lang != null) {
-            d.spigot().sendMessage(ChatMessageType.ACTION_BAR,
-                    TextComponent.fromLegacyText(lang.msg(d, "vehicle.damaged", "percent", v.health.percent())));
+        if (lang != null) {
+            for (Seat seat : v.takenSeats()) {
+                Player d = plugin.getServer().getPlayer(v.occupant(seat));
+                if (d == null) continue;
+                d.spigot().sendMessage(ChatMessageType.ACTION_BAR,
+                        TextComponent.fromLegacyText(lang.msg(d, "vehicle.damaged", "percent", v.health.percent())));
+            }
         }
         return false;
     }
@@ -211,11 +240,12 @@ public final class VehicleService {
         w.spawnParticle(Particle.EXPLOSION_EMITTER, at, 1);
         w.spawnParticle(Particle.LARGE_SMOKE, at, 30, 1.0, 0.6, 1.0, 0.05);
         w.playSound(at, Sound.ENTITY_GENERIC_EXPLODE, 2.0f, 0.7f);
-        Player d = v.driver() == null ? null : plugin.getServer().getPlayer(v.driver());
-        if (d != null) {
-            v.driver(null);
+        for (Seat seat : v.takenSeats()) {
+            Player d = plugin.getServer().getPlayer(v.occupant(seat));
+            v.vacate(seat);
+            if (d == null) continue;
             try {
-                v.rig().unseat(d);
+                v.rig().unseat(d, seat);
             } catch (RuntimeException | LinkageError ignored) {
                 // the seat is going away with the vehicle anyway
             }
@@ -225,6 +255,50 @@ public final class VehicleService {
             if (lang != null) d.sendMessage(lang.msg(d, "vehicle.destroyed"));
         }
         remove(v);
+    }
+
+    static final long MELEE_DEBOUNCE_MILLIS = 400;
+    static final double MELEE_REACH = 3.5;
+    private final Map<UUID, Long> lastMelee = new HashMap<>();
+
+    /** A player's punch on a vehicle (from the damage event or the arm swing; both can fire for one hit, so debounced). */
+    public void melee(Player p, Vehicle v) {
+        if (v.seatOf(p.getUniqueId()) != null) return;
+        int dmg = DamageRules.melee(v.type);
+        if (dmg <= 0) return;
+        long now = System.currentTimeMillis();
+        Long last = lastMelee.get(p.getUniqueId());
+        if (last != null && now - last < MELEE_DEBOUNCE_MILLIS) return;
+        lastMelee.put(p.getUniqueId(), now);
+        damage(v, dmg);
+    }
+
+    /**
+     * Arm swing by a player on foot: the click box is an Interaction, which may not raise a damage event for a
+     * left-click, so we ray trace against the hull ourselves.
+     */
+    public void swing(Player p) {
+        if (p.isInsideVehicle()) return;
+        Location eye = p.getEyeLocation();
+        Vector dir = eye.getDirection();
+        double blockDist = MELEE_REACH;
+        RayTraceResult blk = p.getWorld().rayTraceBlocks(eye, dir, MELEE_REACH);
+        if (blk != null) blockDist = blk.getHitPosition().distance(eye.toVector());
+        Vehicle best = null;
+        double bestT = blockDist;
+        for (Vehicle v : vehicles) {
+            if (!v.world.equals(p.getWorld()) || v.destroyed) continue;
+            double t = v.hull().rayHit(eye.getX(), eye.getY(), eye.getZ(), dir.getX(), dir.getY(), dir.getZ(), blockDist);
+            if (t >= 0 && t <= bestT) {
+                bestT = t;
+                best = v;
+            }
+        }
+        if (best != null) melee(p, best);
+    }
+
+    public void forget(Player p) {
+        lastMelee.remove(p.getUniqueId());
     }
 
     /** Iron ingot repair: returns true if it restored health, false if the vehicle was already full. */
@@ -268,7 +342,7 @@ public final class VehicleService {
         int minutes = VehicleSettings.idleMinutes(plugin);
         long limit = IdleTimer.limitMillis(minutes);
         for (Vehicle v : new ArrayList<>(vehicles)) {
-            if (!v.idle.update(v.driver() != null, now, limit)) continue;
+            if (!v.idle.update(v.hasCrew(), now, limit)) continue;
             VehicleMover.State s = v.state();
             plugin.getLogger().info("Idle check: removed " + v.type.id + " at " + v.world.getName() + " "
                     + (long) Math.floor(s.x()) + " " + (long) Math.floor(s.y()) + " " + (long) Math.floor(s.z())
@@ -289,14 +363,14 @@ public final class VehicleService {
             return;
         }
         DriveInput input = DriveInput.NONE;
-        if (v.driver() != null) {
-            Player d = plugin.getServer().getPlayer(v.driver());
+        for (Seat seat : v.takenSeats()) {
+            Player d = plugin.getServer().getPlayer(v.occupant(seat));
             if (d == null || !d.isOnline() || d.isDead()) {
-                v.driver(null);
-            } else if (!v.rig().isSeated(d)) { // sneaked out
-                v.driver(null);
+                v.vacate(seat);
+            } else if (!v.rig().isSeated(d, seat)) { // sneaked out
+                v.vacate(seat);
                 placeBeside(v, d);
-            } else {
+            } else if (CrewSeats.drives(seat)) {
                 Input in = d.getCurrentInput();
                 input = new DriveInput(in.isForward(), in.isBackward(), in.isLeft(), in.isRight());
                 if (input.any() && !loggedPolledInput) {
@@ -310,8 +384,9 @@ public final class VehicleService {
         Terrain terrain = terrains.computeIfAbsent(v.world, BukkitTerrain::new);
         v.move(terrain, input);
         v.spinWheels();
-        if (v.driver() != null) {
-            Player d = plugin.getServer().getPlayer(v.driver());
+        UUID operator = v.turretOperator();
+        if (operator != null) {
+            Player d = plugin.getServer().getPlayer(operator);
             if (d != null) v.aimTurret(d);
         }
         if (v.health.fraction() < DamageRules.SMOKE_BELOW && ++v.smokeTick >= 10) {

@@ -909,6 +909,56 @@
    "visibility": true,
    "autouv": 0,
    "isOpen": true
+  },
+  {
+   "uuid": "7f611362-e29b-47fa-a66e-140df0dbbf2e",
+   "export": true,
+   "locked": false,
+   "origin": [
+    -5,
+    9,
+    15
+   ],
+   "rotation": [
+    0,
+    0,
+    0
+   ],
+   "color": 0,
+   "name": "sp_passenger1",
+   "children": [],
+   "reset": false,
+   "shade": true,
+   "mirror_uv": false,
+   "selected": false,
+   "visibility": true,
+   "autouv": 0,
+   "isOpen": true
+  },
+  {
+   "uuid": "54ebaec9-1d58-4c0a-abae-05182e4a695f",
+   "export": true,
+   "locked": false,
+   "origin": [
+    5,
+    9,
+    15
+   ],
+   "rotation": [
+    0,
+    0,
+    0
+   ],
+   "color": 0,
+   "name": "sp_passenger2",
+   "children": [],
+   "reset": false,
+   "shade": true,
+   "mirror_uv": false,
+   "selected": false,
+   "visibility": true,
+   "autouv": 0,
+   "isOpen": true
   }
  ],
  "outliner": [
@@ -951,6 +1001,16 @@
     },
     {
      "uuid": "55612570-be33-4e16-b435-00a7140c94ab",
+     "isOpen": true,
+     "children": []
+    },
+    {
+     "uuid": "7f611362-e29b-47fa-a66e-140df0dbbf2e",
+     "isOpen": true,
+     "children": []
+    },
+    {
+     "uuid": "54ebaec9-1d58-4c0a-abae-05182e4a695f",
      "isOpen": true,
      "children": []
     }

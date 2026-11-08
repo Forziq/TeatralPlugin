@@ -71,12 +71,13 @@ class VehicleModelTest {
     @Test
     void tankHasBones() throws Exception {
         Model m = new Model("models/tank.bbmodel");
-        assertEquals(Set.of("hull", "turret", "barrel", "muzzle", "p_driver"), m.parentByName.keySet());
+        assertEquals(Set.of("hull", "turret", "barrel", "muzzle", "p_driver", "sp_gunner"), m.parentByName.keySet());
         assertNull(m.parentByName.get("hull"));
         assertEquals("hull", m.parentByName.get("turret"));
         assertEquals("turret", m.parentByName.get("barrel"));
         assertEquals("barrel", m.parentByName.get("muzzle"));
         assertEquals("hull", m.parentByName.get("p_driver"));
+        assertEquals("turret", m.parentByName.get("sp_gunner"));
         basics(m);
         assertTrue(m.size(0) >= 40 && m.size(0) <= 56, "width " + m.size(0));
         assertTrue(m.size(2) >= 70 && m.size(2) <= 90, "length " + m.size(2));
@@ -86,8 +87,8 @@ class VehicleModelTest {
     @Test
     void jeepHasBones() throws Exception {
         Model m = new Model("models/jeep.bbmodel");
-        assertEquals(Set.of("body", "wheel_fl", "wheel_fr", "wheel_rl", "wheel_rr", "p_driver"), m.parentByName.keySet());
-        for (String w : new String[]{"wheel_fl", "wheel_fr", "wheel_rl", "wheel_rr", "p_driver"}) {
+        assertEquals(Set.of("body", "wheel_fl", "wheel_fr", "wheel_rl", "wheel_rr", "p_driver", "sp_passenger1", "sp_passenger2"), m.parentByName.keySet());
+        for (String w : new String[]{"wheel_fl", "wheel_fr", "wheel_rl", "wheel_rr", "p_driver", "sp_passenger1", "sp_passenger2"}) {
             assertEquals("body", m.parentByName.get(w), w);
         }
         basics(m);

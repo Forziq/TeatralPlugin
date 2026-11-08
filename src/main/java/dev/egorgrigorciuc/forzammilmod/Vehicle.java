@@ -7,7 +7,13 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import dev.egorgrigorciuc.forzammilmod.CrewSeats.Seat;
 
 /**
  * One spawned vehicle: an invisible marker armour stand we move by hand (the anchor BetterModel draws on),
@@ -28,7 +34,8 @@ final class Vehicle {
     private VehicleRig rig;
     private VehicleMover.State state;
     private volatile float renderYaw;
-    private UUID driver;
+    private final Map<Seat, UUID> crew = new EnumMap<>(Seat.class);
+    private final Map<UUID, Long> joined = new HashMap<>();
     /** Null if the vehicle has no turret. Main thread only. */
     private final TurretModel turret;
     /** Gun reload clock (ticks of ShellService) and the last whole second shown on the action bar. */
@@ -67,16 +74,53 @@ final class Vehicle {
     }
 
     UUID driver() {
-        return driver;
+        return crew.get(Seat.DRIVER);
     }
 
     void driver(UUID id) {
-        this.driver = id;
-        if (id != null) mountedAtMillis = System.currentTimeMillis();
+        if (id == null) vacate(Seat.DRIVER);
+        else occupy(Seat.DRIVER, id);
     }
 
-    /** When the current driver got in; the right-click that seats them also swings their arm. */
-    long mountedAtMillis;
+    UUID occupant(Seat seat) {
+        return crew.get(seat);
+    }
+
+    /** Seats somebody sits in right now. */
+    List<Seat> takenSeats() {
+        return new ArrayList<>(crew.keySet());
+    }
+
+    /** Seat this player holds, or null. */
+    Seat seatOf(UUID id) {
+        for (Map.Entry<Seat, UUID> e : crew.entrySet()) if (e.getValue().equals(id)) return e.getKey();
+        return null;
+    }
+
+    boolean hasCrew() {
+        return !crew.isEmpty();
+    }
+
+    void occupy(Seat seat, UUID id) {
+        crew.put(seat, id);
+        joined.put(id, System.currentTimeMillis());
+    }
+
+    void vacate(Seat seat) {
+        UUID id = crew.remove(seat);
+        if (id != null) joined.remove(id);
+    }
+
+    /** When this player got in; the right-click that seats them also swings their arm. 0 if not aboard. */
+    long joinedMillis(UUID id) {
+        return joined.getOrDefault(id, 0L);
+    }
+
+    /** Who aims the turret and fires: the gunner if there is one, else the driver. Null if nobody or no turret. */
+    UUID turretOperator() {
+        Seat s = CrewSeats.turretController(type, crew.keySet());
+        return s == null ? null : crew.get(s);
+    }
 
     boolean owns(Entity e) {
         UUID id = e.getUniqueId();
@@ -124,12 +168,12 @@ final class Vehicle {
     }
 
     /**
-     * Turns the turret and tilts the barrel towards where the seated driver looks, within the rate limits.
-     * Call once per tick after {@link #move}. Without a driver it is simply not called, so the turret holds.
+     * Turns the turret and tilts the barrel towards where the turret operator (gunner, else driver) looks, within the rate limits.
+     * Call once per tick after {@link #move}. Without an operator it is simply not called, so the turret holds.
      */
-    void aimTurret(Player driver) {
+    void aimTurret(Player operator) {
         if (turret == null || rig == null || !rig.hasTurret()) return;
-        Location look = driver.getLocation();
+        Location look = operator.getLocation();
         float rel = TurretModel.relativeYaw(look.getYaw(), renderYaw);
         turret.tick(rel, TurretModel.pitchUpFromMc(look.getPitch()), 0.05f);
         rig.turret(turret.yaw(), turret.pitch());
@@ -142,6 +186,8 @@ final class Vehicle {
     }
 
     void remove() {
+        crew.clear();
+        joined.clear();
         if (rig != null) {
             try {
                 rig.close();

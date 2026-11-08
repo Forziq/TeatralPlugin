@@ -1,5 +1,6 @@
 package dev.egorgrigorciuc.forzammilmod;
 
+import dev.egorgrigorciuc.forzammilmod.CrewSeats.Seat;
 import kr.toxicity.model.api.BetterModel;
 import kr.toxicity.model.api.BetterModelPlatform.ReloadResult;
 import kr.toxicity.model.api.animation.AnimationModifier;
@@ -99,11 +100,9 @@ final class BetterModelHook {
 
     // ---- vehicles ----
 
-    /**
-     * Driver seat bone. The group is named {@code p_driver} in the models ("p" tag = seat), but BetterModel
-     * strips tags off the name, so lookups must use the bare name.
-     */
-    static final String SEAT_BONE = "driver";
+    // Seat bones: the groups are named p_driver (driver), sp_gunner, sp_passenger1 and sp_passenger2 in the
+    // models ("p" tag = seat, "sp" tag = sub seat), but BetterModel strips tags off the name, so lookups use the
+    // bare names in CrewSeats.Seat.bone.
     /** Display movement interpolation in ticks, per docs/notes/vehicles.md section 4. */
     static final int MOVE_TICKS = 2;
 
@@ -239,41 +238,41 @@ final class BetterModelHook {
             this(tracker, angles, wheels, log, new boolean[2]);
         }
 
-        private HitBox seatBox() {
+        private HitBox seatBox(Seat seat) {
             if (tracker.isClosed()) return null;
-            RenderedBone bone = tracker.bone(SEAT_BONE);
+            RenderedBone bone = tracker.bone(seat.bone);
             return bone == null ? null : bone.getHitBox();
         }
 
         @Override
-        public boolean seat(Player player) {
-            HitBox box = seatBox();
+        public boolean seat(Player player, Seat seat) {
+            HitBox box = seatBox(seat);
             if (box == null) {
                 if (!logged[1]) {
                     logged[1] = true;
                     String why = tracker.isClosed() ? "the model is closed"
-                            : tracker.bone(SEAT_BONE) == null ? "the model has no " + SEAT_BONE + " seat bone"
+                            : tracker.bone(seat.bone) == null ? "the model has no " + seat.bone + " seat bone"
                             : "BetterModel has not built the seat yet";
-                    log.warning("Driver check: could not seat " + player.getName() + ": " + why);
+                    log.warning("Seat check: could not seat " + player.getName() + " as " + seat + ": " + why);
                 }
                 return false;
             }
             box.mountController(MountControllers.NONE);
             box.mount(BukkitAdapter.adapt(player));
-            boolean seated = isSeated(player);
+            boolean seated = isSeated(player, seat);
             if (!seated && !logged[1]) {
                 logged[1] = true;
-                log.warning("Driver check: mounted " + player.getName() + " on the seat but they are not riding it"
+                log.warning("Seat check: mounted " + player.getName() + " on the " + seat + " seat but they are not riding it"
                         + " (riding " + player.getVehicle() + ")");
             }
             return seated;
         }
 
         @Override
-        public boolean isSeated(Player player) {
+        public boolean isSeated(Player player, Seat seat) {
             Entity vehicle = player.getVehicle();
             if (vehicle == null) return false;
-            HitBox box = seatBox();
+            HitBox box = seatBox(seat);
             if (box == null) return false;
             UUID seatId = box.uuid();
             // The player rides the seat's Interaction, which rides the seat armour stand.
@@ -283,10 +282,10 @@ final class BetterModelHook {
         }
 
         @Override
-        public void unseat(Player player) {
-            HitBox box = seatBox();
+        public void unseat(Player player, Seat seat) {
+            HitBox box = seatBox(seat);
             if (box != null) box.dismount(BukkitAdapter.adapt(player));
-            if (player.isInsideVehicle() && isSeated(player)) player.leaveVehicle();
+            if (player.isInsideVehicle() && isSeated(player, seat)) player.leaveVehicle();
         }
 
         @Override
@@ -320,8 +319,10 @@ final class BetterModelHook {
 
         @Override
         public void close() {
-            HitBox box = seatBox();
-            if (box != null) box.dismountAll();
+            for (Seat seat : Seat.values()) {
+                HitBox box = seatBox(seat);
+                if (box != null) box.dismountAll();
+            }
             tracker.close();
         }
     }

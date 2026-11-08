@@ -638,6 +638,31 @@
    "visibility": true,
    "autouv": 0,
    "isOpen": true
+  },
+  {
+   "uuid": "5041065e-8299-4736-af9f-97dcf5e3b1f8",
+   "export": true,
+   "locked": false,
+   "origin": [
+    0,
+    18,
+    0
+   ],
+   "rotation": [
+    0,
+    0,
+    0
+   ],
+   "color": 0,
+   "name": "sp_gunner",
+   "children": [],
+   "reset": false,
+   "shade": true,
+   "mirror_uv": false,
+   "selected": false,
+   "visibility": true,
+   "autouv": 0,
+   "isOpen": true
   }
  ],
  "outliner": [
@@ -665,6 +690,11 @@
          "children": []
         }
        ]
+      },
+      {
+       "uuid": "5041065e-8299-4736-af9f-97dcf5e3b1f8",
+       "isOpen": true,
+       "children": []
       }
      ]
     },
