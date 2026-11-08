@@ -57,11 +57,21 @@ You only do this once. After that the plugin updates itself.
 1. On exaroton, open the server's Software page and make sure it's Spigot 1.21.4. If it's on Paper or another version, tell Claude Code before going further.
 2. In Options or server.properties, check `online-mode` is `false`.
 3. Open the Files page, go into `plugins`, and upload these three jars (uploading doesn't work on exaroton's free trial):
-   - `dist/forzammilmod-0.1.0.jar` from the project folder
-   - the BetterModel and SkinsRestorer jars from `server/plugins/` in the project folder (exact versions are in `docs/versions.md`)
+   - `/Users/egorgrigorciuc/Desktop/Projects/TeatralPlugin/dist/forzammilmod-0.1.0.jar`
+   - `BetterModel-2.2.0-spigot.jar` from `/Users/egorgrigorciuc/Desktop/Projects/TeatralPlugin/server/plugins/`
+   - `SkinsRestorer-15.12.6.jar` from the same folder
+   (exact versions are in `docs/versions.md`)
 4. Start the server, wait until it's fully up, then stop it.
-5. Open `plugins/forzammilmod/config.yml` in exaroton's file editor. Copy the token from the 1Password item `forzammilmod GitHub token` and paste it between the quotes on the `github-token:` line. Save.
-6. Start the server again and join. You should be asked to download the resource pack; accept it. Type `/forzammilmod version` and check it says 0.1.0.
+5. Make the GitHub token first, if you haven't already. GitHub asked for a security code when Claude Code tried, so you need to do this yourself:
+   - Go to https://github.com/settings/personal-access-tokens/new while signed in as Forziq.
+   - Enter your sudo code if GitHub asks for it.
+   - Token name: `forzammilmod-server`. Resource owner: Forziq. Expiration: 1 year (custom date 2027-11-08 if needed).
+   - Repository access: "Only select repositories", then pick `TeatralPlugin`.
+   - Permissions: Contents, set to Read-only. Metadata stays read-only automatically.
+   - Click Generate token and copy it straight away.
+   - Save it in 1Password as a new item called `forzammilmod GitHub token`. Don't paste it into any file in the project.
+6. Open `plugins/forzammilmod/config.yml` in exaroton's file editor. Paste the token between the quotes on the `github-token:` line (the key is `github-token`). Save.
+7. Start the server again and join. You should be asked to download the resource pack; accept it. Type `/forzammilmod version` and check it says 0.1.0.
 
 From now on, new versions download by themselves when the server starts and go live on the next restart. If you want one straight away, type `/forzammilmod update` in game and then restart the server from exaroton.
 
