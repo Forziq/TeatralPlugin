@@ -1,5 +1,5 @@
 # progress
-now: T28 todo | G1 passed | G2 passed
+now: T28 doing | G1 passed | G2 passed
 updated: 2026-11-08
 
 ## tasks
@@ -35,7 +35,7 @@ G2|-|egor|T20|done|Gate 2: tank test with friends (manual.md G2)
 T21|L|main|G2|done|Plan phases 3 to 6 from the gate notes
 T26|M|sonnet-builder|G2|done|Vehicle spawn pads (command block and button)
 T50|M|sonnet-builder|T26|done|Our own greeting emote, configurable name and sound
-T28|M|sonnet-builder|T50|todo|Held items and armour during emotes
+T28|M|sonnet-builder|T50|doing|Held items and armour during emotes
 T32|S|haiku-scout|T28|todo|Publish v0.4.0 for Gate 3
 G3|-|egor|T32|gate|Gate 3: greeting test with friends (manual.md G3)
 T33|L|sonnet-builder|G3|todo|Vehicle health, damage and repairs

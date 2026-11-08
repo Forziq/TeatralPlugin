@@ -1,13 +1,19 @@
 package dev.egorgrigorciuc.forzammilmod;
 
+import org.bukkit.Material;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -25,7 +31,11 @@ public final class EmoteService {
 
     private final JavaPlugin plugin;
     private final Map<UUID, Active> active = new HashMap<>();
+    private static final EquipmentSlot[] GEAR_SLOTS = {EquipmentSlot.HAND, EquipmentSlot.OFF_HAND,
+            EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
+
     private final EmoteCooldown cooldown = new EmoteCooldown();
+    private final HiddenGear hiddenGear = new HiddenGear();
     private GreetingSettings greeting = GreetingSettings.defaults();
     private long nextToken;
 
@@ -83,6 +93,7 @@ public final class EmoteService {
         if (handle == null) return PlayResult.UNAVAILABLE;
         active.put(id, new Active(token, handle));
         cooldown.markStarted(id, System.currentTimeMillis());
+        hideGear(player);
         if (isGreeting) playGreetingSound(player);
         return PlayResult.STARTED;
     }
@@ -105,8 +116,60 @@ public final class EmoteService {
     private boolean stop(UUID id, StopReason reason) {
         Active a = active.remove(id);
         if (a == null) return false;
-        close(a);
+        try {
+            close(a);
+        } finally {
+            restoreGear(id);
+        }
         return true;
+    }
+
+    private void hideGear(Player emoter) {
+        List<UUID> viewers = new java.util.ArrayList<>();
+        for (Player v : emoter.getWorld().getPlayers()) if (!v.equals(emoter)) viewers.add(v.getUniqueId());
+        hiddenGear.hide(emoter.getUniqueId(), viewers);
+        sendGear(emoter, viewers, false);
+    }
+
+    private void restoreGear(UUID id) {
+        Set<UUID> viewers = hiddenGear.release(id);
+        if (viewers.isEmpty()) return;
+        Player emoter = plugin.getServer().getPlayer(id);
+        if (emoter == null) return;
+        sendGear(emoter, viewers, true);
+    }
+
+    private void sendGear(Player emoter, java.util.Collection<UUID> viewers, boolean real) {
+        Map<EquipmentSlot, ItemStack> items = new EnumMap<>(EquipmentSlot.class);
+        EntityEquipment eq = emoter.getEquipment();
+        for (EquipmentSlot slot : GEAR_SLOTS) {
+            ItemStack item = real && eq != null ? eq.getItem(slot) : null;
+            items.put(slot, item != null ? item : new ItemStack(Material.AIR));
+        }
+        for (UUID vid : viewers) {
+            Player v = plugin.getServer().getPlayer(vid);
+            if (v == null || v.equals(emoter)) continue;
+            try {
+                v.sendEquipmentChange(emoter, items);
+            } catch (RuntimeException e) {
+                plugin.getLogger().log(Level.FINE, "Could not send gear change", e);
+            }
+        }
+    }
+
+    /** Re-sends the empty gear to everyone who should see it empty. No-op if the player isn't emoting. */
+    public void refreshHidden(Player emoter) {
+        if (!hiddenGear.isHidden(emoter.getUniqueId())) return;
+        sendGear(emoter, hiddenGear.viewers(emoter.getUniqueId()), false);
+    }
+
+    /** A player joined or moved into the emoter's world mid-emote: show them the empty gear. */
+    public void showHiddenTo(Player viewer) {
+        for (Player emoter : viewer.getWorld().getPlayers()) {
+            if (emoter.equals(viewer) || !hiddenGear.isHidden(emoter.getUniqueId())) continue;
+            hiddenGear.addViewer(emoter.getUniqueId(), viewer.getUniqueId());
+            sendGear(emoter, List.of(viewer.getUniqueId()), false);
+        }
     }
 
     private void finished(UUID id, long token) {
@@ -124,7 +187,6 @@ public final class EmoteService {
     }
 
     public void stopAll() {
-        for (Active a : active.values()) close(a);
-        active.clear();
+        for (UUID id : List.copyOf(active.keySet())) stop(id, StopReason.FINISHED);
     }
 }

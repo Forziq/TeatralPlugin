@@ -6,7 +6,14 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
@@ -15,8 +22,10 @@ public final class EmoteListener implements Listener {
 
     private final EmoteService emotes;
     private final Lang lang;
+    private final Plugin plugin;
 
-    public EmoteListener(EmoteService emotes, Lang lang) {
+    public EmoteListener(Plugin plugin, EmoteService emotes, Lang lang) {
+        this.plugin = plugin;
         this.emotes = emotes;
         this.lang = lang;
     }
@@ -55,5 +64,47 @@ public final class EmoteListener implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
         emotes.stop(e.getPlayer(), EmoteService.StopReason.QUIT);
+    }
+
+    /** The server resends real gear on these; put the empty gear back one tick later. */
+    private void refreshLater(Player p) {
+        if (!emotes.isPlaying(p)) return;
+        plugin.getServer().getScheduler().runTask(plugin, () -> emotes.refreshHidden(p));
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onHeld(PlayerItemHeldEvent e) {
+        refreshLater(e.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onSwap(PlayerSwapHandItemsEvent e) {
+        refreshLater(e.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onInventoryClick(InventoryClickEvent e) {
+        if (e.getWhoClicked() instanceof Player p) refreshLater(p);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onInventoryClose(InventoryCloseEvent e) {
+        if (e.getPlayer() instanceof Player p) refreshLater(p);
+    }
+
+    private void showLater(Player viewer) {
+        plugin.getServer().getScheduler().runTask(plugin, () -> {
+            if (viewer.isOnline()) emotes.showHiddenTo(viewer);
+        });
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onJoin(PlayerJoinEvent e) {
+        showLater(e.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onWorldChange(PlayerChangedWorldEvent e) {
+        showLater(e.getPlayer());
     }
 }
