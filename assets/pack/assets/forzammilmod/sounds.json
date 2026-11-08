@@ -175,10 +175,10 @@
       }
     ]
   },
-  "music.tankovy_proryv": {
+  "music.posledniy_rubezh": {
     "sounds": [
       {
-        "name": "forzammilmod:music/tankovy_proryv",
+        "name": "forzammilmod:music/posledniy_rubezh",
         "stream": true
       }
     ]
@@ -191,10 +191,10 @@
       }
     ]
   },
-  "music.polevaya_kukhnya": {
+  "music.pepel_goroda": {
     "sounds": [
       {
-        "name": "forzammilmod:music/polevaya_kukhnya",
+        "name": "forzammilmod:music/pepel_goroda",
         "stream": true
       }
     ]

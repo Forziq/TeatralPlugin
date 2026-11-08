@@ -9,20 +9,20 @@ tracks:
     ru: "Окопный вальс"
     length_ms: 117834
     vocals: false
-  - id: tankovy_proryv
-    en: "Tankovy Proryv"
-    ru: "Танковый прорыв"
-    length_ms: 118527
+  - id: posledniy_rubezh
+    en: "Posledniy Rubezh"
+    ru: "Последний рубеж"
+    length_ms: 118036
     vocals: false
   - id: nochnoy_konvoy
     en: "Nochnoy Konvoy"
     ru: "Ночной конвой"
     length_ms: 143221
     vocals: false
-  - id: polevaya_kukhnya
-    en: "Polevaya Kukhnya"
-    ru: "Полевая кухня"
-    length_ms: 88799
+  - id: pepel_goroda
+    en: "Pepel Goroda"
+    ru: "Пепел города"
+    length_ms: 145516
     vocals: false
   - id: okopnye_chastushki
     en: "Okopnye Chastushki"
