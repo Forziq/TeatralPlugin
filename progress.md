@@ -1,5 +1,5 @@
 # progress
-now: T18 todo | G1 passed | G2 todo
+now: T18 doing | G1 passed | G2 todo
 updated: 2026-11-08
 
 ## tasks
@@ -28,7 +28,7 @@ T14|S|haiku-scout|G1|done|Research vehicle approach
 T15|M|sonnet-builder|T14|done|Tank and jeep placeholder models
 T16|L|opus-deep|T15|done|Driving core (spawn, mount, W/A/S/D, step-up)
 T17|L|sonnet-builder|T16|done|Turret and barrel aim
-T18|L|sonnet-builder|T17|todo|Firing, shells and explosions
+T18|L|sonnet-builder|T17|doing|Firing, shells and explosions
 T19|M|sonnet-builder|T16|todo|Jeep on the same driving code
 T20|S|haiku-scout|T18,T19|todo|Publish v0.3.0 for Gate 2
 G2|-|egor|T20|gate|Gate 2: tank test with friends (manual.md G2)

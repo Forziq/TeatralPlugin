@@ -29,6 +29,9 @@ final class Vehicle {
     private UUID driver;
     /** Null if the vehicle has no turret. Main thread only. */
     private final TurretModel turret;
+    /** Gun reload clock (ticks of ShellService) and the last whole second shown on the action bar. */
+    final ReloadTimer reload = new ReloadTimer(ShellService.RELOAD_TICKS);
+    int shownSeconds;
 
     Vehicle(VehicleType type, ArmorStand anchor, Interaction clickBox, VehicleMover.State state) {
         this.type = type;

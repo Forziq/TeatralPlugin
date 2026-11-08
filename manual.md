@@ -153,7 +153,10 @@ T14 checks whether a free Spigot 1.21.4 plugin with drivable vehicles exists. If
 7. Sneak to get out. You should land beside the tank, not inside it.
 8. `/fmod vehicle list` shows it; `/fmod vehicle remove` (within 10 blocks) takes it away.
 9. Repeat with `/fmod vehicle spawn jeep`: it is faster and only turns while moving.
-10. After T18, fire at a wall and type `/tps` to see how the server copes.
+10. After T18: get in the tank and left-click at a wall about 20 blocks away. You should see a smoke trail fly out and an explosion break blocks.
+11. Click again straight away. The action bar counts down the reload and nothing fires. Wait 4 seconds and fire again.
+12. Fire a few shells in a row and type `/tps`. It should stay near 20.
+13. Look in the server log for the line "Fire check: click seen via ..." and tell Claude which word it says (interact, swing or hit).
 
 What to watch for and tell Claude Code:
 - If nothing moves when you press W, send the server log lines that start with "Driver check". They say whether the keys reach the server while you ride.

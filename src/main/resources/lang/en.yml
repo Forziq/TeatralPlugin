@@ -65,3 +65,8 @@ vehicle:
   name:
     tank: "Tank"
     jeep: "Jeep"
+reload:
+  seconds:
+    one: "&eReloading: {n} second"
+    other: "&eReloading: {n} seconds"
+  ready: "&aReady to fire"

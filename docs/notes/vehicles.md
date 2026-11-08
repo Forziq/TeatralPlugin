@@ -116,3 +116,11 @@ Result: **none confirmed**. Nothing fits all three of free, Spigot 1.21.4 and a 
 - BetterModel caches the idle bone rotation, so BetterModelHook forces a refresh by reflection. Check the 'Turret check' log lines when a tank spawns.
 - If the turret turns the wrong way, flip TURRET_YAW_SIGN or BARREL_PITCH_SIGN in BetterModelHook. Not yet tried in game.
 - T18: fire from Vehicle.muzzle() for the shell start point and direction.
+
+## T18 firing (as built, not yet tried in game)
+- Left-click while driving a tank fires. `FireListener` listens on three paths, because we don't yet know which reaches the server while riding: `PlayerInteractEvent` (LEFT_CLICK_AIR/BLOCK), `PlayerAnimationEvent` (ARM_SWING) and `EntityDamageByEntityEvent` (a hit on an entity). Interact and hit are cancelled for drivers, block breaking is cancelled too.
+- Each path logs once per player: "Fire check: click seen via interact|swing|hit". All three feed `ShellService.fireClick`, which ignores a second click within 5 ticks of the last one, so one click fires once.
+- `ShellModel` (pure): 3 blocks per tick, 150 blocks max, last segment shortened. `ShellService` ray-traces each segment with `World.rayTrace` (ray size 0.3, ignores the driver, vehicle entities and non-living entities), then `createExplosion(power 2.5, no fire, breaks blocks, source = driver)`. Otherwise it draws a smoke trail plus flame and crit at the head. A shell ends at max range or when the next chunk isn't loaded.
+- Reload: `ReloadTimer` (pure), 80 ticks, one per `Vehicle`. The action bar shows whole seconds left (rounded up), then "ready" once. Keys `reload.seconds.*` and `reload.ready`.
+- Constants live in `ShellService` (`RELOAD_TICKS`, `CLICK_DEBOUNCE_TICKS`, `EXPLOSION_POWER`, `SHELL_RAY_SIZE`) and `ShellModel` (`SPEED`, `MAX_RANGE`). Sounds are vanilla (generic explode and large firework blast).
+- Vehicle entities are marker/invulnerable and `VehicleListener.onDamage` cancels damage, so explosions should not hurt them. A wall right at the muzzle can still hurt the driver.

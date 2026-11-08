@@ -15,6 +15,7 @@ public final class ForzammilMod extends JavaPlugin {
     private EmoteService emotes;
     private RadioService radio;
     private VehicleService vehicles;
+    private ShellService shells;
     /** Set when the server-load event fires after our enable; BetterModel loads its models on that event. */
     private volatile boolean serverLoadSeen;
 
@@ -47,6 +48,7 @@ public final class ForzammilMod extends JavaPlugin {
     public void onDisable() {
         if (emotes != null) emotes.stopAll();
         if (radio != null) radio.shutdown();
+        if (shells != null) shells.stop();
         if (vehicles != null) vehicles.removeAll();
     }
 
@@ -71,6 +73,9 @@ public final class ForzammilMod extends JavaPlugin {
         vehicles = new VehicleService(this);
         getServer().getPluginManager().registerEvents(new VehicleListener(vehicles, lang), this);
         vehicles.start();
+        shells = new ShellService(this, vehicles, lang);
+        getServer().getPluginManager().registerEvents(new FireListener(shells), this);
+        shells.start();
         getServer().getScheduler().runTask(this, this::checkVehicleModels);
     }
 
