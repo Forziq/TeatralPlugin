@@ -6,7 +6,7 @@ softdepend: [BetterModel, SkinsRestorer]
 commands:
   forzammilmod:
     description: Forzammilmod main command
-    usage: /<command> <version>
+    usage: /<command> <version|pack|update>
   emote:
     description: Play an emote
     usage: /<command> <wave|stop>

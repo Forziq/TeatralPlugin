@@ -7,6 +7,7 @@ public final class ForzammilMod extends JavaPlugin {
 
     private Lang lang;
     private UpdateService updates;
+    private PackService pack;
 
     public Lang lang() {
         return lang;
@@ -20,12 +21,17 @@ public final class ForzammilMod extends JavaPlugin {
         return updates;
     }
 
+    /** Null in dev builds without pack.properties. */
+    public PackService pack() {
+        return pack;
+    }
+
     @Override
     public void onEnable() {
         saveDefaultConfig();
         lang = Lang.load(this);
         updates = new UpdateService(this);
-        PackService pack = PackService.create(this);
+        pack = PackService.create(this);
         if (pack != null) {
             getServer().getPluginManager().registerEvents(pack, this);
         }

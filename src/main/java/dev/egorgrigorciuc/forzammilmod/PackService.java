@@ -5,10 +5,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent;
+import org.bukkit.event.player.PlayerResourcePackStatusEvent.Status;
 
 import java.io.InputStream;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /** Adds our required resource pack on join (stacked on top of any server pack) and kicks players who refuse it. */
 public final class PackService implements Listener {
@@ -16,6 +20,8 @@ public final class PackService implements Listener {
     private final ForzammilMod plugin;
     private final PackProperties pack;
     private final UUID packId;
+    /** Last status each online player's client reported for our pack. */
+    private final Map<UUID, Status> statuses = new ConcurrentHashMap<>();
 
     private PackService(ForzammilMod plugin, PackProperties pack) {
         this.plugin = plugin;
@@ -53,6 +59,7 @@ public final class PackService implements Listener {
     public void onStatus(PlayerResourcePackStatusEvent e) {
         if (!packId.equals(e.getID())) return; // another pack (e.g. the server's own); not ours to police
         Player p = e.getPlayer();
+        statuses.put(p.getUniqueId(), e.getStatus());
         String key = switch (e.getStatus()) {
             case DECLINED -> "pack.kick-declined";
             case FAILED_DOWNLOAD, INVALID_URL, FAILED_RELOAD, DISCARDED -> "pack.kick-failed";
@@ -61,5 +68,15 @@ public final class PackService implements Listener {
         if (key != null) {
             p.kickPlayer(plugin.lang().msg(p, key));
         }
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent e) {
+        statuses.remove(e.getPlayer().getUniqueId());
+    }
+
+    /** Last status the player's client reported for our pack, or null if it hasn't answered yet. */
+    public Status status(Player p) {
+        return statuses.get(p.getUniqueId());
     }
 }
