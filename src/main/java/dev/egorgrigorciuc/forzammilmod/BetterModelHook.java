@@ -3,12 +3,22 @@ package dev.egorgrigorciuc.forzammilmod;
 import kr.toxicity.model.api.BetterModel;
 import kr.toxicity.model.api.BetterModelPlatform.ReloadResult;
 import kr.toxicity.model.api.animation.AnimationModifier;
+import kr.toxicity.model.api.bone.RenderedBone;
 import kr.toxicity.model.api.bukkit.platform.BukkitAdapter;
+import kr.toxicity.model.api.data.renderer.ModelRenderer;
+import kr.toxicity.model.api.mount.MountControllers;
+import kr.toxicity.model.api.nms.HitBox;
 import kr.toxicity.model.api.tracker.EntityTracker;
+import kr.toxicity.model.api.tracker.ModelRotation;
+import kr.toxicity.model.api.tracker.TrackerUpdateAction;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 
 /**
@@ -82,5 +92,80 @@ final class BetterModelHook {
             return null;
         }
         return tracker;
+    }
+
+    // ---- vehicles ----
+
+    /** Driver seat bone in our vehicle models (BetterModel "p" tag = seat). */
+    static final String SEAT_BONE = "p_driver";
+    /** Display movement interpolation in ticks, per docs/notes/vehicles.md section 4. */
+    static final int MOVE_TICKS = 2;
+
+    /** True if BetterModel has loaded a model with this name. */
+    static boolean hasModel(String model) {
+        return BetterModel.modelOrNull(model) != null;
+    }
+
+    /**
+     * Draws {@code model} on the anchor entity, facing {@code yaw} (read from BetterModel's own thread, so the
+     * supplier must be thread-safe). Returns null if the model isn't loaded.
+     */
+    static VehicleRig attachVehicle(LivingEntity anchor, String model, Supplier<Float> yaw) {
+        ModelRenderer renderer = BetterModel.modelOrNull(model);
+        if (renderer == null) return null;
+        EntityTracker tracker = renderer.getOrCreate(BukkitAdapter.adapt(anchor));
+        tracker.rotation(() -> new ModelRotation(0f, yaw.get()));
+        tracker.update(TrackerUpdateAction.moveDuration(MOVE_TICKS));
+        return new BmRig(tracker);
+    }
+
+    /**
+     * BetterModel builds the seat (an invisible armour stand with an Interaction on it) a tick after the tracker,
+     * and moves it with the anchor. We switch its controller to NONE so BetterModel never steers the anchor or
+     * turns it to the rider's look; our tick loop does the driving.
+     */
+    private record BmRig(EntityTracker tracker) implements VehicleRig {
+
+        private HitBox seatBox() {
+            if (tracker.isClosed()) return null;
+            RenderedBone bone = tracker.bone(SEAT_BONE);
+            return bone == null ? null : bone.getHitBox();
+        }
+
+        @Override
+        public boolean seat(Player player) {
+            HitBox box = seatBox();
+            if (box == null) return false;
+            box.mountController(MountControllers.NONE);
+            box.mount(BukkitAdapter.adapt(player));
+            return isSeated(player);
+        }
+
+        @Override
+        public boolean isSeated(Player player) {
+            Entity vehicle = player.getVehicle();
+            if (vehicle == null) return false;
+            HitBox box = seatBox();
+            if (box == null) return false;
+            UUID seatId = box.uuid();
+            // The player rides the seat's Interaction, which rides the seat armour stand.
+            if (seatId.equals(vehicle.getUniqueId())) return true;
+            Entity below = vehicle.getVehicle();
+            return below != null && seatId.equals(below.getUniqueId());
+        }
+
+        @Override
+        public void unseat(Player player) {
+            HitBox box = seatBox();
+            if (box != null) box.dismount(BukkitAdapter.adapt(player));
+            if (player.isInsideVehicle() && isSeated(player)) player.leaveVehicle();
+        }
+
+        @Override
+        public void close() {
+            HitBox box = seatBox();
+            if (box != null) box.dismountAll();
+            tracker.close();
+        }
     }
 }

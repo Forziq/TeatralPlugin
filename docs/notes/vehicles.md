@@ -88,3 +88,15 @@ Result: **none confirmed**. Nothing fits all three of free, Spigot 1.21.4 and a 
 - **Turret and barrel:** start with built-in head tracking on `h_turret` and check the ±75 clamp in game. If the turret must turn a full 360 degrees, add an `addRotationModifier` with a mutable yaw and pitch field, and check it updates each tick (unverified).
 - **Fire:** left-click through `PlayerInteractEvent` and `PlayerAnimationEvent` with a debounce. Right-click through BetterModel's `HitBoxInteractEvent` if needed.
 - **Open questions to test first:** the modifier refresh behaviour (section 1), `PlayerInputEvent` frequency and version (section 3), and whether ARM_SWING fires while riding (section 5).
+
+## T16 driving core (as built, not yet tried in game)
+
+- Spawn: `/fmod vehicle spawn tank|jeep`. Remove is owner only (`Access.OWNER_NAME`). List is open to anyone. Anyone may drive a spawned vehicle.
+- Driver sits in BetterModel's `p_driver` seat with controller NONE. A vanilla passenger would freeze the anchor's teleport, so the seat is not a passenger in that sense.
+- The invisible armour stand anchor is teleported every tick with moveDuration 2.
+- Input comes from `Player#getCurrentInput()`, polled each tick.
+- Click box is square, so the front and back ends of the tank do not take clicks. Known limit, fix later if it matters.
+- If the tank drives backwards, set `Vehicle.MODEL_YAW_OFFSET` to 180.
+- Log lines to check in game: three "Driver check:" lines (seated, keys polled, keys by event).
+- Still to test: jitter with a second player nearby.
+- T17 builds on `Vehicle` and `VehicleRig` in `BetterModelHook`.

@@ -1,5 +1,5 @@
 # progress
-now: T16 todo | G1 passed | G2 todo
+now: T17 todo | G1 passed | G2 todo
 updated: 2026-11-08
 
 ## tasks
@@ -26,7 +26,7 @@ T25|M|sonnet-builder|T13|done|Rename the commands to /fmod and publish v0.2.1
 G1|-|egor|T13,T25,M02|done|Gate 1: emote test with friends (manual.md G1)
 T14|S|haiku-scout|G1|done|Research vehicle approach
 T15|M|sonnet-builder|T14|done|Tank and jeep placeholder models
-T16|L|opus-deep|T15|todo|Driving core (spawn, mount, W/A/S/D, step-up)
+T16|L|opus-deep|T15|done|Driving core (spawn, mount, W/A/S/D, step-up)
 T17|L|sonnet-builder|T16|todo|Turret and barrel aim
 T18|L|sonnet-builder|T17|todo|Firing, shells and explosions
 T19|M|sonnet-builder|T16|todo|Jeep on the same driving code
@@ -35,6 +35,7 @@ G2|-|egor|T20|gate|Gate 2: tank test with friends (manual.md G2)
 T21|L|main|G2|todo|Plan phases 3 to 6 from the gate notes
 
 ## log (newest first, keep 8)
+- 2026-11-08 T16: driving. /fmod vehicle spawn tank|jeep, remove (owner), list. Driver in p_driver seat, controller NONE. Untested: check the three "Driver check:" log lines. See docs/notes/vehicles.md. T17 builds on Vehicle/VehicleRig.
 - 2026-11-08 T15: tank and jeep placeholder models. Tank: hull > turret > barrel > muzzle (points -Z), p_driver under hull. Jeep: body, wheel_fl/fr/rl/rr, p_driver. No h_/b_ tags, so no head tracking. T16: confirm BetterModel.model("tank") resolves.
 - 2026-11-08 T14: plan in docs/notes/vehicles.md. Invisible ArmorStand anchor, seat bones, input from getCurrentInput(). Test in T16: idle-bone rotation, rider left-click, arm swing while riding. No free tank plugin, so no M04.
 - 2026-11-08 T25: commands now /fmod (no old alias). v0.2.1 pack: https://forziq.github.io/TeatralPlugin/pack/forzammilmod-pack-0.2.1.zip. Server still old: Egor types /forzammilmod update, restarts, then /fmod (manual.md G2). 67 tests pass.
@@ -42,7 +43,6 @@ T21|L|main|G2|todo|Plan phases 3 to 6 from the gate notes
 - 2026-11-08 BM fix: emotes crash on Spigot (BetterModel reads EntityHuman.bW). scripts/patch-bettermodel.sh makes BetterModel-2.2.0-spigot-fmod.jar; setup-server.sh applies it. Swapped on exaroton, emotes work. Re-patch on BetterModel update.
 - 2026-11-08 T13: v0.2.0 released (jar and release.json on GitHub, pack at forziq.github.io/TeatralPlugin/pack/forzammilmod-pack-0.2.0.zip). manual.md G1 is one checklist: update steps, skins, emotes, radio. Not tried in game yet. Note: release.sh needs a clean tree, so stash progress.md first.
 - 2026-11-08 T23: radio at /forzammilmod music (play, stop, shuffle, loop, list), on the Jukebox/Note Blocks slider. Late joiners get a chat note, next track only. Not tried in game (M03). BetterModel 2.2.0 errors on shutdown, not ours.
-- 2026-11-08 T12: /emote, /emote wave, /emote stop. One emote each. Walking (over 0.05 sideways or a new block), damage, death, teleport or quit ends it. Each stop closes the BetterModel tracker. 54 tests pass. Not tried in game (M03).
 
 ## blockers
 none

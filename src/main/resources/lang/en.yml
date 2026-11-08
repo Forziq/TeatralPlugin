@@ -45,3 +45,23 @@ music:
     other: "&7{n} tracks:"
   list-line: "&7- &f{name} &8({id})"
   list-playing: "&a▶ &f{name} &8({id})"
+vehicle:
+  usage: "&eUsage: &f/{label} vehicle <spawn <tank|jeep>|remove|list>"
+  bad-type: "&cNo such vehicle. Pick tank or jeep."
+  unavailable: "&cVehicles aren't available right now."
+  model-missing: "&cThe {type} model isn't loaded. Check the server log."
+  no-target: "&cLook at a block within 30 blocks to put the vehicle there."
+  spawned: "&a{type} spawned."
+  removed: "&7{type} removed."
+  none-nearby: "&cNo vehicle within 10 blocks."
+  has-driver: "&cThis vehicle already has a driver."
+  not-ready: "&cThis vehicle isn't ready yet. Try again in a second."
+  entered: "&7You're in the driver's seat. W/S to drive, A/D to turn, sneak to get out."
+  list-empty: "&7No vehicles out right now."
+  list-header:
+    one: "&7{n} vehicle:"
+    other: "&7{n} vehicles:"
+  list-line: "&7- &f{type} &8({world} {x} {y} {z})"
+  name:
+    tank: "Tank"
+    jeep: "Jeep"

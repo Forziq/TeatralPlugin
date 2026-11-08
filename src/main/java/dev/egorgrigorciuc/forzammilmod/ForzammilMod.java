@@ -14,6 +14,7 @@ public final class ForzammilMod extends JavaPlugin {
     private PackService pack;
     private EmoteService emotes;
     private RadioService radio;
+    private VehicleService vehicles;
     /** Set when the server-load event fires after our enable; BetterModel loads its models on that event. */
     private volatile boolean serverLoadSeen;
 
@@ -29,6 +30,10 @@ public final class ForzammilMod extends JavaPlugin {
         return radio;
     }
 
+    public VehicleService vehicles() {
+        return vehicles;
+    }
+
     public UpdateService updates() {
         return updates;
     }
@@ -42,6 +47,7 @@ public final class ForzammilMod extends JavaPlugin {
     public void onDisable() {
         if (emotes != null) emotes.stopAll();
         if (radio != null) radio.shutdown();
+        if (vehicles != null) vehicles.removeAll();
     }
 
     @Override
@@ -62,6 +68,27 @@ public final class ForzammilMod extends JavaPlugin {
         emotes = new EmoteService(this);
         getServer().getPluginManager().registerEvents(new EmoteListener(emotes, lang), this);
         register("emote", new EmoteCommand(lang, emotes));
+        vehicles = new VehicleService(this);
+        getServer().getPluginManager().registerEvents(new VehicleListener(vehicles, lang), this);
+        vehicles.start();
+        getServer().getScheduler().runTask(this, this::checkVehicleModels);
+    }
+
+    /** After startup (BetterModel has loaded by then), says whether our vehicle models are there. */
+    private void checkVehicleModels() {
+        if (!vehicles.available()) return;
+        for (VehicleType t : VehicleType.values()) {
+            try {
+                if (BetterModelHook.hasModel(t.model())) {
+                    getLogger().info("BetterModel has loaded vehicle model " + t.model());
+                } else {
+                    getLogger().warning("BetterModel did not load vehicle model " + t.model() + "; check its log above");
+                }
+            } catch (LinkageError e) {
+                getLogger().warning("Could not ask BetterModel about vehicle models: " + e);
+                return;
+            }
+        }
     }
 
     /**

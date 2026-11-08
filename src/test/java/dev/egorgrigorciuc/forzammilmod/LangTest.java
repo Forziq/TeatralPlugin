@@ -134,6 +134,16 @@ class LangTest {
     }
 
     @Test
+    void everyVehicleHasANameInBothLanguages() {
+        for (String f : new String[] {"lang/en.yml", "lang/ru.yml"}) {
+            YamlConfiguration y = resource(f);
+            for (VehicleType t : VehicleType.values()) {
+                assertTrue(y.isString("vehicle.name." + t.id), f + " missing vehicle.name." + t.id);
+            }
+        }
+    }
+
+    @Test
     void languageFilesHaveSameKeys() {
         assertEquals(baseKeys(resource("lang/en.yml")), baseKeys(resource("lang/ru.yml")));
     }

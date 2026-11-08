@@ -144,11 +144,23 @@ T14 checks whether a free Spigot 1.21.4 plugin with drivable vehicles exists. If
 
 ## M05 Try the tank locally (optional, after T16 to T19)
 
-1. Start the local server and join `localhost` as `Forzammil`.
-2. `/fmod vehicle spawn tank`, right-click it to get in, drive with W/A/S/D, sneak to get out.
-3. Try flat ground, a one-block step and a two-block wall.
-4. After T18, fire at a wall and type `/tps` to see how the server copes.
-5. After T19, try `/fmod vehicle spawn jeep`.
+1. Start the local server (`scripts/smoke-test.sh` only checks it loads; to play, run the server in `server/` as usual) and join `localhost` as `Forzammil`.
+2. Look at a block on flat ground and type `/fmod vehicle spawn tank`. The tank appears on that block, facing away from you.
+3. Right-click the tank to get in. You should be sitting on it with the camera free to look around.
+4. Drive on flat ground: W forward, S brake then reverse, A/D turn the hull (the tank turns on the spot). Looking around must not turn the tank.
+5. Build a one-block step and drive into it: the tank should climb it. Then a two-block wall: the tank should stop against it and not go inside.
+6. Drive off a ledge: it should drop and land, not sink into the ground.
+7. Sneak to get out. You should land beside the tank, not inside it.
+8. `/fmod vehicle list` shows it; `/fmod vehicle remove` (within 10 blocks) takes it away.
+9. Repeat with `/fmod vehicle spawn jeep`: it is faster and only turns while moving.
+10. After T18, fire at a wall and type `/tps` to see how the server copes.
+
+What to watch for and tell Claude Code:
+- If nothing moves when you press W, send the server log lines that start with "Driver check". They say whether the keys reach the server while you ride.
+- If the model drives backwards (barrel at the back), say so: it is a one-number fix.
+- Ask a second player (or a second game on the same PC) to watch while you drive: does the tank jitter or lag behind?
+- Does your camera shake while driving or stepping up a block?
+- Getting stuck in or on blocks, or getting out somewhere odd.
 
 ## G2 Gate 2: tank test with friends (after T20)
 
