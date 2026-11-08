@@ -235,3 +235,11 @@ Emotes crashed with "Emotes aren't available right now" because of a bug in Bett
 2. Ask a friend to watch you: the right arm should go up in front of you, about 45 degrees above flat and angled a little towards your body, hold for a moment, then come down.
 3. Check it matches the real gesture. If the arm goes sideways or across the wrong way, tell Claude Code, because the angle signs could not be tested without the game.
 4. Typing another emote within 3 seconds should tell you to wait.
+
+## M03 Check hidden items and the greeting arm (after T28)
+1. Pick up a sword and wear some armour. Ask a friend to watch you from a few blocks away.
+2. Before emoting: your friend should see the sword and armour on you.
+3. Type `/emote greeting`. During it, your friend should see your hands and armour empty. Your own inventory should still show everything.
+4. Watch the arm: it should rise in front of you to about 45 degrees, not behind you.
+5. Type `/emote wave`, or wait for the emote to end. Your friend should see the sword and armour come back straight away.
+6. Swap items in your hotbar during an emote. Your friend should still see nothing in your hands until the emote stops.
