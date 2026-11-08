@@ -19,3 +19,7 @@ config.local.yml
 .claude/settings.json.bak-*
 
 assets/music/raw/
+
+# editor build output and iCloud duplicates
+bin/
+.claude/dashboard/server*.pid
