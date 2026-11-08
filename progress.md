@@ -34,7 +34,7 @@ G2|-|egor|T20|gate|Gate 2: tank test with friends (manual.md G2)
 T21|L|main|G2|todo|Plan phases 3 to 6 from the gate notes
 
 ## log (newest first, keep 8)
-- 2026-11-08 T12: /emote, /emote wave, /emote stop. One emote each. Walking (over 0.05 sideways, or onto a new block), damage, death, teleport or quit ends it. Each stop closes the BetterModel tracker. 54 tests pass; server loads it. Not tried in game (M03). BetterModel errors on shutdown: theirs, not ours.
+- 2026-11-08 T12: /emote, /emote wave, /emote stop. One emote each. Walking (over 0.05 sideways or a new block), damage, death, teleport or quit ends it. Each stop closes the BetterModel tracker. 54 tests pass. Not tried in game (M03).
 - 2026-11-08 T24: two cheerful tracks swapped for tragic ones: posledniy_rubezh and pepel_goroda. Still 7 tracks. Music runs cost 4x the estimate (4 takes per run), see docs/notes. Nobody has listened yet. T23 unblocked.
 - 2026-11-08 T22: seven tracks in assets/music (five instrumentals, two Russian comic songs). tracks.yml lists ids and names. Sounds are forzammilmod:music.<id>. Pack now 15.3 MB. Nobody has listened yet. T23: 7 tracks, not 6.
 - 2026-11-08 T11: models copy into BetterModel on startup (SHA-1 checked). `forzammil_player` has a 2 s `wave`. T12: use `BetterModel.limb("forzammil_player")`; `stopAnimation` skips onEnd. Not seen in game yet. Notes: docs/notes/models.md
