@@ -192,6 +192,21 @@ If the turret or wheels turn the wrong way, or something looks off, check the se
 
 Then type `/next`. It'll take your notes and plan the next phase with you.
 
+## Vehicle pads (after T26)
+
+Setup on exaroton:
+1. Turn on command blocks: in the exaroton panel open Options and set `enable-command-block` to `true`, or edit `server.properties` by hand. Restart the server.
+2. Join as Forzammil and type `/give @s command_block`. Place it under the floor or in a wall. Open it and set the command to `fmod vehicle spawn tank` (no slash; `jeep` works too). Set the mode to Impulse and turn Needs Redstone on. Put a button on one of its sides.
+3. Keep the 2 to 5 blocks above the command block clear. Press the button. The vehicle appears 2 blocks above the command block, facing the way the command block points.
+
+What to expect:
+- Pressing again while a vehicle is still on the pad says "There's already a vehicle on the pad".
+- At 10 vehicles on the server, the pad refuses.
+- A vehicle nobody drives for 10 minutes disappears.
+- Anyone can press the button. Only Forzammil can type the spawn command by hand.
+
+Local test: on the local server, set `enable-command-block=true` in `server/server.properties`, restart, then follow the same steps. Join as Forzammil for the `/give`.
+
 ## Added by Claude Code
 (nothing yet)
 

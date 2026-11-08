@@ -5,6 +5,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.Directional;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BoundingBox;
@@ -59,8 +61,13 @@ public final class ForzammilCommand implements TabExecutor {
             listVehicles(sender, vehicles);
             return;
         }
-        if (!Access.isOwner(sender)) {
+        boolean allowed = sub.equals("spawn") ? Access.canSpawnVehicle(sender) : Access.isOwner(sender);
+        if (!allowed) {
             sender.sendMessage(lang.msg(sender, "no-permission"));
+            return;
+        }
+        if (sender instanceof BlockCommandSender cb) {
+            padSpawn(cb, args, vehicles);
             return;
         }
         if (!(sender instanceof Player p)) {
@@ -86,6 +93,10 @@ public final class ForzammilCommand implements TabExecutor {
             p.sendMessage(lang.msg(p, "vehicle.unavailable"));
             return;
         }
+        if (PadRules.check(new double[0], vehicles.vehicles().size()) == PadRules.Verdict.FULL) {
+            p.sendMessage(lang.msg(p, "vehicle.pad-full", "max", PadRules.MAX_VEHICLES));
+            return;
+        }
         RayTraceResult hit = p.rayTraceBlocks(SPAWN_REACH, FluidCollisionMode.NEVER);
         Block block = hit == null ? null : hit.getHitBlock();
         if (block == null) {
@@ -101,6 +112,56 @@ public final class ForzammilCommand implements TabExecutor {
             case MODEL_MISSING -> p.sendMessage(lang.msg(p, "vehicle.model-missing", "type", typeName(p, type)));
             case UNAVAILABLE -> p.sendMessage(lang.msg(p, "vehicle.unavailable"));
         }
+    }
+
+    /** A command block ran "fmod vehicle spawn <type>": put the vehicle 2 blocks above it, facing where it points. */
+    private void padSpawn(BlockCommandSender cb, String[] args, VehicleService vehicles) {
+        Lang lang = plugin.lang();
+        Block block = cb.getBlock();
+        VehicleType type = args.length < 3 ? null : VehicleType.byId(args[2]);
+        if (type == null) {
+            plugin.getLogger().warning("Spawn pad at " + block.getWorld().getName() + " " + block.getX() + " "
+                    + block.getY() + " " + block.getZ() + " has an unknown vehicle type");
+            return;
+        }
+        if (!vehicles.available()) return;
+        Location at = new Location(block.getWorld(), block.getX() + 0.5, block.getY() + 2, block.getZ() + 0.5);
+        float yaw = 0f;
+        if (block.getBlockData() instanceof Directional d) {
+            yaw = switch (d.getFacing()) {
+                case WEST -> 90f;
+                case NORTH -> 180f;
+                case EAST -> -90f;
+                default -> 0f;
+            };
+        }
+        PadRules.Verdict verdict = PadRules.check(vehicles.distancesTo(at), vehicles.vehicles().size());
+        if (verdict != PadRules.Verdict.OK) {
+            String key = verdict == PadRules.Verdict.OCCUPIED ? "vehicle.pad-occupied" : "vehicle.pad-full";
+            tellNearby(at, key, "max", PadRules.MAX_VEHICLES);
+            return;
+        }
+        switch (vehicles.spawn(type, at, yaw)) {
+            case SPAWNED -> {
+                for (Player near : playersNear(at)) {
+                    near.sendMessage(lang.msg(near, "vehicle.pad-arrived", "type", typeName(near, type)));
+                }
+            }
+            case MODEL_MISSING -> tellNearby(at, "vehicle.model-missing", "type", type.id);
+            case UNAVAILABLE -> tellNearby(at, "vehicle.unavailable");
+        }
+    }
+
+    private List<Player> playersNear(Location at) {
+        List<Player> out = new ArrayList<>();
+        for (Player pl : at.getWorld().getPlayers()) {
+            if (pl.getLocation().distance(at) <= PadRules.NOTIFY_RADIUS) out.add(pl);
+        }
+        return out;
+    }
+
+    private void tellNearby(Location at, String key, Object... pairs) {
+        for (Player pl : playersNear(at)) pl.sendMessage(plugin.lang().msg(pl, key, pairs));
     }
 
     private void listVehicles(CommandSender sender, VehicleService vehicles) {

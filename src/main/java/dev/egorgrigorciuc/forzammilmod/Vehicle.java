@@ -20,6 +20,8 @@ final class Vehicle {
     static final float MODEL_YAW_OFFSET = 0f;
 
     final VehicleType type;
+    /** Removes the vehicle after 10 minutes with no driver. */
+    final IdleTimer idle = new IdleTimer(System.currentTimeMillis());
     final ArmorStand anchor;
     final Interaction clickBox;
     final World world;

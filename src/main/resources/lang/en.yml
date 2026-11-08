@@ -57,6 +57,9 @@ vehicle:
   has-driver: "&cThis vehicle already has a driver."
   not-ready: "&cThis vehicle isn't ready yet. Try again in a second."
   entered: "&7You're in the driver's seat. W/S to drive, A/D to turn, sneak to get out."
+  pad-occupied: "&cThere's already a vehicle on the pad."
+  pad-full: "&cToo many vehicles out ({max}). Get rid of one first."
+  pad-arrived: "&a{type} has arrived."
   list-empty: "&7No vehicles out right now."
   list-header:
     one: "&7{n} vehicle:"

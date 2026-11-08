@@ -1,5 +1,6 @@
 package dev.egorgrigorciuc.forzammilmod;
 
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -23,5 +24,10 @@ public final class Access {
     public static boolean isOwner(CommandSender s) {
         if (s instanceof Player p) return isOwner(p);
         return s instanceof ConsoleCommandSender;
+    }
+
+    /** Owner player, console, or a command block (spawn pads work for anyone pressing the button). */
+    public static boolean canSpawnVehicle(CommandSender s) {
+        return isOwner(s) || s instanceof BlockCommandSender;
     }
 }

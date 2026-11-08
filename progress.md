@@ -1,5 +1,5 @@
 # progress
-now: T26 todo | G1 passed | G2 passed
+now: T26 doing | G1 passed | G2 passed
 updated: 2026-11-08
 
 ## tasks
@@ -33,7 +33,7 @@ T19|M|sonnet-builder|T16|done|Jeep on the same driving code
 T20|S|haiku-scout|T18,T19|done|Publish v0.3.0 for Gate 2
 G2|-|egor|T20|done|Gate 2: tank test with friends (manual.md G2)
 T21|L|main|G2|done|Plan phases 3 to 6 from the gate notes
-T26|M|sonnet-builder|G2|todo|Vehicle spawn pads (command block and button)
+T26|M|sonnet-builder|G2|doing|Vehicle spawn pads (command block and button)
 T50|M|sonnet-builder|T26|todo|Our own greeting emote, configurable name and sound
 T28|M|sonnet-builder|T50|todo|Held items and armour during emotes
 T32|S|haiku-scout|T28|todo|Publish v0.4.0 for Gate 3
