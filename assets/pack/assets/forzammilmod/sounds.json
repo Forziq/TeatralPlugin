@@ -1,0 +1,162 @@
+{
+  "tank_engine_idle": {
+    "sounds": [
+      {
+        "name": "forzammilmod:tank_engine_idle",
+        "stream": false
+      }
+    ]
+  },
+  "tank_engine_rev": {
+    "sounds": [
+      {
+        "name": "forzammilmod:tank_engine_rev",
+        "stream": false
+      }
+    ]
+  },
+  "tank_tracks_loop": {
+    "sounds": [
+      {
+        "name": "forzammilmod:tank_tracks_loop",
+        "stream": false
+      }
+    ]
+  },
+  "turret_traverse": {
+    "sounds": [
+      {
+        "name": "forzammilmod:turret_traverse",
+        "stream": false
+      }
+    ]
+  },
+  "cannon_fire": {
+    "sounds": [
+      {
+        "name": "forzammilmod:cannon_fire",
+        "stream": false
+      }
+    ]
+  },
+  "shell_whistle": {
+    "sounds": [
+      {
+        "name": "forzammilmod:shell_whistle",
+        "stream": false
+      }
+    ]
+  },
+  "explosion_big": {
+    "sounds": [
+      {
+        "name": "forzammilmod:explosion_big",
+        "stream": false
+      }
+    ]
+  },
+  "explosion_small": {
+    "sounds": [
+      {
+        "name": "forzammilmod:explosion_small",
+        "stream": false
+      }
+    ]
+  },
+  "reload_clank": {
+    "sounds": [
+      {
+        "name": "forzammilmod:reload_clank",
+        "stream": false
+      }
+    ]
+  },
+  "armour_hit": {
+    "sounds": [
+      {
+        "name": "forzammilmod:armour_hit",
+        "stream": false
+      }
+    ]
+  },
+  "jeep_engine_loop": {
+    "sounds": [
+      {
+        "name": "forzammilmod:jeep_engine_loop",
+        "stream": false
+      }
+    ]
+  },
+  "jeep_horn": {
+    "sounds": [
+      {
+        "name": "forzammilmod:jeep_horn",
+        "stream": false
+      }
+    ]
+  },
+  "plane_engine_loop": {
+    "sounds": [
+      {
+        "name": "forzammilmod:plane_engine_loop",
+        "stream": false
+      }
+    ]
+  },
+  "plane_flyby": {
+    "sounds": [
+      {
+        "name": "forzammilmod:plane_flyby",
+        "stream": false
+      }
+    ]
+  },
+  "mg_burst": {
+    "sounds": [
+      {
+        "name": "forzammilmod:mg_burst",
+        "stream": false
+      }
+    ]
+  },
+  "emote_whoosh": {
+    "sounds": [
+      {
+        "name": "forzammilmod:emote_whoosh",
+        "stream": false
+      }
+    ]
+  },
+  "emote_clap": {
+    "sounds": [
+      {
+        "name": "forzammilmod:emote_clap",
+        "stream": false
+      }
+    ]
+  },
+  "emote_cheer": {
+    "sounds": [
+      {
+        "name": "forzammilmod:emote_cheer",
+        "stream": false
+      }
+    ]
+  },
+  "ui_click": {
+    "sounds": [
+      {
+        "name": "forzammilmod:ui_click",
+        "stream": false
+      }
+    ]
+  },
+  "ui_error": {
+    "sounds": [
+      {
+        "name": "forzammilmod:ui_error",
+        "stream": false
+      }
+    ]
+  }
+}

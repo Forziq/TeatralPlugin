@@ -1,5 +1,5 @@
 # progress
-now: T04 todo | G1 todo | G2 todo
+now: T04 doing | G1 todo | G2 todo
 updated: 2026-11-08
 
 ## tasks
@@ -8,7 +8,7 @@ T01|S|haiku-scout|-|done|Install tools, create the GitHub repo, add Context7
 M01|-|egor|T01|done|Restart Claude Code so new MCP servers load (manual.md M01)
 T02|M|sonnet-builder|M01|done|Gradle scaffold and plugin skeleton
 T03|M|sonnet-builder|T02|done|Build and test the dashboard (/dashboard on/off)
-T04|M|sonnet-builder|T03|todo|Generate the sound library with ElevenLabs
+T04|M|sonnet-builder|T03|doing|Generate the sound library with ElevenLabs
 T05|M|sonnet-builder|T02|todo|Language system (English, Russian, plurals)
 T06|M|sonnet-builder|T02|todo|Local test server and smoke test script
 T07|M|sonnet-builder|T06|todo|Resource pack build and release pipeline (Pages)
