@@ -11,6 +11,7 @@ import kr.toxicity.model.api.nms.HitBox;
 import kr.toxicity.model.api.tracker.EntityTracker;
 import kr.toxicity.model.api.tracker.ModelRotation;
 import kr.toxicity.model.api.tracker.TrackerUpdateAction;
+import org.joml.Quaternionf;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -20,6 +21,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.lang.reflect.Field;
 
 /**
  * The only class that touches the BetterModel API. Only load it after checking BetterModel is enabled,
@@ -110,13 +113,70 @@ final class BetterModelHook {
      * Draws {@code model} on the anchor entity, facing {@code yaw} (read from BetterModel's own thread, so the
      * supplier must be thread-safe). Returns null if the model isn't loaded.
      */
-    static VehicleRig attachVehicle(LivingEntity anchor, String model, Supplier<Float> yaw) {
+    static VehicleRig attachVehicle(LivingEntity anchor, String model, Supplier<Float> yaw, Logger log) {
         ModelRenderer renderer = BetterModel.modelOrNull(model);
         if (renderer == null) return null;
         EntityTracker tracker = renderer.getOrCreate(BukkitAdapter.adapt(anchor));
         tracker.rotation(() -> new ModelRotation(0f, yaw.get()));
         tracker.update(TrackerUpdateAction.moveDuration(MOVE_TICKS));
-        return new BmRig(tracker);
+        return new BmRig(tracker, setupTurret(tracker, log), log);
+    }
+
+    /** Flip to -1f if the turret turns the wrong way in game. */
+    static final float TURRET_YAW_SIGN = 1f;
+    /** Flip to -1f if the barrel tilts the wrong way in game. */
+    static final float BARREL_PITCH_SIGN = 1f;
+
+    /** Angles the bone modifiers read; written by the main thread, read by BetterModel's thread. */
+    private static final class Angles {
+        volatile float yaw;
+        volatile float pitch;
+    }
+
+    /**
+     * Adds one rotation modifier to the turret bone (spin about the vertical axis) and one to the barrel bone
+     * (tilt about its local X axis). They read {@link Angles} and are added once, because modifiers stack.
+     * Returns null if the model has no turret bone.
+     */
+    private static Angles setupTurret(EntityTracker tracker, Logger log) {
+        RenderedBone turret = tracker.bone("turret");
+        RenderedBone barrel = tracker.bone("barrel");
+        if (turret == null || barrel == null) return null;
+        Angles a = new Angles();
+        // MC yaw grows clockwise seen from above, a positive rotateY turns anticlockwise, hence the minus.
+        turret.addRotationModifier(b -> true, q -> new Quaternionf(q).rotateY((float) Math.toRadians(-a.yaw * TURRET_YAW_SIGN)));
+        // The barrel points -Z, so a positive rotateX raises it.
+        barrel.addRotationModifier(b -> true, q -> new Quaternionf(q).rotateX((float) Math.toRadians(a.pitch * BARREL_PITCH_SIGN)));
+        log.info("Turret check: found the turret and barrel bones, rotation modifiers added");
+        return a;
+    }
+
+    // BetterModel only re-applies a bone's rotation modifier when the bone's animation state ticks (see
+    // docs/notes/vehicles.md). With no animation running that never happens, so we poke the bone's private flags.
+    // This reaches into BetterModel 2.2.0 internals and is a guess until tried in game.
+    private static Field fGlobalState, fFirstTick, fUpdateAfter;
+    private static boolean refreshBroken;
+
+    private static void forceRefresh(RenderedBone bone, Logger log) {
+        if (refreshBroken) return;
+        try {
+            if (fGlobalState == null) {
+                fGlobalState = RenderedBone.class.getDeclaredField("globalState");
+                fGlobalState.setAccessible(true);
+            }
+            Object handler = fGlobalState.get(bone);
+            if (fFirstTick == null) {
+                fFirstTick = handler.getClass().getDeclaredField("firstTick");
+                fFirstTick.setAccessible(true);
+                fUpdateAfter = handler.getClass().getDeclaredField("updateAfter");
+                fUpdateAfter.setAccessible(true);
+            }
+            fFirstTick.setBoolean(handler, true);
+            ((java.util.concurrent.atomic.AtomicBoolean) fUpdateAfter.get(handler)).set(true);
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            refreshBroken = true;
+            log.warning("Turret check: could not force a bone refresh (" + e + "); the turret may stay still");
+        }
     }
 
     /**
@@ -124,7 +184,11 @@ final class BetterModelHook {
      * and moves it with the anchor. We switch its controller to NONE so BetterModel never steers the anchor or
      * turns it to the rider's look; our tick loop does the driving.
      */
-    private record BmRig(EntityTracker tracker) implements VehicleRig {
+    private record BmRig(EntityTracker tracker, Angles angles, Logger log, boolean[] logged) implements VehicleRig {
+
+        BmRig(EntityTracker tracker, Angles angles, Logger log) {
+            this(tracker, angles, log, new boolean[1]);
+        }
 
         private HitBox seatBox() {
             if (tracker.isClosed()) return null;
@@ -159,6 +223,30 @@ final class BetterModelHook {
             HitBox box = seatBox();
             if (box != null) box.dismount(BukkitAdapter.adapt(player));
             if (player.isInsideVehicle() && isSeated(player)) player.leaveVehicle();
+        }
+
+        @Override
+        public boolean hasTurret() {
+            return angles != null;
+        }
+
+        @Override
+        public void turret(float yawRel, float pitchUp) {
+            if (angles == null || tracker.isClosed()) return;
+            if (Math.abs(angles.yaw - yawRel) < 0.01f && Math.abs(angles.pitch - pitchUp) < 0.01f) return;
+            angles.yaw = yawRel;
+            angles.pitch = pitchUp;
+            RenderedBone turretBone = tracker.bone("turret");
+            RenderedBone barrelBone = tracker.bone("barrel");
+            if (turretBone != null) forceRefresh(turretBone, log);
+            if (barrelBone != null) forceRefresh(barrelBone, log);
+            if (!logged[0]) {
+                logged[0] = true;
+                RenderedBone muzzle = tracker.bone("muzzle");
+                log.info("Turret check: first turn, turret " + yawRel + ", barrel " + pitchUp
+                        + ", muzzle bone at " + (muzzle == null ? "missing" : muzzle.worldPosition().toString())
+                        + " (compare with the computed muzzle; look at the tank to see if the turret moved)");
+            }
         }
 
         @Override

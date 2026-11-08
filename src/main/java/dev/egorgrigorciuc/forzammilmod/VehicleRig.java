@@ -13,6 +13,12 @@ interface VehicleRig {
 
     void unseat(Player player);
 
+    /** True if the model has a turret bone (the jeep does not). */
+    boolean hasTurret();
+
+    /** Sets the drawn turret angle (relative to the hull) and barrel angle (up positive), in degrees. No-op without a turret. */
+    void turret(float yawRel, float pitchUp);
+
     /** Removes the model, its seat entities and anyone sitting in them. */
     void close();
 }

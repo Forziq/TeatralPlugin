@@ -27,6 +27,8 @@ final class Vehicle {
     private VehicleMover.State state;
     private volatile float renderYaw;
     private UUID driver;
+    /** Null if the vehicle has no turret. Main thread only. */
+    private final TurretModel turret;
 
     Vehicle(VehicleType type, ArmorStand anchor, Interaction clickBox, VehicleMover.State state) {
         this.type = type;
@@ -35,6 +37,7 @@ final class Vehicle {
         this.world = anchor.getWorld();
         this.state = state;
         this.renderYaw = state.yaw() + MODEL_YAW_OFFSET;
+        this.turret = type == VehicleType.TANK ? new TurretModel() : null;
     }
 
     void rig(VehicleRig rig) {
@@ -87,6 +90,28 @@ final class Vehicle {
         if (moved) {
             clickBox.teleport(new Location(world, state.x(), state.y(), state.z()));
         }
+    }
+
+    boolean hasTurret() {
+        return turret != null;
+    }
+
+    /**
+     * Turns the turret and tilts the barrel towards where the seated driver looks, within the rate limits.
+     * Call once per tick after {@link #move}. Without a driver it is simply not called, so the turret holds.
+     */
+    void aimTurret(Player driver) {
+        if (turret == null || rig == null || !rig.hasTurret()) return;
+        Location look = driver.getLocation();
+        float rel = TurretModel.relativeYaw(look.getYaw(), renderYaw);
+        turret.tick(rel, TurretModel.pitchUpFromMc(look.getPitch()), 0.05f);
+        rig.turret(turret.yaw(), turret.pitch());
+    }
+
+    /** Muzzle world position and aim direction, or null if there is no turret. For T18. */
+    TurretModel.Muzzle muzzle() {
+        if (turret == null) return null;
+        return TurretModel.muzzle(state.x(), state.y(), state.z(), renderYaw, turret.yaw(), turret.pitch());
     }
 
     void remove() {

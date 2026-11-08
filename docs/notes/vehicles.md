@@ -100,3 +100,19 @@ Result: **none confirmed**. Nothing fits all three of free, Spigot 1.21.4 and a 
 - Log lines to check in game: three "Driver check:" lines (seated, keys polled, keys by event).
 - Still to test: jitter with a second player nearby.
 - T17 builds on `Vehicle` and `VehicleRig` in `BetterModelHook`.
+
+## T17 turret (as built, not yet tried in game)
+
+- `TurretModel` (pure) holds turret yaw (relative to the hull, 40 deg/s, shortest way round) and barrel pitch (-5 down to +20 up, 25 deg/s). Pitch is "up positive"; Minecraft pitch is the opposite, so `pitchUpFromMc` flips it.
+- `Vehicle.aimTurret(driver)` runs each tick after `move`, using the driver's head yaw against `renderYaw`. With no driver nothing runs, so the turret holds. The jeep has no turret, so it does nothing there.
+- Rendering: one rotation modifier on the `turret` bone (rotateY) and one on `barrel` (rotateX), added once at attach in `BetterModelHook.setupTurret`. They read volatile angles.
+- Refresh mechanism (a guess): BetterModel only re-applies modifiers when a bone's animation state ticks, which an idle bone never does. `forceRefresh` uses reflection to set the private `firstTick` and `updateAfter` flags on the bone's state each time the angle changes. If it fails, a "Turret check: could not force a bone refresh" warning appears.
+- Muzzle: computed by `TurretModel.muzzle` from the anchor position, hull yaw, turret yaw, barrel pitch and the pivots in `tank.bbmodel` (barrel 12 px forward, 21.5 px up; barrel length 32 px). `Vehicle.muzzle()` returns position and unit direction. BetterModel's `muzzle` bone `worldPosition()` is logged once for comparison.
+- Sign constants in `BetterModelHook`: `TURRET_YAW_SIGN` and `BARREL_PITCH_SIGN` (both 1). Flip if the turret turns, or the barrel tilts, the wrong way.
+- Log lines to check: "Turret check: found the turret and barrel bones" at spawn, and "Turret check: first turn ..." on the first movement.
+
+## T17 turret and barrel aim
+- Turret yaw follows the driver's look at 40 degrees per second. Barrel pitch runs -5 to +20 degrees at 25 degrees per second. Logic is in TurretModel (unit tested).
+- BetterModel caches the idle bone rotation, so BetterModelHook forces a refresh by reflection. Check the 'Turret check' log lines when a tank spawns.
+- If the turret turns the wrong way, flip TURRET_YAW_SIGN or BARREL_PITCH_SIGN in BetterModelHook. Not yet tried in game.
+- T18: fire from Vehicle.muzzle() for the shell start point and direction.

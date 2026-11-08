@@ -89,7 +89,7 @@ public final class VehicleService {
         Vehicle v = new Vehicle(type, anchor, box, new VehicleMover.State(at.getX(), at.getY(), at.getZ(), DriveModel.wrap(yaw), 0, 0));
         VehicleRig rig;
         try {
-            rig = BetterModelHook.attachVehicle(anchor, type.model(), v::renderYaw);
+            rig = BetterModelHook.attachVehicle(anchor, type.model(), v::renderYaw, plugin.getLogger());
         } catch (RuntimeException | LinkageError e) {
             plugin.getLogger().log(Level.WARNING, "Could not draw the " + type.id + " model", e);
             rig = null;
@@ -224,6 +224,10 @@ public final class VehicleService {
         }
         Terrain terrain = terrains.computeIfAbsent(v.world, BukkitTerrain::new);
         v.move(terrain, input);
+        if (v.driver() != null) {
+            Player d = plugin.getServer().getPlayer(v.driver());
+            if (d != null) v.aimTurret(d);
+        }
         if (v.state().y() < v.world.getMinHeight() - 64) remove(v); // fell out of the world
     }
 
