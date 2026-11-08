@@ -52,10 +52,18 @@ process.stdin.on('end', () => {
     if (ev === 'PreToolUse' || ev === 'PostToolUse' || ev === 'PostToolUseFailure') {
       e.tool = h.tool_name;
       e.text = describe(h.tool_name, h.tool_input);
-      if (h.tool_name === 'Task' || h.tool_name === 'Agent') e.sub = h.tool_input?.subagent_type || null;
+      const i = h.tool_input || {};
+      if (h.tool_name === 'Task' || h.tool_name === 'Agent') { e.sub = i.subagent_type || null; e.subDesc = clip(i.description, 90); }
+      // Raw bits the dashboard turns into plain English.
+      if (h.tool_name === 'Bash') { e.cmd = clip(i.command, 240); e.desc = clip(i.description, 100); }
+      if (i.file_path || i.notebook_path) e.file = rel(i.file_path || i.notebook_path);
+      if (i.query) e.q = clip(i.query, 100);
+      if (i.url) e.url = clip(i.url, 200);
+      if (i.skill || i.name) e.skill = clip(i.skill || i.name, 60);
       if (ev === 'PostToolUse' && h.tool_response && typeof h.tool_response === 'object' && h.tool_response.is_error) e.err = true;
     } else if (ev === 'UserPromptSubmit') {
       e.text = 'Egor: ' + clip(h.prompt, 100);
+      e.prompt = clip(h.prompt, 120);
     } else if (ev === 'SubagentStart' || ev === 'SubagentStop') {
       e.sub = h.agent_type || h.subagent_type || null;
       e.text = ev === 'SubagentStart' ? 'Started' : 'Finished';

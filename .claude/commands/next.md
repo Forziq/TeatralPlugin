@@ -15,7 +15,7 @@ Run exactly one task from the plan, then stop. Egor will `/clear` afterwards, so
 
 ## 2. Start
 - `node scripts/task.mjs start <id>`.
-- `node .claude/dashboard/status.mjs main "<id>: planning"`.
+- `node .claude/dashboard/status.mjs main "<plain words>"`, e.g. "Reading the next job: the language files". Every status line and job description follows the plain-words rule in CLAUDE.md.
 - Read `tasks/<id>.md`. Read docs/notes files only if the task names them.
 
 ## 3. Do it
@@ -33,5 +33,5 @@ Run exactly one task from the plan, then stop. Egor will `/clear` afterwards, so
 
 ## 5. Finish
 - Send haiku-scout one job: commit as `<id>: <summary>`, push if a remote exists, run `node scripts/task.mjs done <id>`, add a log line to progress.md (uk-writing skill), and note anything the next task needs. If the work revealed something Egor must do by hand, add it to manual.md too.
-- `node .claude/dashboard/status.mjs main "<id> done"`.
+- `node .claude/dashboard/status.mjs main "<plain words>"`, e.g. "Finished the language files, waiting for you".
 - Reply to Egor in at most five lines: what got done, anything he needs to do, and the next task's id and title. End with: "Run /clear, then /next."

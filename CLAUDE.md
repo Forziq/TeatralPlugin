@@ -34,7 +34,20 @@ Private Spigot plugin for Egor's friends' server: emotes first, WWII-style vehic
 ## Dashboard
 Report what you're doing so Egor can watch it at http://localhost:4321:
 `node .claude/dashboard/status.mjs <agent> "<plain-English status>"`
-Agents: `main`, `opus-deep`, `sonnet-builder`, `sonnet-tester`, `haiku-scout`. Call it when you start, at each real step change, and when done. One line, under 100 characters. Tool calls are logged automatically by hooks.
+Agents: `main`, `opus-deep`, `sonnet-builder`, `sonnet-tester`, `haiku-scout`. Call it when you start, at each real step change, and when done. Tool calls are logged automatically by hooks.
+
+Egor reads these to follow along without looking at code, so write them the way you'd tell a friend what you're up to:
+- Plain everyday words, present tense, under 80 characters. Say what you're doing and, if it helps, why.
+- No task ids at the start, file paths, commands, flags, tool or library names, or jargon (commit, push, scaffold, smoke test, M-size check).
+- The same goes for the `description` you give a Bash command and the description you give a subagent job: "Check which sounds have finished", "Make the sound effects", not "T04 generate ElevenLabs sounds".
+
+| Instead of | Write |
+|---|---|
+| T04: committing sound library and pushing | Saving the new sounds and uploading them to GitHub |
+| T02: scaffolding gradle project | Setting up the empty plugin project |
+| T03 dashboard checks | Checking the dashboard page works |
+| T04: blocked - ffmpeg has no libvorbis | Stuck: the sound converter can't make Minecraft's sound format |
+| T06: running smoke-test.sh | Starting a test server to see if the plugin loads |
 
 ## Git
 One commit per task: `Txx: short summary`. Commit only after checks pass. Push to `origin main` if a remote exists. Never commit `server/`, tokens, or `.claude/dashboard/events.jsonl`.

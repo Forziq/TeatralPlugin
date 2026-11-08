@@ -16,3 +16,4 @@ local.properties
 token.txt
 plugins/
 config.local.yml
+.claude/settings.json.bak-*
