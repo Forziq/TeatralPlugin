@@ -61,6 +61,7 @@ T49|S|haiku-scout|T48|todo|Publish v1.0.0 for the final gate
 G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
 
 ## log (newest first, keep 8)
+- 2026-11-08 v0.3.4 test release with the greeting emote, pack SHA-1 c1e6df52. Server: /fmod update, then restart. Not a gate release.
 - 2026-11-08 T50: greeting emote `/emote greeting`, 3 s cooldown. Settings in config.yml under `greeting:`, `/fmod reload` (owner) re-reads. Sound forzammilmod:emote_whoosh. Arm angles a guess. 146 tests pass. T28: use EmoteService cooldown.
 - 2026-11-08 After T26, Egor asked for the vehicle cap and idle time to be settable: config.yml now has `max-vehicles` (default 10, minimum 1) and `idle-despawn-minutes` (default 10, 0 = never). Older config files pick up the keys on restart. Read live, so edits apply without a restart. 130 tests pass, not tried in game.
 - 2026-11-08 T26: command blocks spawn vehicles (`fmod vehicle spawn tank|jeep`), 2 blocks up, facing the block. Refused within 3 blocks or at 10 out. Idle 10 min despawns ('Idle check:'). 126 tests pass, not tried in game. manual.md 'Vehicle pads'.
@@ -68,7 +69,6 @@ G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
 - 2026-11-08 Fix: barrel model tilted the wrong way (shells were fine), BARREL_PITCH_SIGN now -1f. v0.3.3 released, pack SHA-1 de475fe9. Turret visibly moves in game on v0.3.2; no-shot-on-mount not yet confirmed.
 - 2026-11-08 Fix: turret, barrel and jeep wheels didn't move (BetterModel caches modifier rotation with no animation; we now write lastModifiedRotation + firstTick by reflection, barrel carries turret yaw). Clicks within 0.5 s of mounting ignored, so getting in no longer fires. v0.3.2 released, pack SHA-1 583df984. Not tried in game.
 - 2026-11-08 Fix: couldn't get into vehicles ("not ready") because seat lookup used p_driver; BetterModel strips the p_ tag, so it's now "driver". v0.3.1 released, pack SHA-1 d8b739cb. Seat failures now log a 'Driver check:' warning. Server: /fmod update, then restart.
-- 2026-11-08 T20: v0.3.0 released (tank and jeep). Pack forzammilmod-pack-0.3.0.zip, SHA-1 de83929d. manual.md G2 has the checklist and commands. Server needs /fmod update and a restart first.
 
 ## blockers
 none
