@@ -8,10 +8,15 @@ import java.util.List;
 
 public final class EmoteCommand implements TabExecutor {
 
+    private final Lang lang;
+
+    public EmoteCommand(Lang lang) {
+        this.lang = lang;
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        // TODO T05: move to lang
-        sender.sendMessage("Emotes are coming soon.");
+        sender.sendMessage(lang.msg(sender, "emote.soon"));
         return true;
     }
 

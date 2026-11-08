@@ -1,0 +1,8 @@
+version: "&7forzammilmod &fv{version}"
+usage: "&eUsage: &f/{label} <{subs}>"
+no-permission: "&cYou can't do that."
+emote:
+  soon: "&7Emotes are coming soon."
+  count:
+    one: "&7{n} emote available."
+    other: "&7{n} emotes available."

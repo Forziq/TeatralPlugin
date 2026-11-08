@@ -19,17 +19,19 @@ public final class ForzammilCommand implements TabExecutor {
 
     private final Map<String, Sub> subs = new TreeMap<>();
 
+    private final ForzammilMod plugin;
+
     public ForzammilCommand(ForzammilMod plugin) {
+        this.plugin = plugin;
         subs.put("version", (sender, args) ->
-                sender.sendMessage("forzammilmod v" + plugin.getDescription().getVersion()));
+                sender.sendMessage(plugin.lang().msg(sender, "version", "version", plugin.getDescription().getVersion())));
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Sub sub = args.length == 0 ? null : subs.get(args[0].toLowerCase(Locale.ROOT));
         if (sub == null) {
-            // TODO T05: move to lang
-            sender.sendMessage("Usage: /" + label + " <" + String.join("|", subs.keySet()) + ">");
+            sender.sendMessage(plugin.lang().msg(sender, "usage", "label", label, "subs", String.join("|", subs.keySet())));
             return true;
         }
         sub.run(sender, args);
