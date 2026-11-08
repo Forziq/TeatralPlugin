@@ -128,7 +128,7 @@ final class BetterModelHook {
     /** Flip to -1f if the turret turns the wrong way in game. */
     static final float TURRET_YAW_SIGN = 1f;
     /** Flip to -1f if the barrel tilts the wrong way in game. */
-    static final float BARREL_PITCH_SIGN = 1f;
+    static final float BARREL_PITCH_SIGN = -1f;
 
     /** Flip to -1f if the wheels roll backwards in game. */
     static final float WHEEL_SPIN_SIGN = 1f;
