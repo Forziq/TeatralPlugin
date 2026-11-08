@@ -61,7 +61,7 @@ T49|S|haiku-scout|T48|todo|Publish v1.0.0 for the final gate
 G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
 
 ## log (newest first, keep 8)
-- 2026-11-08 T34: tank gunner seat, jeep two passenger seats. Right-click takes first free seat, sneak gets out. Gunner aims and fires, or the driver does both with no gunner. Everyone ejected when destroyed. Jeep punches via arm swing; blasts no longer punch.
+- 2026-11-08 T34: tank gunner seat, jeep two passenger seats. Right-click takes first free seat, sneak exits. Gunner aims and fires; with no gunner the driver does both. All ejected when destroyed. Jeep punches via arm swing; blasts don't punch.
 - 2026-11-08 T34: 181 tests pass, not tried in game. T35 check: seat positions are guesses, and BetterModel mounting on sp_ bones is unconfirmed ('Seat check' in log). BetterModel's shutdown error isn't ours.
 - 2026-11-08 T33: tank 100 HP, jeep 40. Shell hull hits: tank 25 front, 35 side, 50 back. Iron ingot repairs 10%. 170 tests pass, untested in game. T34 check: front/back may flip, jeep melee may miss Interaction, blasts may count as jeep punches.
 - 2026-11-08 G3 passed, no notes from Egor. Next: T33 vehicle health, damage and repairs.
