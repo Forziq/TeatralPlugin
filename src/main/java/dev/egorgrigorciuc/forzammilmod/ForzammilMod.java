@@ -44,6 +44,12 @@ public final class ForzammilMod extends JavaPlugin {
         return pack;
     }
 
+    /** Re-reads config.yml. Vehicle limits are read live from the config, so reloading it is enough for them. */
+    public void reloadSettings() {
+        reloadConfig();
+        if (emotes != null) emotes.loadGreeting();
+    }
+
     @Override
     public void onDisable() {
         if (emotes != null) emotes.stopAll();
@@ -70,6 +76,7 @@ public final class ForzammilMod extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new RadioListener(radio), this);
         register("fmod", new ForzammilCommand(this));
         emotes = new EmoteService(this);
+        emotes.loadGreeting();
         getServer().getPluginManager().registerEvents(new EmoteListener(emotes, lang), this);
         register("emote", new EmoteCommand(lang, emotes));
         vehicles = new VehicleService(this);

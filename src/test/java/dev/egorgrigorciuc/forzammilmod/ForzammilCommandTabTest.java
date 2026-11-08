@@ -18,12 +18,17 @@ class ForzammilCommandTabTest {
 
     @Test
     void emptyPrefixListsAllSubcommands() {
-        assertEquals(List.of("music", "pack", "update", "vehicle", "version"), tab(""));
+        assertEquals(List.of("music", "pack", "reload", "update", "vehicle", "version"), tab(""));
     }
 
     @Test
     void prefixMatches() {
         assertEquals(List.of("version"), tab("ver"));
+    }
+
+    @Test
+    void reloadIsListed() {
+        assertEquals(List.of("reload"), tab("rel"));
     }
 
     @Test

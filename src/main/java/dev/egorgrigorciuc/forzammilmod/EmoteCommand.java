@@ -26,8 +26,9 @@ public final class EmoteCommand implements TabExecutor {
             return true;
         }
         if (args.length == 0) {
-            player.sendMessage(lang.plural(player, "emote.count", EmoteService.EMOTES.size())
-                    + " " + String.join(", ", EmoteService.EMOTES));
+            GreetingSettings g = emotes.greeting();
+            player.sendMessage(lang.plural(player, "emote.count", emotes.emoteIds().size())
+                    + " " + EmoteService.WAVE + ", " + g.id() + " (" + g.nameFor(lang.languageOf(player)) + ")");
             return true;
         }
         String name = args[0].toLowerCase(Locale.ROOT);
@@ -39,7 +40,7 @@ public final class EmoteCommand implements TabExecutor {
             }
             return true;
         }
-        if (!EmoteService.EMOTES.contains(name)) {
+        if (!emotes.emoteIds().contains(name)) {
             player.sendMessage(lang.msg(player, "emote.unknown"));
             return true;
         }
@@ -47,6 +48,7 @@ public final class EmoteCommand implements TabExecutor {
             case STARTED -> player.sendMessage(lang.msg(player, "emote.started"));
             case ALREADY_PLAYING -> player.sendMessage(lang.msg(player, "emote.already-playing"));
             case UNAVAILABLE -> player.sendMessage(lang.msg(player, "emote.unavailable"));
+            case COOLDOWN -> player.sendMessage(lang.plural(player, "emote.cooldown", emotes.cooldownSeconds(player)));
         }
         return true;
     }
@@ -55,7 +57,7 @@ public final class EmoteCommand implements TabExecutor {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length != 1) return List.of();
         String prefix = args[0].toLowerCase(Locale.ROOT);
-        List<String> out = new ArrayList<>(EmoteService.EMOTES);
+        List<String> out = new ArrayList<>(emotes.emoteIds());
         out.add("stop");
         out.removeIf(s -> !s.startsWith(prefix));
         return out;

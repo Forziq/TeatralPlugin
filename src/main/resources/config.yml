@@ -7,3 +7,12 @@ max-vehicles: 10
 
 # Minutes a vehicle can stand with nobody driving before it disappears. 0 = never.
 idle-despawn-minutes: 10
+
+# The group's greeting emote. Change it here, then run /fmod reload on the server.
+greeting:
+  id: greeting            # what players type: /emote greeting (lowercase letters, digits, _)
+  name: "Greeting"        # shown in English
+  name-ru: "Приветствие"  # shown in Russian; blank = same as name
+  sound: "forzammilmod:emote_whoosh"  # any sound key, vanilla or ours; blank = silent
+  volume: 1.0             # more than 1 carries further than 16 blocks
+  pitch: 1.0              # 0.5 to 2.0

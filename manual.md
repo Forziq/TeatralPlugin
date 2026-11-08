@@ -222,3 +222,16 @@ Emotes crashed with "Emotes aren't available right now" because of a bug in Bett
 1. Open `src/main/resources/models/tank.bbmodel` and `jeep.bbmodel` in Blockbench (free, blockbench.net).
 2. Check they look like a tank and a jeep, and that the turret, barrel and wheels are separate parts you can select.
 3. Tell Claude Code if anything looks wrong.
+
+## Change the greeting
+1. In exaroton, open Files > `plugins/forzammilmod/config.yml` and edit the `greeting:` block (what players type, the English and Russian names, the sound, volume and pitch).
+2. Save, then run `/fmod reload` in the game or the console. No restart or new release needed.
+3. Vanilla sounds work too, for example `minecraft:entity.player.levelup`. A sound key that doesn't exist plays nothing and gives no error, so check the spelling. The server log shows the sound key it picked up after every reload.
+4. For a brand-new sound: drop a mono `.ogg` into `assets/sounds/`, make a release, then set the sound to `forzammilmod:<name>`.
+5. The arm movement itself is the `greeting` animation in `src/main/resources/models/players/forzammil_player.bbmodel` (open it in Blockbench). The id in the config never changes the animation name.
+
+## Try the greeting
+1. Join the server, stand still and type `/emote greeting` (or the id you set).
+2. Ask a friend to watch you: the right arm should go up in front of you, about 45 degrees above flat and angled a little towards your body, hold for a moment, then come down.
+3. Check it matches the real gesture. If the arm goes sideways or across the wrong way, tell Claude Code, because the angle signs could not be tested without the game.
+4. Typing another emote within 3 seconds should tell you to wait.

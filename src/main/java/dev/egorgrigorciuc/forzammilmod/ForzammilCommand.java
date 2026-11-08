@@ -40,6 +40,14 @@ public final class ForzammilCommand implements TabExecutor {
             }
             plugin.updates().checkFor(sender);
         });
+        subs.put("reload", (sender, args) -> {
+            if (!Access.isOwner(sender)) {
+                sender.sendMessage(plugin.lang().msg(sender, "no-permission"));
+                return;
+            }
+            plugin.reloadSettings();
+            sender.sendMessage(plugin.lang().msg(sender, "reload.done"));
+        });
         subs.put("pack", (sender, args) -> checkPack(sender));
         subs.put("music", this::music);
         subs.put("vehicle", this::vehicle);

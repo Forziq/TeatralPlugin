@@ -1,5 +1,5 @@
 # progress
-now: T50 todo | G1 passed | G2 passed
+now: T28 todo | G1 passed | G2 passed
 updated: 2026-11-08
 
 ## tasks
@@ -34,7 +34,7 @@ T20|S|haiku-scout|T18,T19|done|Publish v0.3.0 for Gate 2
 G2|-|egor|T20|done|Gate 2: tank test with friends (manual.md G2)
 T21|L|main|G2|done|Plan phases 3 to 6 from the gate notes
 T26|M|sonnet-builder|G2|done|Vehicle spawn pads (command block and button)
-T50|M|sonnet-builder|T26|todo|Our own greeting emote, configurable name and sound
+T50|M|sonnet-builder|T26|done|Our own greeting emote, configurable name and sound
 T28|M|sonnet-builder|T50|todo|Held items and armour during emotes
 T32|S|haiku-scout|T28|todo|Publish v0.4.0 for Gate 3
 G3|-|egor|T32|gate|Gate 3: greeting test with friends (manual.md G3)
@@ -61,6 +61,7 @@ T49|S|haiku-scout|T48|todo|Publish v1.0.0 for the final gate
 G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
 
 ## log (newest first, keep 8)
+- 2026-11-08 T50: greeting emote `/emote greeting`, 3 s cooldown. Settings in config.yml under `greeting:`, `/fmod reload` (owner) re-reads. Sound forzammilmod:emote_whoosh. Arm angles a guess. 146 tests pass. T28: use EmoteService cooldown.
 - 2026-11-08 After T26, Egor asked for the vehicle cap and idle time to be settable: config.yml now has `max-vehicles` (default 10, minimum 1) and `idle-despawn-minutes` (default 10, 0 = never). Older config files pick up the keys on restart. Read live, so edits apply without a restart. 130 tests pass, not tried in game.
 - 2026-11-08 T26: command blocks spawn vehicles (`fmod vehicle spawn tank|jeep`), 2 blocks up, facing the block. Refused within 3 blocks or at 10 out. Idle 10 min despawns ('Idle check:'). 126 tests pass, not tried in game. manual.md 'Vehicle pads'.
 - 2026-11-08 G2 passed ("all fine, carry on"). T21: planned phases 3 to 6 as T26 to T50 with gates G3 to G7. Decided with Egor: vehicles come from command-block pads with a button, block damage and protected zones are parked, planes get their own keep-or-drop test (G6). Added T50, the group's own greeting emote with its name and sound in config.yml. Egor then dropped the other planned emotes and the emote menu (old T27, T29, T30, T31): the greeting is the only new emote.
@@ -68,7 +69,6 @@ G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
 - 2026-11-08 Fix: turret, barrel and jeep wheels didn't move (BetterModel caches modifier rotation with no animation; we now write lastModifiedRotation + firstTick by reflection, barrel carries turret yaw). Clicks within 0.5 s of mounting ignored, so getting in no longer fires. v0.3.2 released, pack SHA-1 583df984. Not tried in game.
 - 2026-11-08 Fix: couldn't get into vehicles ("not ready") because seat lookup used p_driver; BetterModel strips the p_ tag, so it's now "driver". v0.3.1 released, pack SHA-1 d8b739cb. Seat failures now log a 'Driver check:' warning. Server: /fmod update, then restart.
 - 2026-11-08 T20: v0.3.0 released (tank and jeep). Pack forzammilmod-pack-0.3.0.zip, SHA-1 de83929d. manual.md G2 has the checklist and commands. Server needs /fmod update and a restart first.
-- 2026-11-08 T19: jeep wheels spin with speed (radius 5 px, roll about X). No gun, so no turret. 116 tests pass, not tried in game. Watch 'Wheel check:' log; if backwards, flip WHEEL_SPIN_SIGN in BetterModelHook.
 
 ## blockers
 none

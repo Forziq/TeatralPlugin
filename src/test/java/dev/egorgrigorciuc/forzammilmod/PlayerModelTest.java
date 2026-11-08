@@ -77,8 +77,8 @@ class PlayerModelTest {
     }
 
     @Test
-    void onlyWaveAnimation() {
-        assertEquals(1, model.getAsJsonArray("animations").size());
+    void waveAnimation() {
+        assertEquals(2, model.getAsJsonArray("animations").size());
         JsonObject w = wave();
         assertEquals(2.0, w.get("length").getAsDouble(), 1e-9);
         assertEquals("once", w.get("loop").getAsString());
@@ -134,6 +134,28 @@ class PlayerModelTest {
             }
         }
         fail("no keyframe at 0.4 s");
+    }
+
+    @Test
+    void greetingIsPlayOnceAndOnlyMovesKnownBones() {
+        JsonObject g = null;
+        for (JsonElement a : model.getAsJsonArray("animations")) {
+            if (a.getAsJsonObject().get("name").getAsString().equals("greeting")) g = a.getAsJsonObject();
+        }
+        assertNotNull(g, "no greeting animation");
+        assertEquals(2.5, g.get("length").getAsDouble(), 1e-9);
+        assertEquals("once", g.get("loop").getAsString());
+        for (var e : g.getAsJsonObject("animators").entrySet()) {
+            String name = groupNameByUuid.get(e.getKey());
+            assertNotNull(name, "animator keyed by unknown group uuid " + e.getKey());
+            assertEquals(name, e.getValue().getAsJsonObject().get("name").getAsString());
+            for (JsonElement k : e.getValue().getAsJsonObject().getAsJsonArray("keyframes")) {
+                double t = k.getAsJsonObject().get("time").getAsDouble();
+                assertTrue(t >= 0 && t <= 2.5, "keyframe outside 0..2.5 s: " + t);
+            }
+        }
+        assertEquals(Set.of("pra_right_arm"), g.getAsJsonObject("animators").entrySet().stream()
+                .map(e -> groupNameByUuid.get(e.getKey())).collect(java.util.stream.Collectors.toSet()));
     }
 
     private static void assertZero(JsonObject kf) {

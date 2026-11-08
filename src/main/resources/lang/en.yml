@@ -11,6 +11,11 @@ emote:
   count:
     one: "&7{n} emote available."
     other: "&7{n} emotes available."
+  cooldown:
+    one: "&7Wait {n} second before the next emote."
+    other: "&7Wait {n} seconds before the next emote."
+reload:
+  done: "&aSettings reloaded."
 update:
   checking: "&7Checking for updates..."
   up-to-date: "&aAlready up to date (v{version})."
