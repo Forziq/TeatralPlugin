@@ -1,5 +1,5 @@
 # progress
-now: T07 todo | G1 todo | G2 todo
+now: T08 todo | G1 todo | G2 todo
 updated: 2026-11-08
 
 ## tasks
@@ -11,7 +11,7 @@ T03|M|sonnet-builder|T02|done|Build and test the dashboard (/dashboard on/off)
 T04|M|sonnet-builder|T03|done|Generate the sound library with ElevenLabs
 T05|M|sonnet-builder|T02|done|Language system (English, Russian, plurals)
 T06|M|sonnet-builder|T02|done|Local test server and smoke test script
-T07|M|sonnet-builder|T06|todo|Resource pack build and release pipeline (Pages)
+T07|M|sonnet-builder|T06|done|Resource pack build and release pipeline (Pages)
 T08|L|sonnet-builder|T05,T07|todo|Updater, pack sender and owner check
 T09|S|haiku-scout|T08|todo|Publish starter release v0.1.0
 M02|-|egor|T09|manual|Upload the starter to exaroton (manual.md M02)
@@ -31,6 +31,7 @@ G2|-|egor|T20|gate|Gate 2: tank test with friends (manual.md G2)
 T21|L|main|G2|todo|Plan phases 3 to 6 from the gate notes
 
 ## log (newest first, keep 8)
+- 2026-11-08 T07: `scripts/build-pack.sh <v>` makes build/pack/forzammilmod-pack-<v>.zip. `scripts/release.sh <v> [--dry-run]` puts pack.properties in the jar, publishes to Pages and creates the GitHub release. Live publish untested until T09.
 - 2026-11-08 T06: local Spigot 1.21.4 test server in `server/`: `setup-server.sh`, `server-start.sh`, `smoke-test.sh [--fresh]` (PASS/FAIL). Needs Java 21. BetterModel pinned 2.2.0, not 3.x (needs Java 25). T10/T11 use the 2.2.0 API.
 - 2026-11-08 T05: `Lang` loads `lang/en.yml` and `ru.yml` from the jar; `ru*` locales get Russian. Add every message to both files (`LangTest` checks). Use `lang.msg` or `lang.plural` via `plugin.lang()`. Details: docs/notes/lang.md.
 - 2026-11-08 T04: 20 sounds, two takes each, made with ElevenLabs Sound Effects v2 through the creative flow (flow id `6EXEYeied2tVleSPsw1f`, prompt influence 0.5, the four engine and track sounds looped). About 330 credits, no quota errors. Take 1 is `assets/sounds/<name>.ogg`, take 2 is in `assets/sounds/alt/`, raw mp3s are in the ignored `assets/sounds/raw/`. Mono Vorbis q5 at 44.1 kHz: ffmpeg to wav, then `oggenc -q 5`, because Homebrew ffmpeg has no libvorbis. Installed vorbis-tools 1.4.3. Leading silence trimmed on one-shots only. `sounds.json` has 20 entries, `stream: false`. T07 must copy `assets/sounds/*.ogg` into `assets/forzammilmod/sounds/`. Egor has not listened yet: check the loop seams and swap any weak take (copy `alt/<name>.ogg` over `<name>.ogg`).
