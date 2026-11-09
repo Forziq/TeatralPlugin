@@ -1,6 +1,6 @@
 # progress
-now: T35 doing | G1 passed | G2 passed
-updated: 2026-11-08
+now: T36 todo | G1 passed | G2 passed
+updated: 2026-11-09
 
 ## tasks
 id|size|who|deps|status|title
@@ -40,7 +40,7 @@ T32|S|haiku-scout|T28|done|Publish v0.4.0 for Gate 3
 G3|-|egor|T32|done|Gate 3: greeting test with friends (manual.md G3)
 T33|L|sonnet-builder|G3|done|Vehicle health, damage and repairs
 T34|L|sonnet-builder|T33|done|Crew seats: gunner and passengers
-T35|L|opus-deep|T34|doing|Proper tank and jeep models, with track animation
+T35|L|opus-deep|T34|done|Proper tank and jeep models, with track animation
 T36|M|sonnet-builder|T34|todo|Vehicle sounds
 T37|M|sonnet-builder|T36|todo|Vehicle HUD
 T38|S|haiku-scout|T35,T37|todo|Publish v0.5.0 for Gate 4
@@ -61,14 +61,14 @@ T49|S|haiku-scout|T48|todo|Publish v1.0.0 for the final gate
 G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
 
 ## log (newest first, keep 8)
+- 2026-11-09 T35: new T-34 style tank (red star, 10 road wheels) and jeep. Made by scripts/make-vehicle-models.py, overwriting Blockbench edits. Tank wheels spin via WheelSpin. BARREL_LENGTH 42/16. Pack 16.1 MB. 182 tests pass, not tried in game.
+- 2026-11-09 T35 to check in game: wheels roll the right way (WHEEL_SPIN_SIGN), log shows 10 wheel bones, seats sit right, slopes lean right. No scrolling tracks (BetterModel 2.2.0 can't tie texture to speed). T36: wheel bones resent each tick; slow if laggy.
 - 2026-11-08 T34: tank gunner seat, jeep two passenger seats. Right-click takes first free seat, sneak exits. Gunner aims and fires; with no gunner the driver does both. All ejected when destroyed. Jeep punches via arm swing; blasts don't punch.
 - 2026-11-08 T34: 181 tests pass, not tried in game. T35 check: seat positions are guesses, and BetterModel mounting on sp_ bones is unconfirmed ('Seat check' in log). BetterModel's shutdown error isn't ours.
 - 2026-11-08 T33: tank 100 HP, jeep 40. Shell hull hits: tank 25 front, 35 side, 50 back. Iron ingot repairs 10%. 170 tests pass, untested in game. T34 check: front/back may flip, jeep melee may miss Interaction, blasts may count as jeep punches.
 - 2026-11-08 G3 passed, no notes from Egor. Next: T33 vehicle health, damage and repairs.
 - 2026-11-08 T32: v0.4.0 released for Gate 3, pack SHA-1 ad7aec7e. manual.md G3 has the checklist. Server: /fmod update, then restart.
 - 2026-11-08 T28: others see an emoter's hands and armour empty while emoting, restored on stop; re-hidden after swaps, clicks, joins. HiddenGear is the state class. 153 tests pass, not tried in game. Greeting arm angle flipped, needs new jar.
-- 2026-11-08 v0.3.4 test release with the greeting emote, pack SHA-1 c1e6df52. Server: /fmod update, then restart. Not a gate release.
-- 2026-11-08 T50: greeting emote `/emote greeting`, 3 s cooldown. Settings in config.yml under `greeting:`, `/fmod reload` (owner) re-reads. Sound forzammilmod:emote_whoosh. Arm angles a guess. 146 tests pass. T28: use EmoteService cooldown.
 
 ## blockers
 none
