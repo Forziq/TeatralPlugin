@@ -62,7 +62,7 @@ G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
 
 ## log (newest first, keep 8)
 - 2026-11-09 T35: new T-34 style tank (red star, 10 road wheels) and jeep. Made by scripts/make-vehicle-models.py, overwriting Blockbench edits. Tank wheels spin via WheelSpin. BARREL_LENGTH 42/16. Pack 16.1 MB. 182 tests pass, not tried in game.
-- 2026-11-09 T35 to check in game: wheels roll the right way (WHEEL_SPIN_SIGN), log shows 10 wheel bones, seats sit right, slopes lean right. No scrolling tracks (BetterModel 2.2.0 can't tie texture to speed). T36: wheel bones resent each tick; slow if laggy.
+- 2026-11-09 T35 check in game: wheels roll the right way (WHEEL_SPIN_SIGN), log shows 10 wheel bones, seats sit right, slopes lean right. No scrolling tracks (BetterModel can't tie texture to speed). T36: wheel bones resent each tick; slow if laggy.
 - 2026-11-08 T34: tank gunner seat, jeep two passenger seats. Right-click takes first free seat, sneak exits. Gunner aims and fires; with no gunner the driver does both. All ejected when destroyed. Jeep punches via arm swing; blasts don't punch.
 - 2026-11-08 T34: 181 tests pass, not tried in game. T35 check: seat positions are guesses, and BetterModel mounting on sp_ bones is unconfirmed ('Seat check' in log). BetterModel's shutdown error isn't ours.
 - 2026-11-08 T33: tank 100 HP, jeep 40. Shell hull hits: tank 25 front, 35 side, 50 back. Iron ingot repairs 10%. 170 tests pass, untested in game. T34 check: front/back may flip, jeep melee may miss Interaction, blasts may count as jeep punches.
