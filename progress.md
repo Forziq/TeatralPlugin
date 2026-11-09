@@ -1,5 +1,5 @@
 # progress
-now: T35 todo | G1 passed | G2 passed
+now: T35 doing | G1 passed | G2 passed
 updated: 2026-11-08
 
 ## tasks
@@ -40,7 +40,7 @@ T32|S|haiku-scout|T28|done|Publish v0.4.0 for Gate 3
 G3|-|egor|T32|done|Gate 3: greeting test with friends (manual.md G3)
 T33|L|sonnet-builder|G3|done|Vehicle health, damage and repairs
 T34|L|sonnet-builder|T33|done|Crew seats: gunner and passengers
-T35|L|opus-deep|T34|todo|Proper tank and jeep models, with track animation
+T35|L|opus-deep|T34|doing|Proper tank and jeep models, with track animation
 T36|M|sonnet-builder|T34|todo|Vehicle sounds
 T37|M|sonnet-builder|T36|todo|Vehicle HUD
 T38|S|haiku-scout|T35,T37|todo|Publish v0.5.0 for Gate 4

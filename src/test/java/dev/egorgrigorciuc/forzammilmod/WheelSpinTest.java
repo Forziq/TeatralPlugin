@@ -32,4 +32,12 @@ class WheelSpinTest {
         assertTrue(down >= 0f && down < 360f);
         assertEquals(1f - (float) Math.toDegrees(0.2) + 360f, down, 1e-3);
     }
+
+    @Test
+    void eachTypeHasItsWheels() {
+        assertEquals(4, WheelSpin.bones(VehicleType.JEEP).size());
+        assertEquals(10, WheelSpin.bones(VehicleType.TANK).size());
+        assertEquals(WheelSpin.JEEP_WHEEL_RADIUS, WheelSpin.radius(VehicleType.JEEP));
+        assertEquals(WheelSpin.TANK_WHEEL_RADIUS, WheelSpin.radius(VehicleType.TANK));
+    }
 }

@@ -102,7 +102,7 @@ public final class VehicleService {
         Vehicle v = new Vehicle(type, anchor, box, new VehicleMover.State(at.getX(), at.getY(), at.getZ(), DriveModel.wrap(yaw), 0, 0));
         VehicleRig rig;
         try {
-            rig = BetterModelHook.attachVehicle(anchor, type.model(), v::renderYaw, plugin.getLogger());
+            rig = BetterModelHook.attachVehicle(anchor, type.model(), WheelSpin.bones(type), v::renderYaw, plugin.getLogger());
         } catch (RuntimeException | LinkageError e) {
             plugin.getLogger().log(Level.WARNING, "Could not draw the " + type.id + " model", e);
             rig = null;

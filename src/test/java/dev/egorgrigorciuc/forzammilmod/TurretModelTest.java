@@ -93,7 +93,7 @@ class TurretModelTest {
         TurretModel.Muzzle m = TurretModel.muzzle(10, 64, 20, 0f, 0f, 0f);
         assertEquals(10, m.x(), 1e-6);
         assertEquals(64 + 21.5 / 16, m.y(), 1e-6);
-        assertEquals(20 + 2.75, m.z(), 1e-6);
+        assertEquals(20 + 54.0 / 16, m.z(), 1e-6);
         assertEquals(1.0, m.dz(), 1e-6);
         assertEquals(0.0, m.dy(), 1e-6);
     }
@@ -102,7 +102,7 @@ class TurretModelTest {
     void muzzleFollowsYawAndPitch() {
         // yaw 90 faces -X; turret +90 on top of hull 0 gives the same
         TurretModel.Muzzle m = TurretModel.muzzle(0, 0, 0, 0f, 90f, 0f);
-        assertEquals(-2.75, m.x(), 1e-6);
+        assertEquals(-54.0 / 16, m.x(), 1e-6);
         assertEquals(0.0, m.z(), 1e-6);
         assertEquals(-1.0, m.dx(), 1e-6);
         TurretModel.Muzzle up = TurretModel.muzzle(0, 0, 0, 0f, 0f, 20f);

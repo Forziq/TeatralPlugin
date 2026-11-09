@@ -154,8 +154,8 @@ final class Vehicle {
 
     /** Rolls the wheels with the current speed. Call once per tick after {@link #move}. */
     void spinWheels() {
-        if (rig == null || type.turnsOnSpot || state.speed() == 0) return;
-        wheelAngle = WheelSpin.advance(wheelAngle, state.speed(), WheelSpin.JEEP_WHEEL_RADIUS);
+        if (rig == null || state.speed() == 0) return;
+        wheelAngle = WheelSpin.advance(wheelAngle, state.speed(), WheelSpin.radius(type));
         rig.wheels(wheelAngle);
     }
 

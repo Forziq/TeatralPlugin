@@ -1,12 +1,39 @@
 package dev.egorgrigorciuc.forzammilmod;
 
-/** Wheel roll angle from vehicle speed. Pure maths, no Bukkit or BetterModel types. */
+import java.util.List;
+
+/** Wheel roll angle from vehicle speed, and which model bones roll. Pure, no Bukkit or BetterModel types. */
 final class WheelSpin {
 
     /** Jeep wheel radius in blocks (10 px tall wheels in the model, 16 px per block). */
     static final double JEEP_WHEEL_RADIUS = 5.0 / 16.0;
+    /** Tank road wheel radius in blocks (10.5 px tall road wheels). */
+    static final double TANK_WHEEL_RADIUS = 5.25 / 16.0;
+
+    /** Jeep wheel bones. */
+    static final List<String> JEEP_WHEELS = List.of("wheel_fl", "wheel_fr", "wheel_rl", "wheel_rr");
+    /** Tank road wheel bones, five a side, numbered front to back; l is the tank's left (-X). */
+    static final List<String> TANK_WHEELS = List.of(
+            "wheel_l1", "wheel_l2", "wheel_l3", "wheel_l4", "wheel_l5",
+            "wheel_r1", "wheel_r2", "wheel_r3", "wheel_r4", "wheel_r5");
 
     private WheelSpin() {}
+
+    /** Bones that roll with speed on this vehicle type's model. */
+    static List<String> bones(VehicleType type) {
+        return switch (type) {
+            case TANK -> TANK_WHEELS;
+            case JEEP -> JEEP_WHEELS;
+        };
+    }
+
+    /** Radius of the rolling wheels in blocks. */
+    static double radius(VehicleType type) {
+        return switch (type) {
+            case TANK -> TANK_WHEEL_RADIUS;
+            case JEEP -> JEEP_WHEEL_RADIUS;
+        };
+    }
 
     /** New roll angle in [0, 360): forward speed adds, reverse subtracts, zero speed leaves it. */
     static float advance(float angleDeg, double speedBlocksPerTick, double radiusBlocks) {

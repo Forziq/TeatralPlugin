@@ -29,8 +29,8 @@ final class TurretModel {
     /** Barrel pivot: this far forward of the turret pivot and this high above the origin. */
     static final double BARREL_PIVOT_FORWARD = 12.0 / 16.0;
     static final double BARREL_PIVOT_UP = 21.5 / 16.0;
-    /** Muzzle is this far along the barrel from the barrel pivot (44 - 12 px). */
-    static final double BARREL_LENGTH = 32.0 / 16.0;
+    /** Muzzle is this far along the barrel from the barrel pivot (54 - 12 px, the T35 long gun). */
+    static final double BARREL_LENGTH = 42.0 / 16.0;
 
     private float yaw;
     private float pitch;

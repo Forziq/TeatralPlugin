@@ -219,9 +219,10 @@ Emotes crashed with "Emotes aren't available right now" because of a bug in Bett
 4. Start the server and try `/emote wave` again. If it still fails, paste the log into Claude Code.
 
 ## M05 (optional): look at the tank and jeep in Blockbench
+Open tank.bbmodel and jeep.bbmodel in Blockbench to check how they look, if you like.
 1. Open `src/main/resources/models/tank.bbmodel` and `jeep.bbmodel` in Blockbench (free, blockbench.net).
-2. Check they look like a tank and a jeep, and that the turret, barrel and wheels are separate parts you can select.
-3. Tell Claude Code if anything looks wrong.
+2. Check they look like a T-34 style tank and a wartime jeep, painted olive with a red star on the turret, and that the turret, barrel and each wheel are separate parts you can select.
+3. Tell Claude Code if anything looks wrong. Don't fix them in Blockbench: both files are made by `scripts/make-vehicle-models.py`, and running it again would undo your changes.
 
 ## Change the greeting
 1. In exaroton, open Files > `plugins/forzammilmod/config.yml` and edit the `greeting:` block (what players type, the English and Russian names, the sound, volume and pitch).

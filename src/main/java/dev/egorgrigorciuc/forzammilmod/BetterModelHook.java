@@ -113,15 +113,16 @@ final class BetterModelHook {
 
     /**
      * Draws {@code model} on the anchor entity, facing {@code yaw} (read from BetterModel's own thread, so the
-     * supplier must be thread-safe). Returns null if the model isn't loaded.
+     * supplier must be thread-safe). {@code wheelBones} roll with speed. Returns null if the model isn't loaded.
      */
-    static VehicleRig attachVehicle(LivingEntity anchor, String model, Supplier<Float> yaw, Logger log) {
+    static VehicleRig attachVehicle(LivingEntity anchor, String model, List<String> wheelBones, Supplier<Float> yaw, Logger log) {
         ModelRenderer renderer = BetterModel.modelOrNull(model);
         if (renderer == null) return null;
         EntityTracker tracker = renderer.getOrCreate(BukkitAdapter.adapt(anchor));
         tracker.rotation(() -> new ModelRotation(0f, yaw.get()));
         tracker.update(TrackerUpdateAction.moveDuration(MOVE_TICKS));
-        return new BmRig(tracker, setupTurret(tracker, log), setupWheels(tracker, log), log);
+        Wheels wheels = setupWheels(tracker, wheelBones, log);
+        return new BmRig(tracker, setupTurret(tracker, log), wheels, log);
     }
 
     /** Flip to -1f if the turret turns the wrong way in game. */
@@ -131,33 +132,38 @@ final class BetterModelHook {
 
     /** Flip to -1f if the wheels roll backwards in game. */
     static final float WHEEL_SPIN_SIGN = 1f;
-    private static final String[] WHEEL_BONES = {"wheel_fl", "wheel_fr", "wheel_rl", "wheel_rr"};
 
-    /** Roll angle the wheel modifiers read. */
+    /** Roll angle the wheel modifiers read, and the bone names they sit on. */
     private static final class Wheels {
+        final List<String> bones;
         volatile float angle;
+
+        Wheels(List<String> bones) {
+            this.bones = bones;
+        }
 
         Quaternionf rotation() {
             return new Quaternionf().rotateX((float) Math.toRadians(angle * WHEEL_SPIN_SIGN));
         }
     }
 
-    /** Adds a roll modifier to each wheel bone. Returns null (and does nothing) if any of the four is missing. */
-    private static Wheels setupWheels(EntityTracker tracker, Logger log) {
-        RenderedBone[] bones = new RenderedBone[WHEEL_BONES.length];
+    /** Adds a roll modifier to each wheel bone. Returns null (and does nothing) if any of them is missing. */
+    private static Wheels setupWheels(EntityTracker tracker, List<String> names, Logger log) {
+        if (names.isEmpty()) return null;
+        RenderedBone[] bones = new RenderedBone[names.size()];
         for (int i = 0; i < bones.length; i++) {
-            bones[i] = tracker.bone(WHEEL_BONES[i]);
+            bones[i] = tracker.bone(names.get(i));
             if (bones[i] == null) {
-                if (i > 0) log.info("Wheel check: wheel bone " + WHEEL_BONES[i] + " missing, no wheel spin");
+                log.info("Wheel check: wheel bone " + names.get(i) + " missing, no wheel spin");
                 return null;
             }
         }
-        Wheels w = new Wheels();
+        Wheels w = new Wheels(names);
         for (RenderedBone b : bones) {
             // Forward is -Z, so wheels roll about X.
             b.addRotationModifier(x -> true, q -> new Quaternionf(q).mul(w.rotation()));
         }
-        log.info("Wheel check: found 4 wheel bones, spin added");
+        log.info("Wheel check: found " + bones.length + " wheel bones, spin added");
         return w;
     }
 
@@ -292,7 +298,8 @@ final class BetterModelHook {
         public void wheels(float angleDeg) {
             if (wheels == null || tracker.isClosed()) return;
             wheels.angle = angleDeg;
-            for (String name : WHEEL_BONES) forceRotation(tracker.bone(name), wheels.rotation(), log);
+            // A fresh quaternion per bone: BetterModel keeps the object as that bone's cached rotation.
+            for (String name : wheels.bones) forceRotation(tracker.bone(name), wheels.rotation(), log);
         }
 
         @Override
