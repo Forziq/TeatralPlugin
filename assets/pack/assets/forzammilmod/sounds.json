@@ -214,5 +214,29 @@
         "stream": true
       }
     ]
+  },
+  "turret_traverse_loop": {
+    "sounds": [
+      {
+        "name": "forzammilmod:turret_traverse_loop",
+        "stream": false
+      }
+    ]
+  },
+  "turret_traverse_stop": {
+    "sounds": [
+      {
+        "name": "forzammilmod:turret_traverse_stop",
+        "stream": false
+      }
+    ]
+  },
+  "cannon_fire_tank": {
+    "sounds": [
+      {
+        "name": "forzammilmod:cannon_fire_tank",
+        "stream": false
+      }
+    ]
   }
 }
