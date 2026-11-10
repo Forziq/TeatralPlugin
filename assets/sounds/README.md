@@ -40,3 +40,33 @@ The sounds `armour_hit`, `explosion_small`, `reload_clank` and `shell_whistle` w
 `cannon_fire_tank` is the louder alternative to `cannon_fire`. The old `cannon_fire` is kept as it was.
 
 `armour_ricochet` is the deflection variant of `armour_hit`.
+
+## Turret sound options (Nov 2026)
+
+Five candidate replacements for `turret_traverse_loop` and `turret_traverse_stop`, in `options/turret/` (not wired in; Egor picks one). Same model and flow as above (`eleven_text_to_sound_v2`, prompt influence 0.6, loops asked for 4 s with the loop flag, stops 1.5 s). Two takes of each, the one with the least energy above 4 kHz was kept. Loops are cut to 3 s with a 0.5 s crossfade into the start; stops are trimmed to 1 s with a short fade-out; everything is low-passed at 7 kHz, mono, peak -1 dBFS. `preview_*.m4a` = loop three times then the stop; `preview_all.m4a` = all five in order. Raw takes are in `raw/turret/` (not committed).
+
+Every prompt ends with: "Low-pitched and heavy. No screeching, no squealing, no scraping, no high-pitched grinding, no music, no voices." Loop prompts also end with: "Continuous and steady, no start and no stop, same from first moment to last."
+
+| Option | Loop prompt | Stop prompt | Notes |
+|---|---|---|---|
+| 1_electric | WWII tank electric turret traverse motor running: a deep, smooth, powerful electric hum and low whirring drone of a big motor under load, soft rhythmic thrum of heavy gears, heard from inside a steel tank hull. | WWII tank turret stopping: a deep electric motor winding down with a falling low hum, ending in one solid heavy thunk as the turret locks. | Mostly a low hum (almost all energy under 300 Hz), with a faint whine ~16 dB lower above 4 kHz. |
+| 2_hydraulic | WWII tank hydraulic turret traverse: a hydraulic pump throbbing and pulsing steadily, low pressurised fluid rush, deep mechanical chugging, inside a steel tank hull. | WWII tank turret stopping: hydraulic valve closing with a short low hiss of released pressure and a heavy dull clunk as the turret halts. | Mid-range pulsing pump, not much deep bass; the stop has a hiss. |
+| 3_geared | Heavy WWII tank turret turning on a big geared ring: slow steady rhythmic clack-clack of massive steel gear teeth meshing, deep heavy ratcheting thuds, hand-cranked traverse, inside a steel hull. | WWII tank turret stopping: large steel gears clacking a final time and locking with a heavy, deep metallic clunk. | Clacky and metallic, mid-range heavy with little deep bass; the most likely to feel scrapey. |
+| 4_engine | WWII heavy tank turret turning powered by the tank's engine: deep diesel engine rumble straining under load, low gearbox drone and heavy mechanical vibration through the hull. | WWII tank turret stopping: tank engine load dropping off with a falling low rumble and a heavy gearbox clunk as the turret drive disengages. | Mostly low end, diesel-like. |
+| 5_rumble | A massive steel tank turret rotating on its huge ring bearing: a deep, heavy, rolling rumble and low resonant thrumming of tons of steel turning, the whole armoured hull vibrating, like distant thunder inside a steel vault. | Tons of steel coming to rest: a deep heavy thud and a short low resonant boom of the hull settling. | Almost pure low end, the least screech risk, but may feel less mechanical. |
+
+**Chosen (Nov 2026): `h2_pump_engine`** is now `turret_traverse_loop.ogg` and `turret_traverse_stop.ogg`. The old screechy versions are in `old/turret_traverse_loop.ogg` and `old/turret_traverse_stop.ogg`. The prompts in the main table above are for those old versions.
+
+### Heavy hydraulic variants
+
+Five heavier takes on option 2 (Egor's pick), in `options/turret/` as `h1_*` to `h5_*` with `preview_h*.m4a` and `preview_hydraulic_all.m4a`. Same settings and processing as above (two takes each, least energy above 4 kHz kept; raw takes in `raw/turret/`).
+
+Every prompt ends with: "Massive heavy WWII breakthrough tank, deep and powerful, lots of low-end weight. Low-pitched and heavy. No screeching, no squealing, no scraping, no high-pitched whine, no music, no voices." Loop prompts also end with: "Continuous and steady, no start and no stop, same from first moment to last."
+
+| Option | Loop prompt | Stop prompt | Notes |
+|---|---|---|---|
+| h1_heavypump | A big high-pressure hydraulic pump pounding in a deep, slow, heavy rhythm, low thick fluid surge through steel pipes, the armoured hull vibrating with each stroke. | The hydraulic pump thudding to a halt with a deep, heavy hydraulic lock clunk. | Slow pounding pump; the brightest of the five. |
+| h2_pump_engine | A hydraulic traverse pump driven off the tank's huge diesel engine: deep engine rumble under load mixed with a strong low pulsing pump throb. | The load drops off, the engine rumble eases and a heavy valve slams shut with a deep clunk. | Engine rumble plus pump throb. |
+| h3_hydraulic_motor | A large hydraulic motor turning tons of steel: a smooth, deep, powerful pressurised drone, low-frequency hum of pressurised oil, steady heavy mechanical force. | Pressure releasing in one short, low, heavy whoosh, then a solid steel thud as the turret locks. | Smooth drone, little rhythm. |
+| h4_rams | Huge hydraulic rams and pistons working under great strain, deep groaning pressure, slow heavy surging pushes, a feeling of enormous force moving a massive weight. | The rams locking with a huge deep metallic clunk and a short low resonant boom of the hull. | Groaning surges, cleanest top end. |
+| h5_pump_ring | A heavy hydraulic pump throbbing combined with the deep low rumble of a massive turret ring rolling, tons of steel turning smoothly, the whole hull humming. | The turret settling: a deep heavy thud, a short low rumble and a brief low hydraulic exhale. | Pump throb over a rolling-ring rumble. |
