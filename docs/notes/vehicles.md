@@ -132,3 +132,13 @@ Result: **none confirmed**. Nothing fits all three of free, Spigot 1.21.4 and a 
 - CrewSeats now has PASSENGER1 to PASSENGER7.
 - Not tested in game: how the truck looks, the back seat positions, the 0.75-pitch sound, and whether its 2.4-block height fits the command-block pad clearance.
 - Gate 4 passed with no notes from Egor.
+
+## Field artillery (T40)
+- Doesn't drive. A/D swing the whole gun at 10 degrees a second. The barrel follows the gunner's look, 0 to 45 degrees.
+- Shells fly a real arc: speed 3.87 blocks a tick, gravity 0.05, about 300 blocks at 45 degrees, about 5.5 s in the air. Ray-stepped in 1-block chords so they can't skip through walls.
+- Blast about tank size. Reload 8 s. Health 50.
+- Sounds: cannon_fire on firing. shell_whistle plays once per player when a shell falls within 40 blocks.
+- Shells landing in unloaded chunks vanish silently.
+- Model: src/main/resources/models/artillery.bbmodel. The pack must include it (T41).
+- 244 tests pass. Smoke test loads the model on the test server. Not tried in game.
+- G5 checks: trail-leg splay, shell visibility at long range, turning in tight spots.
