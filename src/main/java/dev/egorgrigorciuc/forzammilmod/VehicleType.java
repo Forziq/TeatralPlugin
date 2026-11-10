@@ -17,7 +17,10 @@ public enum VehicleType {
     JEEP_HEAVY("jeep_heavy", 0.42, 0.14, 0.014, 0.040, 0.012, 4.5, false, 1.0, 1.15, 1.90, 1.5, 40),
     // ZIS-5 style army truck (model 40 x 102 px): between the jeep and the tank in speed, slow to pick up speed,
     // wide turning circle, carries a squad of eight. No gun.
-    TRUCK("truck", 0.30, 0.10, 0.009, 0.032, 0.012, 3.0, false, 1.0, 1.15, 2.90, 2.4, 60);
+    TRUCK("truck", 0.30, 0.10, 0.009, 0.032, 0.012, 3.0, false, 1.0, 1.15, 2.90, 2.4, 60),
+    // ZiS-3 style field gun (model about 40 x 96 px). Cannot move under its own power: A and D swing the whole gun
+    // on the spot, slowly (half a degree a tick), the barrel elevates from the gunner's look pitch.
+    ARTILLERY("artillery", 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, true, 0.5, 1.0, 2.2, 1.5, 50);
 
     public final String id;
     public final double maxSpeed;
@@ -62,6 +65,26 @@ public enum VehicleType {
     /** True for both tanks: turret, gunner seat, armour that depends on the side hit. */
     public boolean isTank() {
         return this == TANK || this == TANK_HEAVY;
+    }
+
+    /** True for the field gun: a barrel that lobs shells in an arc, no engine, no driving. */
+    public boolean isArtillery() {
+        return this == ARTILLERY;
+    }
+
+    /** True if the type has an aimable gun (both tanks and the field gun). */
+    public boolean hasGun() {
+        return isTank() || isArtillery();
+    }
+
+    /** False for the field gun: W and S do nothing, no engine sounds, no speed read-out. */
+    public boolean moves() {
+        return !isArtillery();
+    }
+
+    /** Ticks between shots: 4 seconds for a tank, 8 for the field gun. */
+    public int reloadTicks() {
+        return isArtillery() ? 160 : ShellService.RELOAD_TICKS;
     }
 
     /** Pitch of the engine and horn sounds: the truck plays the jeep sounds lower and slower. Range 0.5 to 2. */

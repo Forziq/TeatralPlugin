@@ -40,6 +40,7 @@ class VehicleMoverTest {
     @Test
     void drivesOnFlatGround() {
         for (VehicleType t : VehicleType.values()) {
+            if (!t.moves()) continue; // the field gun does not drive
             VehicleMover.State s = drive(t, new World(), at(0.5, 64, 0.5), W, 100);
             assertEquals(64, s.y(), 1e-9);
             assertEquals(0.5, s.x(), 1e-9);
@@ -51,6 +52,7 @@ class VehicleMoverTest {
     @Test
     void climbsOneBlockStep() {
         for (VehicleType t : VehicleType.values()) {
+            if (!t.moves()) continue; // the field gun does not drive
             World w = new World();
             w.wallFromZ = 6;
             w.wallHeight = 1;
@@ -64,6 +66,7 @@ class VehicleMoverTest {
     @Test
     void stopsAtTwoBlockWall() {
         for (VehicleType t : VehicleType.values()) {
+            if (!t.moves()) continue; // the field gun does not drive
             World w = new World();
             w.wallFromZ = 6;
             w.wallHeight = 2;

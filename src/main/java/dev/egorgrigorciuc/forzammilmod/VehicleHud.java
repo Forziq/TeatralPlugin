@@ -132,7 +132,7 @@ final class VehicleHud {
 
     private String actionLine(Player p, Vehicle v, Seat seat, Seat controller) {
         String speed = null, reload = null;
-        if (HudModel.showsSpeed(seat)) {
+        if (HudModel.showsSpeed(seat) && v.type.moves()) {
             speed = lang.msg(p, "hud.speed", "n", HudModel.formatSpeed(v.state().speed()));
         }
         if (HudModel.showsReload(seat, controller) && v.hasTurret()) {

@@ -32,8 +32,29 @@ final class TurretModel {
     /** Muzzle is this far along the barrel from the barrel pivot (54 - 12 px, the T35 long gun). */
     static final double BARREL_LENGTH = 42.0 / 16.0;
 
+    /** Barrel geometry: pivot this far forward of and this high above the model origin, tube this long (blocks). */
+    record Gun(double pivotForward, double pivotUp, double length) {}
+
+    static final Gun TANK_GUN = new Gun(BARREL_PIVOT_FORWARD, BARREL_PIVOT_UP, BARREL_LENGTH);
+    /** artillery.bbmodel: barrel pivot 4 px forward and 16 px up, muzzle 50 px along the barrel. */
+    static final Gun FIELD_GUN = new Gun(4.0 / 16.0, 16.0 / 16.0, 50.0 / 16.0);
+    /** The field gun cannot point below level, and goes up to 45 degrees. */
+    static final float FIELD_GUN_PITCH_MIN = 0f;
+    static final float FIELD_GUN_PITCH_MAX = 45f;
+
     private float yaw;
     private float pitch;
+    private final float pitchMin;
+    private final float pitchMax;
+
+    TurretModel() {
+        this(PITCH_MIN, PITCH_MAX);
+    }
+
+    TurretModel(float pitchMin, float pitchMax) {
+        this.pitchMin = pitchMin;
+        this.pitchMax = pitchMax;
+    }
 
     float yaw() {
         return yaw;
@@ -53,7 +74,7 @@ final class TurretModel {
         float maxYaw = YAW_RATE * dtSeconds;
         yaw = wrap(yaw + Math.max(-maxYaw, Math.min(maxYaw, diff)));
 
-        float target = clampPitch(targetPitchUp);
+        float target = Math.max(pitchMin, Math.min(pitchMax, targetPitchUp));
         float maxPitch = PITCH_RATE * dtSeconds;
         pitch += Math.max(-maxPitch, Math.min(maxPitch, target - pitch));
     }
@@ -88,12 +109,17 @@ final class TurretModel {
      * angle (relative to the hull) and barrel angle (up positive). Pure geometry from the bone pivots above.
      */
     static Muzzle muzzle(double ax, double ay, double az, float hullYaw, float turretYaw, float pitchUp) {
+        return muzzle(ax, ay, az, hullYaw, turretYaw, pitchUp, TANK_GUN);
+    }
+
+    /** Same as above for any barrel geometry. */
+    static Muzzle muzzle(double ax, double ay, double az, float hullYaw, float turretYaw, float pitchUp, Gun gun) {
         double yawRad = Math.toRadians(hullYaw + turretYaw);
         double fx = -Math.sin(yawRad);
         double fz = Math.cos(yawRad);
         double p = Math.toRadians(pitchUp);
-        double horizontal = BARREL_PIVOT_FORWARD + BARREL_LENGTH * Math.cos(p);
-        double up = BARREL_PIVOT_UP + BARREL_LENGTH * Math.sin(p);
+        double horizontal = gun.pivotForward() + gun.length() * Math.cos(p);
+        double up = gun.pivotUp() + gun.length() * Math.sin(p);
         return new Muzzle(ax + fx * horizontal, ay + up, az + fz * horizontal,
                 fx * Math.cos(p), Math.sin(p), fz * Math.cos(p));
     }

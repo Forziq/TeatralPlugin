@@ -1,7 +1,7 @@
 package dev.egorgrigorciuc.forzammilmod;
 
 /** Pure flight bookkeeping for one tank shell: a straight ray, 3 blocks per tick, 150 blocks max. No Bukkit types. */
-final class ShellModel {
+final class ShellModel implements ShellPath {
 
     static final double SPEED = 3.0;
     static final double MAX_RANGE = 150.0;
@@ -37,7 +37,14 @@ final class ShellModel {
         return travelled >= MAX_RANGE - 1e-9;
     }
 
-    double travelled() {
+    @Override
+    public java.util.List<Segment> nextTick() {
+        Segment s = next();
+        return s == null ? java.util.List.of() : java.util.List.of(s);
+    }
+
+    @Override
+    public double travelled() {
         return travelled;
     }
 

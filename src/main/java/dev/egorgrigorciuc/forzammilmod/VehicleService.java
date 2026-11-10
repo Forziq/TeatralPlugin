@@ -403,7 +403,7 @@ public final class VehicleService {
             Player d = plugin.getServer().getPlayer(operator);
             if (d != null) v.aimTurret(d);
         }
-        sounds.tick(v, input);
+        if (v.type.moves()) sounds.tick(v, input);
         if (v.health.fraction() < DamageRules.SMOKE_BELOW && ++v.smokeTick >= 10) {
             v.smokeTick = 0;
             v.world.spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, v.location().add(0, v.type.height, 0), 3, 0.3, 0.1, 0.3, 0.02);

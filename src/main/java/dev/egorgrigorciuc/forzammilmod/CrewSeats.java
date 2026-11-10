@@ -32,6 +32,8 @@ final class CrewSeats {
     static List<Seat> seatsOf(VehicleType type) {
         return switch (type) {
             case TANK, TANK_HEAVY -> List.of(Seat.DRIVER, Seat.GUNNER);
+            // One crew seat, behind the shield: the gunner turns the gun and fires. It is the driver seat so A and D work.
+            case ARTILLERY -> List.of(Seat.DRIVER);
             case JEEP, JEEP_HEAVY -> List.of(Seat.DRIVER, Seat.PASSENGER1, Seat.PASSENGER2);
             // Driver, cab passenger, then six on the benches in the back.
             case TRUCK -> List.of(Seat.DRIVER, Seat.PASSENGER1, Seat.PASSENGER2, Seat.PASSENGER3, Seat.PASSENGER4,
@@ -59,7 +61,7 @@ final class CrewSeats {
 
     /** Seat that aims the turret and fires: the gunner if there is one, else the driver, else nobody. Null for turretless types. */
     static Seat turretController(VehicleType type, Collection<Seat> taken) {
-        if (!type.isTank()) return null;
+        if (!type.hasGun()) return null;
         if (taken.contains(Seat.GUNNER)) return Seat.GUNNER;
         if (taken.contains(Seat.DRIVER)) return Seat.DRIVER;
         return null;

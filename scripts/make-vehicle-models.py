@@ -2,7 +2,7 @@
 """Builds the vehicle models (shapes plus a painted 128x128 texture) for BetterModel.
 
 Usage: python3 scripts/make-vehicle-models.py
-Writes tank, jeep, tank_heavy, jeep_heavy and truck .bbmodel files into src/main/resources/models. Needs Pillow
+Writes tank, jeep, tank_heavy, jeep_heavy, truck and artillery .bbmodel files into src/main/resources/models. Needs Pillow
 (pip install pillow). The heavy ones are bulkier alternatives to the plain tank and jeep, kept side by side
 until Egor picks which to keep.
 Re-running overwrites any changes made to those files in Blockbench, so edit this script instead.
@@ -637,6 +637,49 @@ def truck():
     return m
 
 
+def artillery():
+    """ZiS-3 style field gun: two wheels, split trail legs, a gun shield and a long barrel. Does not drive.
+    Bones: carriage (root), turret (holds the shield; never turns, the barrel code just needs the bone), barrel
+    (pitches about its pivot), muzzle, and the gunner's seat behind the shield."""
+    m = Model("artillery")
+    car = m.group("carriage", (0, 0, 0))
+    # Axle, two wheels, and the carriage block the legs and the cradle hang off.
+    m.cube(car, "axle", (-17, 5, 1), (17, 7, 3), "dark_steel")
+    m.cube(car, "carriage_block", (-5, 4, -4), (5, 10, 10), "olive")
+    m.cube(car, "seat_post", (-1, 6, 6), (1, 9, 8), "dark_steel")
+    m.cube(car, "seat", (-3, 8, 6), (3, 9, 11), "seat")
+    for name, x in (("wheel_l", -17), ("wheel_r", 17)):
+        wheel(m, car, name, "x", (6, 2), 6, sorted((x - 2, x + 2)), "wheel_jeep", "tyre")
+    # Split trail: two legs, hinged at the carriage and splayed 22.5 degrees, each with a spade at the end.
+    for s in (-1, 1):
+        ox = s * 4
+        angle = s * 22.5
+        a, b = sorted((ox - 2, ox + 2))
+        m.cube(car, "trail_leg", (a, 1, 4), (b, 5, 40), "olive", rot=[0, angle, 0], origin=(ox, 3, 4))
+        sa, sb = sorted((ox - 4, ox + 4))
+        m.cube(car, "trail_spade", (sa, 0, 40), (sb, 6, 41.5), "dark", rot=[0, angle, 0], origin=(ox, 3, 4))
+    m.cube(car, "ammo_box", (-12, 6, 8), (-7, 11, 16), "dark")
+
+    turret = m.group("turret", (0, 16, 0), car)
+    # Gun shield in front of the gunner: a lower plate, a narrower upper plate and a wing on each side.
+    m.cube(turret, "shield_lower", (-17, 6, -7), (17, 16, -6), "olive")
+    m.cube(turret, "shield_upper", (-12, 16, -7), (12, 24, -6), "olive")
+    for s in (-1, 1):
+        a, b = sorted((s * 17, s * 16))
+        m.cube(turret, "shield_wing", (a, 8, -6), (b, 16, -1), "olive")
+
+    barrel = m.group("barrel", (0, 16, -4), turret)
+    m.cube(barrel, "cradle", (-3.5, 13.5, -9), (3.5, 18.5, -4), "dark")
+    m.cube(barrel, "breech", (-2.5, 14, -4), (2.5, 19, 6), "dark_steel")
+    m.cube(barrel, "recoil_sleeve", (-2.25, 14.25, -22), (2.25, 18.75, -9), "olive")
+    m.cube(barrel, "gun_tube", (-1.25, 14.75, -50), (1.25, 17.25, -22), "metal")
+    m.cube(barrel, "muzzle_brake", (-1.75, 14.25, -54), (1.75, 17.75, -50), "dark_steel")
+    m.group("muzzle", (0, 16, -54), barrel)  # TurretModel.FIELD_GUN: pivot 4 px forward, barrel 50 px long
+
+    m.group("p_driver", (0, 9, 8), car)  # the gunner, behind the shield
+    return m
+
+
 def tank_heavy():
     """Heavy breakthrough tank: wider tracks, bigger wheels, side skirts, a slab-sided turret with a fat gun and
     a roof machine gun. Keeps the plain tank's turret, barrel and muzzle pivots so TurretModel fits both."""
@@ -814,7 +857,7 @@ def jeep_heavy():
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    for model in (tank(), jeep(), tank_heavy(), jeep_heavy(), truck()):
+    for model in (tank(), jeep(), tank_heavy(), jeep_heavy(), truck(), artillery()):
         path = OUT / f"{model.name}.bbmodel"
         path.write_text(json.dumps(model.json(), separators=(",", ":")) + "\n", encoding="utf-8")
         print(f"wrote {path.relative_to(ROOT)} ({path.stat().st_size // 1024} KB, {len(model.elements)} cubes)")

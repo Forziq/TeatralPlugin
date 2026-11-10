@@ -26,6 +26,8 @@ final class VehicleSounds {
     static final String TURRET_LOOP = PREFIX + "turret_traverse_loop";
     static final String TURRET_STOP = PREFIX + "turret_traverse_stop";
     static final String CANNON = PREFIX + "cannon_fire_tank";
+    /** The big gun sound, for the field gun. */
+    static final String CANNON_FIELD = PREFIX + "cannon_fire";
     static final String SHELL_WHISTLE = PREFIX + "shell_whistle";
     static final String EXPLOSION_SMALL = PREFIX + "explosion_small";
     static final String EXPLOSION_BIG = PREFIX + "explosion_big";
@@ -79,7 +81,7 @@ final class VehicleSounds {
 
     /** Jeep horn; ignored inside the cooldown and for tanks. */
     void horn(Vehicle v) {
-        if (v.type.isTank() || !v.hasCrew()) return;
+        if (v.type.isTank() || !v.type.moves() || !v.hasCrew()) return;
         Live l = live.computeIfAbsent(v, Live::new);
         if (l.logic.horn(now)) oneShot(v, l, JEEP_HORN, LOOP_VOLUME);
     }

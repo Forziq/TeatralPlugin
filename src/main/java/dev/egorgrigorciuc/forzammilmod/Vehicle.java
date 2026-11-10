@@ -39,7 +39,7 @@ final class Vehicle {
     /** Null if the vehicle has no turret. Main thread only. */
     private final TurretModel turret;
     /** Gun reload clock (ticks of ShellService). */
-    final ReloadTimer reload = new ReloadTimer(ShellService.RELOAD_TICKS);
+    final ReloadTimer reload;
     final VehicleHealth health;
     /** Set once the vehicle has blown up, so it cannot blow up twice. */
     boolean destroyed;
@@ -49,13 +49,15 @@ final class Vehicle {
 
     Vehicle(VehicleType type, ArmorStand anchor, Interaction clickBox, VehicleMover.State state) {
         this.type = type;
+        this.reload = new ReloadTimer(type.reloadTicks());
         this.health = new VehicleHealth(type.maxHealth);
         this.anchor = anchor;
         this.clickBox = clickBox;
         this.world = anchor.getWorld();
         this.state = state;
         this.renderYaw = state.yaw() + MODEL_YAW_OFFSET;
-        this.turret = type.isTank() ? new TurretModel() : null;
+        this.turret = type.isArtillery() ? new TurretModel(TurretModel.FIELD_GUN_PITCH_MIN, TurretModel.FIELD_GUN_PITCH_MAX)
+                : type.isTank() ? new TurretModel() : null;
     }
 
     void rig(VehicleRig rig) {
@@ -175,7 +177,8 @@ final class Vehicle {
     void aimTurret(Player operator) {
         if (turret == null || rig == null || !rig.hasTurret()) return;
         Location look = operator.getLocation();
-        float rel = TurretModel.relativeYaw(look.getYaw(), renderYaw);
+        // The field gun never swings its barrel sideways: the whole gun turns with A and D, only the pitch follows the look.
+        float rel = type.isArtillery() ? 0f : TurretModel.relativeYaw(look.getYaw(), renderYaw);
         float before = turret.yaw();
         turret.tick(rel, TurretModel.pitchUpFromMc(look.getPitch()), 0.05f);
         turretYawDelta = TurretModel.wrap(turret.yaw() - before);
@@ -185,7 +188,8 @@ final class Vehicle {
     /** Muzzle world position and aim direction, or null if there is no turret. For T18. */
     TurretModel.Muzzle muzzle() {
         if (turret == null) return null;
-        return TurretModel.muzzle(state.x(), state.y(), state.z(), renderYaw, turret.yaw(), turret.pitch());
+        TurretModel.Gun gun = type.isArtillery() ? TurretModel.FIELD_GUN : TurretModel.TANK_GUN;
+        return TurretModel.muzzle(state.x(), state.y(), state.z(), renderYaw, turret.yaw(), turret.pitch(), gun);
     }
 
     void remove() {

@@ -36,7 +36,7 @@ public final class ShellService {
     static final double ORIGIN_SAFE_BLOCKS = 10.0;
 
     private static final class Shell {
-        final ShellModel model;
+        final ShellPath model;
         final World world;
         final UUID driver;
         /** The firing vehicle; it cannot be hit by its own shell near the muzzle. */
@@ -44,7 +44,7 @@ public final class ShellService {
         /** Players who already heard this shell whistle past. */
         final Set<UUID> whistled = new HashSet<>();
 
-        Shell(ShellModel model, World world, UUID driver, Vehicle origin) {
+        Shell(ShellPath model, World world, UUID driver, Vehicle origin) {
             this.model = model;
             this.world = world;
             this.driver = driver;
@@ -83,13 +83,13 @@ public final class ShellService {
     /** True if this player sits in a tank (any seat), so their left-click never hits blocks or mobs. */
     boolean isTankCrew(Player p) {
         Vehicle v = vehicles.boardedBy(p);
-        return v != null && v.type.isTank();
+        return v != null && v.type.hasGun();
     }
 
     /** True if this player aims and fires the tank gun: the gunner, or the driver when there is no gunner. */
     boolean isTurretOperator(Player p) {
         Vehicle v = vehicles.boardedBy(p);
-        return v != null && v.type.isTank() && p.getUniqueId().equals(v.turretOperator());
+        return v != null && v.type.hasGun() && p.getUniqueId().equals(v.turretOperator());
     }
 
     /** Handles a fire click from one of the three paths ("interact", "swing", "hit"). */
@@ -113,8 +113,11 @@ public final class ShellService {
     private void launch(Player p, Vehicle v, TurretModel.Muzzle m) {
         World w = v.world;
         Location at = new Location(w, m.x(), m.y(), m.z());
-        shells.add(new Shell(new ShellModel(m.x(), m.y(), m.z(), m.dx(), m.dy(), m.dz()), w, p.getUniqueId(), v));
-        VehicleSounds.boom(w, at, VehicleSounds.CANNON, VehicleSounds.LOUD);
+        ShellPath path = v.type.isArtillery()
+                ? BallisticArc.fire(m.x(), m.y(), m.z(), m.dx(), m.dy(), m.dz())
+                : new ShellModel(m.x(), m.y(), m.z(), m.dx(), m.dy(), m.dz());
+        shells.add(new Shell(path, w, p.getUniqueId(), v));
+        VehicleSounds.boom(w, at, v.type.isArtillery() ? VehicleSounds.CANNON_FIELD : VehicleSounds.CANNON, VehicleSounds.LOUD);
         w.spawnParticle(Particle.LARGE_SMOKE, at, 6, 0.15, 0.15, 0.15, 0.02);
         w.spawnParticle(Particle.EXPLOSION, at, 1);
     }
@@ -145,9 +148,18 @@ public final class ShellService {
 
     /** Moves one shell along; returns false when it is finished. */
     private boolean step(Shell s) {
-        ShellModel.Segment seg = s.model.next();
-        if (seg == null) return false;
+        List<ShellModel.Segment> segs = s.model.nextTick();
+        if (segs.isEmpty()) return false;
+        for (ShellModel.Segment seg : segs) {
+            if (!step(s, seg)) return false;
+        }
+        return true;
+    }
+
+    /** Tests one stretch of flight; returns false when the shell burst or left the loaded world. */
+    private boolean step(Shell s, ShellModel.Segment seg) {
         World w = s.world;
+        if (seg.endY() < w.getMinHeight()) return false; // fell into the void without hitting anything
         int ex = (int) Math.floor(seg.endX()), ez = (int) Math.floor(seg.endZ());
         if (!w.isChunkLoaded(ex >> 4, ez >> 4)) return false;
         Location start = new Location(w, seg.x(), seg.y(), seg.z());
@@ -196,6 +208,7 @@ public final class ShellService {
             return false;
         }
         whistle(s, seg);
+        // A lobbed shell is far away and moves in small steps, so only draw a trail; the flame rides the tick's last step.
         for (double d = 0; d < seg.length(); d += 0.5) {
             w.spawnParticle(Particle.SMOKE, seg.x() + seg.dx() * d, seg.y() + seg.dy() * d, seg.z() + seg.dz() * d,
                     1, 0, 0, 0, 0);
@@ -207,10 +220,15 @@ public final class ShellService {
 
     /** Blocks from the shell's path within which a player hears it whistle past. */
     static final double WHISTLE_RANGE = 24.0;
+    /** The same for a lobbed shell, which only whistles on its way down. */
+    static final double FALLING_WHISTLE_RANGE = 40.0;
 
     /** Plays the whistle once to each player near the shell, except the firing vehicle's crew. */
     private void whistle(Shell s, ShellModel.Segment seg) {
-        double rangeSq = WHISTLE_RANGE * WHISTLE_RANGE;
+        boolean lobbed = s.model instanceof BallisticArc;
+        if (lobbed && seg.dy() >= 0) return; // still climbing
+        double range = lobbed ? FALLING_WHISTLE_RANGE : WHISTLE_RANGE;
+        double rangeSq = range * range;
         for (Player p : s.world.getPlayers()) {
             UUID id = p.getUniqueId();
             if (id.equals(s.driver) || s.whistled.contains(id) || s.origin.seatOf(id) != null) continue;
@@ -219,7 +237,7 @@ public final class ShellService {
             if (dx * dx + dy * dy + dz * dz > rangeSq) continue;
             s.whistled.add(id);
             p.playSound(new Location(s.world, seg.endX(), seg.endY(), seg.endZ()), VehicleSounds.SHELL_WHISTLE,
-                    SoundCategory.NEUTRAL, VehicleSounds.LOOP_VOLUME, 1f);
+                    SoundCategory.NEUTRAL, lobbed ? 3.0f : VehicleSounds.LOOP_VOLUME, 1f);
         }
     }
 }
