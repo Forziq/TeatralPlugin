@@ -1,5 +1,5 @@
 # progress
-now: T41 todo | G1 passed | G2 passed
+now: G5 | G1 passed | G2 passed
 updated: 2026-11-10
 
 ## tasks
@@ -47,7 +47,7 @@ T38|S|haiku-scout|T35,T37|done|Publish v0.5.0 for Gate 4
 G4|-|egor|T38|done|Gate 4: tank battle with friends (manual.md G4)
 T39|M|sonnet-builder|G4|done|Army truck
 T40|L|sonnet-builder|T39|done|Field artillery
-T41|S|haiku-scout|T40|todo|Publish v0.6.0 for Gate 5
+T41|S|haiku-scout|T40|doing|Publish v0.6.0 for Gate 5
 G5|-|egor|T41|gate|Gate 5: truck and artillery (manual.md G5)
 T42|S|haiku-scout|G5|todo|Research how to fly a plane
 T43|L|opus-deep|T42|todo|Rough plane

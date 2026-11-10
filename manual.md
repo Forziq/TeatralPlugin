@@ -282,3 +282,21 @@ Check each of these and jot down a few words for each:
 - The Russian text reads naturally
 
 Then type `/next`.
+
+## G5 Gate 5: truck and artillery
+
+Get ready:
+1. In game, type `/fmod update`, then restart the server from the exaroton panel. The server must be on v0.6.0 or later.
+2. Build two pads well away from spawn, because shells break blocks. Each pad is a command block running `fmod vehicle spawn truck` or `fmod vehicle spawn artillery`, with a button next to it.
+3. Press the button on each pad to spawn the vehicle two blocks above it.
+
+Check each of these and jot down a few words for each:
+- The truck handles well with a full squad
+- Everyone in the back sees the ride smoothly
+- Artillery aim and range feel right
+- Shells are hard but possible to dodge
+- Reload time feels fair
+- Server TPS stays fine with artillery firing
+- The Russian text reads naturally
+
+Then type `/next`.
