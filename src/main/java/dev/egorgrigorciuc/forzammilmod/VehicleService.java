@@ -2,8 +2,6 @@ package dev.egorgrigorciuc.forzammilmod;
 
 import dev.egorgrigorciuc.forzammilmod.CrewSeats.Seat;
 import org.bukkit.Input;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -43,6 +41,7 @@ public final class VehicleService {
     private BukkitTask task;
     private final VehicleSounds sounds;
     private Lang lang;
+    private VehicleHud hud;
     private boolean loggedSeated;
     private boolean loggedPolledInput;
     private boolean loggedInputEvent;
@@ -59,6 +58,11 @@ public final class VehicleService {
     /** Needed for the damage and wreck messages; set before the first tick. */
     public void lang(Lang lang) {
         this.lang = lang;
+    }
+
+    /** Starts the boss bar and action bar HUD; the clock is the gun reload clock. Set before the first tick. */
+    void hud(Lang lang, java.util.function.LongSupplier reloadClock) {
+        this.hud = new VehicleHud(lang, reloadClock);
     }
 
     public void start() {
@@ -204,6 +208,7 @@ public final class VehicleService {
         if (v == null) return;
         Seat seat = v.seatOf(p.getUniqueId());
         v.vacate(seat);
+        if (hud != null) hud.clear(p);
         try {
             v.rig().unseat(p, seat);
         } catch (RuntimeException | LinkageError ignored) {
@@ -219,7 +224,7 @@ public final class VehicleService {
                 + ", back=" + in.isBackward() + ", left=" + in.isLeft() + ", right=" + in.isRight() + ")");
     }
 
-    /** Applies damage; shows the driver the hull state and blows the vehicle up at 0. Returns true if it was destroyed. */
+    /** Applies damage; blows the vehicle up at 0. Returns true if it was destroyed. */
     public boolean damage(Vehicle v, int amount) {
         if (amount <= 0 || v.destroyed || !vehicles.contains(v)) return false;
         v.health.damage(amount);
@@ -227,20 +232,13 @@ public final class VehicleService {
             destroy(v);
             return true;
         }
-        if (lang != null) {
-            for (Seat seat : v.takenSeats()) {
-                Player d = plugin.getServer().getPlayer(v.occupant(seat));
-                if (d == null) continue;
-                d.spigot().sendMessage(ChatMessageType.ACTION_BAR,
-                        TextComponent.fromLegacyText(lang.msg(d, "vehicle.damaged", "percent", v.health.percent())));
-            }
-        }
         return false;
     }
 
     /** Big blast (particles and sound only, no block damage), crew thrown out and hurt, vehicle removed. */
     private void destroy(Vehicle v) {
         v.destroyed = true;
+        if (hud != null) hud.clear(v);
         Location at = v.location().add(0, v.type.height / 2, 0);
         World w = v.world;
         w.spawnParticle(Particle.EXPLOSION_EMITTER, at, 1);
@@ -317,6 +315,7 @@ public final class VehicleService {
 
     public void remove(Vehicle v) {
         sounds.stop(v);
+        if (hud != null) hud.clear(v);
         vehicles.remove(v);
         v.remove();
     }
@@ -328,6 +327,7 @@ public final class VehicleService {
             v.remove();
         }
         vehicles.clear();
+        if (hud != null) hud.clearAll();
     }
 
     private int idleCounter;
@@ -341,11 +341,13 @@ public final class VehicleService {
         for (Vehicle v : new ArrayList<>(vehicles)) {
             try {
                 tick(v);
+                if (hud != null) hud.update(v);
             } catch (RuntimeException e) {
                 plugin.getLogger().log(Level.WARNING, "Vehicle tick failed; removing the " + v.type.id, e);
                 remove(v);
             }
         }
+        if (hud != null) hud.endTick();
     }
 
     private void checkIdle() {

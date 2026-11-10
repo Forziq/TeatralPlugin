@@ -38,9 +38,8 @@ final class Vehicle {
     private final Map<UUID, Long> joined = new HashMap<>();
     /** Null if the vehicle has no turret. Main thread only. */
     private final TurretModel turret;
-    /** Gun reload clock (ticks of ShellService) and the last whole second shown on the action bar. */
+    /** Gun reload clock (ticks of ShellService). */
     final ReloadTimer reload = new ReloadTimer(ShellService.RELOAD_TICKS);
-    int shownSeconds;
     final VehicleHealth health;
     /** Set once the vehicle has blown up, so it cannot blow up twice. */
     boolean destroyed;

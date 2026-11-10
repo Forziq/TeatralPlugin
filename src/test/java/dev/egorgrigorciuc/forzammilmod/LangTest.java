@@ -162,4 +162,29 @@ class LangTest {
             if (plural) assertEquals(new TreeSet<>(required), kids, "plural shape of " + k);
         }
     }
+
+    @Test
+    void hudAndReloadKeysExistInBothLanguages() {
+        for (String f : new String[] {"lang/en.yml", "lang/ru.yml"}) {
+            YamlConfiguration y = resource(f);
+            assertTrue(y.isString("reload.done"), f + " reload.done");
+            assertTrue(y.isString("reload.ready"), f + " reload.ready");
+            assertTrue(y.isString("hud.speed"), f + " hud.speed");
+            assertTrue(y.isConfigurationSection("reload.seconds"), f + " reload.seconds");
+            assertTrue(y.getString("hud.speed").contains("{n}"), f + " hud.speed placeholder");
+        }
+    }
+
+    @Test
+    void noDuplicateTopLevelKeys() throws Exception {
+        for (String f : new String[] {"lang/en.yml", "lang/ru.yml"}) {
+            var in = LangTest.class.getClassLoader().getResourceAsStream(f);
+            String text = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+            Set<String> seen = new java.util.HashSet<>();
+            for (String line : text.split("\\R")) {
+                var m = java.util.regex.Pattern.compile("^([^\\s#][^:]*):").matcher(line);
+                if (m.find()) assertTrue(seen.add(m.group(1).trim()), f + " duplicate top-level key " + m.group(1));
+            }
+        }
+    }
 }

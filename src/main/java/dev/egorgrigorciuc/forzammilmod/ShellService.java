@@ -1,7 +1,5 @@
 package dev.egorgrigorciuc.forzammilmod;
 
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -109,7 +107,6 @@ public final class ShellService {
         TurretModel.Muzzle m = v.muzzle();
         if (m == null) return;
         if (!v.reload.tryFire(tick)) return;
-        v.shownSeconds = 0;
         launch(p, v, m);
     }
 
@@ -120,6 +117,10 @@ public final class ShellService {
         VehicleSounds.boom(w, at, VehicleSounds.CANNON, VehicleSounds.LOUD);
         w.spawnParticle(Particle.LARGE_SMOKE, at, 6, 0.15, 0.15, 0.15, 0.02);
         w.spawnParticle(Particle.EXPLOSION, at, 1);
+    }
+
+    long tick() {
+        return tick;
     }
 
     private void tickAll() {
@@ -136,7 +137,6 @@ public final class ShellService {
             if (!keep) it.remove();
         }
         for (Vehicle v : vehicles.vehicles()) {
-            showReload(v);
             if (v.hasTurret() && v.reload.pollFinished(tick)) {
                 VehicleSounds.boom(v.world, v.location().add(0, v.type.height / 2, 0), VehicleSounds.RELOAD, 2.0f);
             }
@@ -221,22 +221,5 @@ public final class ShellService {
             p.playSound(new Location(s.world, seg.endX(), seg.endY(), seg.endZ()), VehicleSounds.SHELL_WHISTLE,
                     SoundCategory.NEUTRAL, VehicleSounds.LOOP_VOLUME, 1f);
         }
-    }
-
-    /** Action bar countdown while the gun reloads, shown to whoever fires it, then "ready" once. */
-    private void showReload(Vehicle v) {
-        if (v.turretOperator() == null || !v.hasTurret()) return;
-        Player d = plugin.getServer().getPlayer(v.turretOperator());
-        if (d == null) return;
-        int left = v.reload.remainingSeconds(tick);
-        if (left == v.shownSeconds) return;
-        String text;
-        if (left > 0) {
-            text = lang.plural(d, "reload.seconds", left, "n", left);
-        } else {
-            text = lang.msg(d, "reload.ready");
-        }
-        v.shownSeconds = left;
-        d.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(text));
     }
 }

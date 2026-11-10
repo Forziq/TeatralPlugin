@@ -14,8 +14,6 @@ emote:
   cooldown:
     one: "&7Wait {n} second before the next emote."
     other: "&7Wait {n} seconds before the next emote."
-reload:
-  done: "&aSettings reloaded."
 update:
   checking: "&7Checking for updates..."
   up-to-date: "&aAlready up to date (v{version})."
@@ -82,7 +80,10 @@ vehicle:
     tank_heavy: "Heavy tank"
     jeep_heavy: "Armoured jeep"
 reload:
+  done: "&aSettings reloaded."
   seconds:
     one: "&eReloading: {n} second"
     other: "&eReloading: {n} seconds"
   ready: "&aReady to fire"
+hud:
+  speed: "&fSpeed: &e{n} b/s"

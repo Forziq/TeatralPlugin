@@ -84,6 +84,7 @@ public final class ForzammilMod extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new VehicleListener(vehicles, lang), this);
         vehicles.start();
         shells = new ShellService(this, vehicles, lang);
+        vehicles.hud(lang, shells::tick);
         getServer().getPluginManager().registerEvents(new FireListener(shells), this);
         shells.start();
         getServer().getScheduler().runTask(this, this::checkVehicleModels);
