@@ -61,7 +61,7 @@ T49|S|haiku-scout|T48|todo|Publish v1.0.0 for the final gate
 G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
 
 ## log (newest first, keep 8)
-- 2026-11-10 Extra: tank sounds redone (old in sounds/old/). Redone: armour_hit, explosion_small, reload_clank, shell_whistle. New: cannon_fire_tank, turret_traverse_loop, turret_traverse_stop. armour_ricochet not made, Egor to decide. Unheard, unwired.
+- 2026-11-10 Extra: tank sounds redone (old in sounds/old/). Redone: armour_hit, explosion_small, reload_clank, shell_whistle. New: cannon_fire_tank, turret_traverse_loop, turret_traverse_stop, armour_ricochet. Unheard, unwired.
 - 2026-11-09 Extra (no task id): bulkier look-alikes tank_heavy and jeep_heavy beside the plain ones, for Egor to pick. `/fmod vehicle spawn tank_heavy|jeep_heavy`. New VehicleType entries (same driving and health, bigger hit boxes), same script makes all four models. 185 tests pass, models load on the test server, not tried in game. Practice release 0.4.1 built fine with them in the pack (nothing published); the server sees them only after a real release. Drop the losing pair once Egor picks.
 - 2026-11-09 T35: new T-34 style tank (red star, 10 road wheels) and jeep. Made by scripts/make-vehicle-models.py, overwriting Blockbench edits. Tank wheels spin via WheelSpin. BARREL_LENGTH 42/16. Pack 16.1 MB. 182 tests pass, not tried in game.
 - 2026-11-09 T35 check in game: wheels roll the right way (WHEEL_SPIN_SIGN), log shows 10 wheel bones, seats sit right, slopes lean right. No scrolling tracks (BetterModel can't tie texture to speed). T36: wheel bones resent each tick; slow if laggy.

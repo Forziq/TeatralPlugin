@@ -238,5 +238,13 @@
         "stream": false
       }
     ]
+  },
+  "armour_ricochet": {
+    "sounds": [
+      {
+        "name": "forzammilmod:armour_ricochet",
+        "stream": false
+      }
+    ]
   }
 }

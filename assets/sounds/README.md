@@ -19,6 +19,7 @@ The raw downloads (mp3, two per sound) are in `raw/` and are not committed. The 
 | explosion_small | A real high-explosive shell detonating on hard ground about thirty metres away: a sharp violent crack and a punchy low concussive thump that hits the chest, followed by a short rolling boom, earth and gravel thrown up and raining down, a brief echo across open ground. Compact but destructive and dangerous, cinematic war film. No music, no voices, no fireworks. | 2 s | no |
 | reload_clank | Loading a WWII tank cannon from inside the cramped steel turret: a heavy brass shell casing dragged out of a metal rack with a scrape, a loader grunting with effort, the shell rammed into the breech with a sliding metal-on-metal rasp, then the breech block slamming shut with a heavy, satisfying steel clang that rings briefly inside the hull. Close, enclosed, mechanical. No music. | 2.5 s | no |
 | armour_hit | Armour-piercing tank shell slamming into thick steel tank armour: a massive, heavy, deep metallic impact like a wrecking ball hitting a steel vault door, with a violent crunch of tearing and buckling steel, a short low boom, sparks and shrapnel scattering, then a brief deep ringing of the hull. Powerful, close, cinematic war film. No music, no voices, not a kitchen pan, not a cymbal. | 1.8 s | no |
+| armour_ricochet | A tank shell striking sloped steel armour and deflecting: a brutal sharp metallic clang with a deep punch behind it, immediately followed by a fast, descending, spinning ricochet whine as the shell zings away into the distance, and a short ring of the steel plate. Heavy, close, cinematic war film. No music, no voices, not a kitchen pan. | 1.5 s | no |
 | jeep_engine_loop | 1940s military jeep petrol engine running steadily, rough four-cylinder idle, constant, no music, no voices | 3 s | yes |
 | jeep_horn | Old 1940s jeep horn, two short nasal beeps, outdoors | 1 s | no |
 | plane_engine_loop | WWII propeller fighter plane engine running steadily, droning radial engine with spinning propeller, constant, no music, no voices | 4 s | yes |
@@ -37,3 +38,5 @@ Conversion: mono, 44.1 kHz Vorbis. One-shots have leading silence trimmed; loops
 The sounds `armour_hit`, `explosion_small`, `reload_clank` and `shell_whistle` were redone with longer, more detailed prompts (prompt influence 0.65) and normalised to a peak of -1 dBFS, so they are much louder. The first versions are in `old/` (`<name>.ogg` and `<name>_alt.ogg`) so you can compare them.
 
 `cannon_fire_tank` is the louder alternative to `cannon_fire`. The old `cannon_fire` is kept as it was.
+
+`armour_ricochet` is the deflection variant of `armour_hit`.
