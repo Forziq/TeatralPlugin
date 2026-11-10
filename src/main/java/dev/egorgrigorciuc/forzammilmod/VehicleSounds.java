@@ -46,7 +46,7 @@ final class VehicleSounds {
         float lastYaw;
 
         Live(Vehicle v) {
-            logic = new VehicleSoundState(v.type.isTank());
+            logic = new VehicleSoundState(v.type.isTank(), v.type.soundPitch());
             lastYaw = v.state().yaw();
         }
     }
@@ -119,7 +119,7 @@ final class VehicleSounds {
             boolean crew = v.seatOf(p.getUniqueId()) != null;
             if (!crew && p.getLocation().distanceSquared(at) > rangeSq) continue;
             // Crew hear it at their own position, so it does not swing around as the vehicle turns.
-            p.playSound(crew ? p.getLocation() : at, key, SoundCategory.NEUTRAL, volume, 1f);
+            p.playSound(crew ? p.getLocation() : at, key, SoundCategory.NEUTRAL, volume, (float) v.type.soundPitch());
             l.heard.add(p.getUniqueId());
         }
     }

@@ -12,7 +12,12 @@ final class CrewSeats {
         DRIVER("driver"),
         GUNNER("gunner"),
         PASSENGER1("passenger1"),
-        PASSENGER2("passenger2");
+        PASSENGER2("passenger2"),
+        PASSENGER3("passenger3"),
+        PASSENGER4("passenger4"),
+        PASSENGER5("passenger5"),
+        PASSENGER6("passenger6"),
+        PASSENGER7("passenger7");
 
         final String bone;
 
@@ -28,6 +33,9 @@ final class CrewSeats {
         return switch (type) {
             case TANK, TANK_HEAVY -> List.of(Seat.DRIVER, Seat.GUNNER);
             case JEEP, JEEP_HEAVY -> List.of(Seat.DRIVER, Seat.PASSENGER1, Seat.PASSENGER2);
+            // Driver, cab passenger, then six on the benches in the back.
+            case TRUCK -> List.of(Seat.DRIVER, Seat.PASSENGER1, Seat.PASSENGER2, Seat.PASSENGER3, Seat.PASSENGER4,
+                    Seat.PASSENGER5, Seat.PASSENGER6, Seat.PASSENGER7);
         };
     }
 

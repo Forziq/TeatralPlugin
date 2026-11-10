@@ -1,5 +1,5 @@
 # progress
-now: G4 gate | G1 passed | G2 passed
+now: T39 doing | G1 passed | G2 passed
 updated: 2026-11-10
 
 ## tasks
@@ -44,8 +44,8 @@ T35|L|opus-deep|T34|done|Proper tank and jeep models, with track animation
 T36|M|sonnet-builder|T34|done|Vehicle sounds
 T37|M|sonnet-builder|T36|done|Vehicle HUD
 T38|S|haiku-scout|T35,T37|done|Publish v0.5.0 for Gate 4
-G4|-|egor|T38|gate|Gate 4: tank battle with friends (manual.md G4)
-T39|M|sonnet-builder|G4|todo|Army truck
+G4|-|egor|T38|done|Gate 4: tank battle with friends (manual.md G4)
+T39|M|sonnet-builder|G4|doing|Army truck
 T40|L|sonnet-builder|T39|todo|Field artillery
 T41|S|haiku-scout|T40|todo|Publish v0.6.0 for Gate 5
 G5|-|egor|T41|gate|Gate 5: truck and artillery (manual.md G5)
@@ -77,6 +77,7 @@ none
 G1: -
 G2: passed. Egor: all fine, carry on.
 G3: passed. Egor gave no notes on the checklist items.
+G4: passed. Egor: all fine on every checklist item.
 
 ## parked (not planned yet, ask Egor before starting)
 - Block damage on the real world: protected zones and blocks growing back. Egor: "we will work on that later".

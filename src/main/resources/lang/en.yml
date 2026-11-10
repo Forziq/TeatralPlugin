@@ -49,8 +49,8 @@ music:
   list-line: "&7- &f{name} &8({id})"
   list-playing: "&a▶ &f{name} &8({id})"
 vehicle:
-  usage: "&eUsage: &f/{label} vehicle <spawn <tank|jeep|tank_heavy|jeep_heavy>|remove|list>"
-  bad-type: "&cNo such vehicle. Pick tank, jeep, tank_heavy or jeep_heavy."
+  usage: "&eUsage: &f/{label} vehicle <spawn <tank|jeep|tank_heavy|jeep_heavy|truck>|remove|list>"
+  bad-type: "&cNo such vehicle. Pick tank, jeep, tank_heavy, jeep_heavy or truck."
   unavailable: "&cVehicles aren't available right now."
   model-missing: "&cThe {type} model isn't loaded. Check the server log."
   no-target: "&cLook at a block within 30 blocks to put the vehicle there."
@@ -79,6 +79,7 @@ vehicle:
     jeep: "Jeep"
     tank_heavy: "Heavy tank"
     jeep_heavy: "Armoured jeep"
+    truck: "Army truck"
 reload:
   done: "&aSettings reloaded."
   seconds:

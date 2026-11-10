@@ -94,4 +94,17 @@ class CrewSeatsTest {
         assertFalse(CrewSeats.drives(Seat.PASSENGER1));
         assertFalse(CrewSeats.drives(Seat.PASSENGER2));
     }
+
+    @Test
+    void truckCarriesASquadOfEight() {
+        List<Seat> seats = CrewSeats.seatsOf(VehicleType.TRUCK);
+        assertEquals(8, seats.size());
+        assertEquals(Seat.DRIVER, seats.get(0));
+        assertEquals(8, EnumSet.copyOf(seats).size());
+        assertFalse(seats.contains(Seat.GUNNER));
+        EnumSet<Seat> taken = EnumSet.noneOf(Seat.class);
+        for (int i = 0; i < 8; i++) taken.add(CrewSeats.nextFree(VehicleType.TRUCK, taken));
+        assertNull(CrewSeats.nextFree(VehicleType.TRUCK, taken));
+        assertNull(CrewSeats.turretController(VehicleType.TRUCK, taken));
+    }
 }

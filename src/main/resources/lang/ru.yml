@@ -52,8 +52,8 @@ music:
   list-line: "&7- &f{name} &8({id})"
   list-playing: "&a▶ &f{name} &8({id})"
 vehicle:
-  usage: "&eИспользуй: &f/{label} vehicle <spawn <tank|jeep|tank_heavy|jeep_heavy>|remove|list>"
-  bad-type: "&cТакой техники нет. Выбери tank, jeep, tank_heavy или jeep_heavy."
+  usage: "&eИспользуй: &f/{label} vehicle <spawn <tank|jeep|tank_heavy|jeep_heavy|truck>|remove|list>"
+  bad-type: "&cТакой техники нет. Выбери tank, jeep, tank_heavy, jeep_heavy или truck."
   unavailable: "&cТехника сейчас недоступна."
   model-missing: "&cМодель «{type}» не загрузилась. Загляни в лог сервера."
   no-target: "&cПосмотри на блок не дальше 30 блоков, чтобы поставить туда технику."
@@ -83,6 +83,7 @@ vehicle:
     jeep: "Джип"
     tank_heavy: "Тяжёлый танк"
     jeep_heavy: "Бронированный джип"
+    truck: "Армейский грузовик"
 reload:
   done: "&aНастройки перечитаны."
   seconds:

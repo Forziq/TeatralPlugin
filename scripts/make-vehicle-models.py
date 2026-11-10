@@ -2,7 +2,7 @@
 """Builds the vehicle models (shapes plus a painted 128x128 texture) for BetterModel.
 
 Usage: python3 scripts/make-vehicle-models.py
-Writes tank, jeep, tank_heavy and jeep_heavy .bbmodel files into src/main/resources/models. Needs Pillow
+Writes tank, jeep, tank_heavy, jeep_heavy and truck .bbmodel files into src/main/resources/models. Needs Pillow
 (pip install pillow). The heavy ones are bulkier alternatives to the plain tank and jeep, kept side by side
 until Egor picks which to keep.
 Re-running overwrites any changes made to those files in Blockbench, so edit this script instead.
@@ -567,6 +567,76 @@ def jeep():
     return m
 
 
+def truck():
+    """ZIS-5 style army truck: long bonnet, cab, flatbed with benches and a canvas cover on hoops. Six wheels,
+    eight seats (driver, cab passenger, six in the back)."""
+    m = Model("truck")
+    body = m.group("body", (0, 9, 0))
+    m.cube(body, "chassis", (-8, 7, -48), (8, 9, 48), "dark")
+    m.cube(body, "cab_floor", (-16, 9, -30), (16, 10, -10), "dark")
+    m.cube(body, "bed_floor", (-16, 9, -10), (16, 10, 48), "dark")
+    # Bonnet, grille and lights.
+    m.cube(body, "bonnet", (-9, 9, -47), (9, 22, -30))
+    m.cube(body, "grille", (-9, 8, -48.5), (9, 22, -47), "olive", faces={"north": "grille"})
+    m.cube(body, "bumper", (-13, 6, -52), (13, 9, -48.5), "dark")
+    for s in (-1, 1):
+        a, b = sorted((s * 7, s * 4))
+        m.cube(body, "headlight", (a, 16, -49.5), (b, 19, -48.5), "light")
+        fa, fb = sorted((s * 14, s * 20))
+        m.cube(body, "front_fender", (fa, 12.5, -42), (fb, 13.5, -22))
+        m.cube(body, "front_fender_lip", (fa, 10.5, -42.5), (fb, 12.5, -41.5))
+        ra, rb = sorted((s * 16, s * 20))
+        m.cube(body, "rear_fender", (ra, 12.5, 17), (rb, 13.5, 45))
+        # Cab: low door, front and rear pillars, side window.
+        a, b = sorted((s * 16, s * 15))
+        m.cube(body, "door", (a, 10, -30), (b, 21, -10))
+        m.cube(body, "cab_pillar_front", (a, 21, -30), (b, 28, -28))
+        m.cube(body, "cab_pillar_back", (a, 21, -12), (b, 28, -10))
+        ga, gb = sorted((s * 15.75, s * 15.25))
+        m.cube(body, "side_glass", (ga, 21, -28), (gb, 28, -12), "glass")
+        m.cube(body, "step", (min(s * 16, s * 19), 8.5, -27), (max(s * 16, s * 19), 9.5, -13), "dark")
+        # Flatbed sides and the benches along them.
+        m.cube(body, "bed_side", (a, 10, -10), (b, 18, 48))
+        ba, bb = sorted((s * 15, s * 8.5))
+        m.cube(body, "bench", (ba, 10, -6), (bb, 12.5, 44), "seat")
+        # Canvas drape over the sides.
+        ca, cb = sorted((s * 16.5, s * 15.5))
+        m.cube(body, "canvas_side", (ca, 26, -9), (cb, 33, 47), "olive_plain")
+    m.cube(body, "cab_back", (-15, 10, -12), (15, 28, -11))
+    m.cube(body, "cab_roof", (-16, 28, -30.5), (16, 29, -10))
+    m.cube(body, "tailgate", (-16, 10, 47), (16, 18, 48))
+    m.cube(body, "rear_bumper", (-12, 7, 48), (12, 9, 50), "dark")
+    # Windscreen and dash.
+    m.cube(body, "screen_bottom", (-15, 19, -30), (15, 21, -29), "dark")
+    m.cube(body, "screen_middle", (-0.5, 21, -30), (0.5, 28, -29), "dark")
+    m.cube(body, "glass", (-14.5, 21, -29.75), (-0.5, 28, -29.25), "glass")
+    m.cube(body, "glass", (0.5, 21, -29.75), (14.5, 28, -29.25), "glass")
+    m.cube(body, "dash", (-15, 10, -29), (15, 18, -28))
+    m.cube(body, "steering_wheel", (-9.5, 14.5, -25.5), (-3.5, 18.5, -25), "dark_steel", rot=[-22.5, 0, 0], origin=(-6.5, 16.5, -25.25))
+    m.cube(body, "steering_column", (-7, 12, -28), (-6, 15.5, -25.8), "dark_steel")
+    m.cube(body, "cab_seat", (-14, 10, -24), (14, 12.5, -14), "seat")
+    m.cube(body, "cab_backrest", (-14, 12.5, -14), (14, 20, -12), "seat")
+    # Canvas cover: hoops and the roof.
+    for z in (-6, 8, 22, 36, 44):
+        for s in (-1, 1):
+            a, b = sorted((s * 16, s * 15))
+            m.cube(body, "hoop_post", (a, 18, z), (b, 33, z + 1), "dark_steel")
+        m.cube(body, "hoop_top", (-16, 33, z), (16, 34, z + 1), "dark_steel")
+    m.cube(body, "canvas_roof", (-16.5, 34, -9), (16.5, 35, 47), "olive_plain")
+    m.cube(body, "canvas_front", (-16, 18, -10), (16, 34, -9), "olive_plain")
+    m.cube(body, "jerry_can", (-20, 10, 0), (-16.5, 17, 6), "dark")
+    # Six wheels: front axle and two rear axles.
+    for name, x, z in (("wheel_fl", -17.5, -32), ("wheel_fr", 17.5, -32), ("wheel_rl", -17.5, 24),
+                       ("wheel_rr", 17.5, 24), ("wheel_rl2", -17.5, 38), ("wheel_rr2", 17.5, 38)):
+        g = m.group(name, (x, 6, z), body)
+        wheel(m, g, name, "x", (6, z), 6, sorted((x - 2, x + 2)), "wheel_jeep", "tyre")
+    m.group("p_driver", (-7, 12.5, -19), body)
+    m.group("sp_passenger1", (7, 12.5, -19), body)  # cab passenger
+    for i, (x, z) in enumerate(((-11.5, 2), (-11.5, 18), (-11.5, 34), (11.5, 2), (11.5, 18), (11.5, 34)), start=2):
+        m.group(f"sp_passenger{i}", (x, 12.5, z), body)  # benches in the back
+    return m
+
+
 def tank_heavy():
     """Heavy breakthrough tank: wider tracks, bigger wheels, side skirts, a slab-sided turret with a fat gun and
     a roof machine gun. Keeps the plain tank's turret, barrel and muzzle pivots so TurretModel fits both."""
@@ -744,7 +814,7 @@ def jeep_heavy():
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    for model in (tank(), jeep(), tank_heavy(), jeep_heavy()):
+    for model in (tank(), jeep(), tank_heavy(), jeep_heavy(), truck()):
         path = OUT / f"{model.name}.bbmodel"
         path.write_text(json.dumps(model.json(), separators=(",", ":")) + "\n", encoding="utf-8")
         print(f"wrote {path.relative_to(ROOT)} ({path.stat().st_size // 1024} KB, {len(model.elements)} cubes)")

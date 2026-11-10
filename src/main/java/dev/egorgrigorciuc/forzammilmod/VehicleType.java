@@ -14,7 +14,10 @@ public enum VehicleType {
     // Bulkier look-alikes, kept beside the plain ones until Egor picks. Same driving and health, bigger hit boxes
     // (heavy tank model 56 x 90 px, armoured jeep 40 x 68 px).
     TANK_HEAVY("tank_heavy", 0.18, 0.08, 0.006, 0.025, 0.010, 2.5, true, 1.0, 1.65, 2.65, 1.9, 100),
-    JEEP_HEAVY("jeep_heavy", 0.42, 0.14, 0.014, 0.040, 0.012, 4.5, false, 1.0, 1.15, 1.90, 1.5, 40);
+    JEEP_HEAVY("jeep_heavy", 0.42, 0.14, 0.014, 0.040, 0.012, 4.5, false, 1.0, 1.15, 1.90, 1.5, 40),
+    // ZIS-5 style army truck (model 40 x 102 px): between the jeep and the tank in speed, slow to pick up speed,
+    // wide turning circle, carries a squad of eight. No gun.
+    TRUCK("truck", 0.30, 0.10, 0.009, 0.032, 0.012, 3.0, false, 1.0, 1.15, 2.90, 2.4, 60);
 
     public final String id;
     public final double maxSpeed;
@@ -59,6 +62,11 @@ public enum VehicleType {
     /** True for both tanks: turret, gunner seat, armour that depends on the side hit. */
     public boolean isTank() {
         return this == TANK || this == TANK_HEAVY;
+    }
+
+    /** Pitch of the engine and horn sounds: the truck plays the jeep sounds lower and slower. Range 0.5 to 2. */
+    public double soundPitch() {
+        return this == TRUCK ? 0.75 : 1.0;
     }
 
     public static VehicleType byId(String s) {

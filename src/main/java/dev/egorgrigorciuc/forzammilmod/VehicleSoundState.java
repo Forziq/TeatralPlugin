@@ -35,8 +35,13 @@ final class VehicleSoundState {
     private boolean hadThrottle;
 
     VehicleSoundState(boolean tank) {
+        this(tank, 1.0);
+    }
+
+    /** {@code pitch} below 1 stretches the engine loop, so it is restarted later. */
+    VehicleSoundState(boolean tank, double pitch) {
         this.tank = tank;
-        this.engine = new SoundLoop(tank ? TANK_IDLE_TICKS : JEEP_ENGINE_TICKS);
+        this.engine = new SoundLoop((int) Math.round((tank ? TANK_IDLE_TICKS : JEEP_ENGINE_TICKS) / pitch));
     }
 
     /**

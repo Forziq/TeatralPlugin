@@ -15,6 +15,8 @@ final class WheelSpin {
 
     /** Jeep wheel bones. */
     static final List<String> JEEP_WHEELS = List.of("wheel_fl", "wheel_fr", "wheel_rl", "wheel_rr");
+    /** Truck wheel bones: front axle, then two rear axles (a 6x4 look). */
+    static final List<String> TRUCK_WHEELS = List.of("wheel_fl", "wheel_fr", "wheel_rl", "wheel_rr", "wheel_rl2", "wheel_rr2");
     /** Tank road wheel bones, five a side, numbered front to back; l is the tank's left (-X). */
     static final List<String> TANK_WHEELS = List.of(
             "wheel_l1", "wheel_l2", "wheel_l3", "wheel_l4", "wheel_l5",
@@ -27,6 +29,7 @@ final class WheelSpin {
         return switch (type) {
             case TANK, TANK_HEAVY -> TANK_WHEELS;
             case JEEP, JEEP_HEAVY -> JEEP_WHEELS;
+            case TRUCK -> TRUCK_WHEELS;
         };
     }
 
@@ -35,7 +38,7 @@ final class WheelSpin {
         return switch (type) {
             case TANK -> TANK_WHEEL_RADIUS;
             case JEEP -> JEEP_WHEEL_RADIUS;
-            case TANK_HEAVY, JEEP_HEAVY -> HEAVY_WHEEL_RADIUS;
+            case TANK_HEAVY, JEEP_HEAVY, TRUCK -> HEAVY_WHEEL_RADIUS;
         };
     }
 

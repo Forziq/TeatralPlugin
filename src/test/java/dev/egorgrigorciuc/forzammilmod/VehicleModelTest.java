@@ -133,6 +133,27 @@ class VehicleModelTest {
     }
 
     @Test
+    void truckHasBones() throws Exception {
+        Model m = new Model("models/truck.bbmodel");
+        VehicleType type = VehicleType.TRUCK;
+        assertNull(m.parentByName.get("body"));
+        assertTrue(m.parentByName.containsKey("body"));
+        assertEquals(8, CrewSeats.seatsOf(type).size());
+        assertEquals("body", m.parentByName.get("p_driver"));
+        for (int i = 1; i <= 7; i++) assertEquals("body", m.parentByName.get("sp_passenger" + i), "passenger" + i);
+        assertEquals(6, WheelSpin.bones(type).size());
+        for (String w : WheelSpin.bones(type)) assertEquals("body", m.parentByName.get(w), w);
+        seats(m, type);
+        wheels(m, type);
+        basics(m);
+        assertTrue(m.size(0) >= 36 && m.size(0) <= 44, "width " + m.size(0));
+        assertTrue(m.size(2) >= 90 && m.size(2) <= 110, "length " + m.size(2));
+        assertTrue(type.halfWidth * 32 <= m.size(0), "hit box wider than the model");
+        assertTrue(type.halfLength * 32 <= m.size(2), "hit box longer than the model");
+        assertTrue(type.height * 16 >= m.size(1), "hit box lower than the model");
+    }
+
+    @Test
     void everyTypeHasAModelAndBothNames() throws Exception {
         for (VehicleType t : VehicleType.values()) {
             new Model("models/" + t.model() + ".bbmodel");
