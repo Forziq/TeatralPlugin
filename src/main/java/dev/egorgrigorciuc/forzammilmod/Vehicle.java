@@ -45,6 +45,8 @@ final class Vehicle {
     /** Set once the vehicle has blown up, so it cannot blow up twice. */
     boolean destroyed;
     int smokeTick;
+    /** Degrees the turret turned in the last tick (for the turning sound). Main thread only. */
+    float turretYawDelta;
 
     Vehicle(VehicleType type, ArmorStand anchor, Interaction clickBox, VehicleMover.State state) {
         this.type = type;
@@ -175,7 +177,9 @@ final class Vehicle {
         if (turret == null || rig == null || !rig.hasTurret()) return;
         Location look = operator.getLocation();
         float rel = TurretModel.relativeYaw(look.getYaw(), renderYaw);
+        float before = turret.yaw();
         turret.tick(rel, TurretModel.pitchUpFromMc(look.getPitch()), 0.05f);
+        turretYawDelta = TurretModel.wrap(turret.yaw() - before);
         rig.turret(turret.yaw(), turret.pitch());
     }
 

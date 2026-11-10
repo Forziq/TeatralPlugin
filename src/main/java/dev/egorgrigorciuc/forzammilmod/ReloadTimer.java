@@ -7,6 +7,7 @@ final class ReloadTimer {
 
     private final long durationTicks;
     private long readyAt;
+    private boolean pendingReady;
 
     ReloadTimer(long durationTicks) {
         this.durationTicks = durationTicks;
@@ -20,6 +21,7 @@ final class ReloadTimer {
     boolean tryFire(long now) {
         if (!ready(now)) return false;
         readyAt = now + durationTicks;
+        pendingReady = true;
         return true;
     }
 
@@ -27,5 +29,12 @@ final class ReloadTimer {
     int remainingSeconds(long now) {
         if (ready(now)) return 0;
         return (int) ((readyAt - now + TICKS_PER_SECOND - 1) / TICKS_PER_SECOND);
+    }
+
+    /** True once, the first time it is asked after a reload has finished. */
+    boolean pollFinished(long now) {
+        if (!pendingReady || !ready(now)) return false;
+        pendingReady = false;
+        return true;
     }
 }

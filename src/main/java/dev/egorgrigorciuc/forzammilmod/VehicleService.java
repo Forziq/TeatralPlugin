@@ -41,6 +41,7 @@ public final class VehicleService {
     private final List<Vehicle> vehicles = new ArrayList<>();
     private final Map<World, Terrain> terrains = new HashMap<>();
     private BukkitTask task;
+    private final VehicleSounds sounds;
     private Lang lang;
     private boolean loggedSeated;
     private boolean loggedPolledInput;
@@ -48,6 +49,11 @@ public final class VehicleService {
 
     public VehicleService(JavaPlugin plugin) {
         this.plugin = plugin;
+        this.sounds = new VehicleSounds(plugin);
+    }
+
+    VehicleSounds sounds() {
+        return sounds;
     }
 
     /** Needed for the damage and wreck messages; set before the first tick. */
@@ -239,7 +245,7 @@ public final class VehicleService {
         World w = v.world;
         w.spawnParticle(Particle.EXPLOSION_EMITTER, at, 1);
         w.spawnParticle(Particle.LARGE_SMOKE, at, 30, 1.0, 0.6, 1.0, 0.05);
-        w.playSound(at, Sound.ENTITY_GENERIC_EXPLODE, 2.0f, 0.7f);
+        VehicleSounds.boom(w, at, VehicleSounds.EXPLOSION_BIG, VehicleSounds.LOUD);
         for (Seat seat : v.takenSeats()) {
             Player d = plugin.getServer().getPlayer(v.occupant(seat));
             v.vacate(seat);
@@ -310,19 +316,24 @@ public final class VehicleService {
     }
 
     public void remove(Vehicle v) {
+        sounds.stop(v);
         vehicles.remove(v);
         v.remove();
     }
 
     public void removeAll() {
         if (task != null) task.cancel();
-        for (Vehicle v : new ArrayList<>(vehicles)) v.remove();
+        for (Vehicle v : new ArrayList<>(vehicles)) {
+            sounds.stop(v);
+            v.remove();
+        }
         vehicles.clear();
     }
 
     private int idleCounter;
 
     private void tickAll() {
+        sounds.advance();
         if (++idleCounter >= 20) {
             idleCounter = 0;
             checkIdle();
@@ -363,6 +374,7 @@ public final class VehicleService {
             return;
         }
         DriveInput input = DriveInput.NONE;
+        v.turretYawDelta = 0f;
         for (Seat seat : v.takenSeats()) {
             Player d = plugin.getServer().getPlayer(v.occupant(seat));
             if (d == null || !d.isOnline() || d.isDead()) {
@@ -389,6 +401,7 @@ public final class VehicleService {
             Player d = plugin.getServer().getPlayer(operator);
             if (d != null) v.aimTurret(d);
         }
+        sounds.tick(v, input);
         if (v.health.fraction() < DamageRules.SMOKE_BELOW && ++v.smokeTick >= 10) {
             v.smokeTick = 0;
             v.world.spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, v.location().add(0, v.type.height, 0), 3, 0.3, 0.1, 0.3, 0.02);

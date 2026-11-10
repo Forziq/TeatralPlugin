@@ -5,7 +5,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -43,6 +43,8 @@ public final class ShellService {
         final UUID driver;
         /** The firing vehicle; it cannot be hit by its own shell near the muzzle. */
         final Vehicle origin;
+        /** Players who already heard this shell whistle past. */
+        final Set<UUID> whistled = new HashSet<>();
 
         Shell(ShellModel model, World world, UUID driver, Vehicle origin) {
             this.model = model;
@@ -115,8 +117,7 @@ public final class ShellService {
         World w = v.world;
         Location at = new Location(w, m.x(), m.y(), m.z());
         shells.add(new Shell(new ShellModel(m.x(), m.y(), m.z(), m.dx(), m.dy(), m.dz()), w, p.getUniqueId(), v));
-        w.playSound(at, Sound.ENTITY_GENERIC_EXPLODE, 1.5f, 1.6f);
-        w.playSound(at, Sound.ENTITY_FIREWORK_ROCKET_LARGE_BLAST, 1.5f, 0.8f);
+        VehicleSounds.boom(w, at, VehicleSounds.CANNON, VehicleSounds.LOUD);
         w.spawnParticle(Particle.LARGE_SMOKE, at, 6, 0.15, 0.15, 0.15, 0.02);
         w.spawnParticle(Particle.EXPLOSION, at, 1);
     }
@@ -134,7 +135,12 @@ public final class ShellService {
             }
             if (!keep) it.remove();
         }
-        for (Vehicle v : vehicles.vehicles()) showReload(v);
+        for (Vehicle v : vehicles.vehicles()) {
+            showReload(v);
+            if (v.hasTurret() && v.reload.pollFinished(tick)) {
+                VehicleSounds.boom(v.world, v.location().add(0, v.type.height / 2, 0), VehicleSounds.RELOAD, 2.0f);
+            }
+        }
     }
 
     /** Moves one shell along; returns false when it is finished. */
@@ -175,6 +181,8 @@ public final class ShellService {
                 if (hit.getHitBlockFace() != null) boom.add(hit.getHitBlockFace().getDirection().multiply(0.1));
             }
             Player shooter = plugin.getServer().getPlayer(s.driver);
+            VehicleSounds.boom(w, boom, VehicleSounds.EXPLOSION_SMALL, 3.0f);
+            if (hitVehicle != null) VehicleSounds.boom(w, boom, VehicleSounds.ARMOUR_HIT, 3.0f);
             w.createExplosion(boom, EXPLOSION_POWER, false, true, shooter);
             if (hitVehicle != null) {
                 HitSide side = HitSide.classify(hitVehicle.state().yaw(), seg.dx(), seg.dz());
@@ -187,6 +195,7 @@ public final class ShellService {
             }
             return false;
         }
+        whistle(s, seg);
         for (double d = 0; d < seg.length(); d += 0.5) {
             w.spawnParticle(Particle.SMOKE, seg.x() + seg.dx() * d, seg.y() + seg.dy() * d, seg.z() + seg.dz() * d,
                     1, 0, 0, 0, 0);
@@ -194,6 +203,24 @@ public final class ShellService {
         w.spawnParticle(Particle.FLAME, seg.endX(), seg.endY(), seg.endZ(), 1, 0, 0, 0, 0);
         w.spawnParticle(Particle.CRIT, seg.endX(), seg.endY(), seg.endZ(), 2, 0.05, 0.05, 0.05, 0);
         return true;
+    }
+
+    /** Blocks from the shell's path within which a player hears it whistle past. */
+    static final double WHISTLE_RANGE = 24.0;
+
+    /** Plays the whistle once to each player near the shell, except the firing vehicle's crew. */
+    private void whistle(Shell s, ShellModel.Segment seg) {
+        double rangeSq = WHISTLE_RANGE * WHISTLE_RANGE;
+        for (Player p : s.world.getPlayers()) {
+            UUID id = p.getUniqueId();
+            if (id.equals(s.driver) || s.whistled.contains(id) || s.origin.seatOf(id) != null) continue;
+            Location pl = p.getLocation();
+            double dx = pl.getX() - seg.endX(), dy = pl.getY() - seg.endY(), dz = pl.getZ() - seg.endZ();
+            if (dx * dx + dy * dy + dz * dz > rangeSq) continue;
+            s.whistled.add(id);
+            p.playSound(new Location(s.world, seg.endX(), seg.endY(), seg.endZ()), VehicleSounds.SHELL_WHISTLE,
+                    SoundCategory.NEUTRAL, VehicleSounds.LOOP_VOLUME, 1f);
+        }
     }
 
     /** Action bar countdown while the gun reloads, shown to whoever fires it, then "ready" once. */

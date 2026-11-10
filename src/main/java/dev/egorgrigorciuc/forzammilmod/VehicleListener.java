@@ -140,5 +140,9 @@ public final class VehicleListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onInput(PlayerInputEvent e) {
         vehicles.noteInputEvent(e.getPlayer(), e.getInput());
+        if (e.getInput().isJump()) {
+            Vehicle v = vehicles.drivenBy(e.getPlayer());
+            if (v != null) vehicles.sounds().horn(v);
+        }
     }
 }
