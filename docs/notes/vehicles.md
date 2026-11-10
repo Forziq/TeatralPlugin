@@ -124,3 +124,11 @@ Result: **none confirmed**. Nothing fits all three of free, Spigot 1.21.4 and a 
 - Reload: `ReloadTimer` (pure), 80 ticks, one per `Vehicle`. The action bar shows whole seconds left (rounded up), then "ready" once. Keys `reload.seconds.*` and `reload.ready`.
 - Constants live in `ShellService` (`RELOAD_TICKS`, `CLICK_DEBOUNCE_TICKS`, `EXPLOSION_POWER`, `SHELL_RAY_SIZE`) and `ShellModel` (`SPEED`, `MAX_RANGE`). Sounds are vanilla (generic explode and large firework blast).
 - Vehicle entities are marker/invulnerable and `VehicleListener.onDamage` cancels damage, so explosions should not hurt them. A wall right at the muzzle can still hurt the driver.
+
+## Army truck (T39)
+- Speed between the jeep and the tank. Wide turning circle. Health 60. No gun. Eight seats: driver, cab passenger, six in the back. Six wheels spin via WheelSpin.
+- Jeep engine sound, pitched lower (soundPitch() on VehicleType, 0.75 for the truck).
+- Model comes from scripts/make-vehicle-models.py. Add new models there; the existing models regenerate byte-identical.
+- CrewSeats now has PASSENGER1 to PASSENGER7.
+- Not tested in game: how the truck looks, the back seat positions, the 0.75-pitch sound, and whether its 2.4-block height fits the command-block pad clearance.
+- Gate 4 passed with no notes from Egor.
