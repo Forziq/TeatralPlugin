@@ -61,7 +61,7 @@ T49|S|haiku-scout|T48|todo|Publish v1.0.0 for the final gate
 G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
 
 ## log (newest first, keep 8)
-- 2026-11-10 T39: army truck added: faster than the jeep, slower than the tank, wide turns, 60 health, no gun, 8 seats. T40: the truck model comes from scripts/make-vehicle-models.py. Details in docs/notes/vehicles.md.
+- 2026-11-10 T39: army truck added: slower than the jeep, faster than the tank, wide turns, 60 health, no gun, 8 seats. T40: the truck model comes from scripts/make-vehicle-models.py. Details in docs/notes/vehicles.md.
 - 2026-11-10 T38: v0.5.0 published: jar on GitHub Releases, pack at https://forziq.github.io/TeatralPlugin/pack/forzammilmod-pack-0.5.0.zip (SHA-1 6d8dc957db90ca33729cb5675eb6375e705ce310). manual.md G4 checklist added.
 - 2026-11-10 T37: everyone in a vehicle sees a health bar at the top. Driver sees speed, gunner sees reload. Clears on exit, death, quit or removal. 223 tests pass, not tried in game. G4: check bars appear and clear, and bottom text doesn't flicker.
 - 2026-11-10 T36: vehicles use our own sounds. Jeep: engine, horn on jump. Tank: idle, rev, tracks, turret, shot, whistle, reload, hits, explosions. Unwired: ricochet, repair, old turret. 210 tests pass, not heard in game. T37: jump is the horn.
