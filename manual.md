@@ -261,3 +261,24 @@ Check each of these and jot down a few words for each:
 - The Russian text reads naturally
 
 Then type `/next`.
+
+## G4 Gate 4: tank battle with friends (after T38)
+
+Get ready:
+1. In game, type `/fmod update`, then restart the server from the exaroton panel. The server must be on v0.5.0 or later.
+2. Use the vehicle pads, well away from spawn, because shells break blocks.
+3. Pick plain or heavy models for the bulky ones: `/fmod vehicle spawn tank` or `jeep` for the plain ones, `/fmod vehicle spawn tank_heavy` or `jeep_heavy` for the bulky ones.
+
+Check each of these and jot down a few words for each:
+- The new models look right
+- Tracks or wheels move with speed
+- Health and the side and back damage feel fair
+- A destroyed tank explodes and throws the crew out
+- Iron ingot repairs work
+- Gunner and passenger seats work
+- Sounds are the right volume, and loops don't stutter or overlap
+- The boss bar and action bar are readable
+- Server TPS with three or four tanks
+- The Russian text reads naturally
+
+Then type `/next`.

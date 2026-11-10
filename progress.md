@@ -1,5 +1,5 @@
 # progress
-now: T38 todo | G1 passed | G2 passed
+now: G4 gate | G1 passed | G2 passed
 updated: 2026-11-10
 
 ## tasks
@@ -43,7 +43,7 @@ T34|L|sonnet-builder|T33|done|Crew seats: gunner and passengers
 T35|L|opus-deep|T34|done|Proper tank and jeep models, with track animation
 T36|M|sonnet-builder|T34|done|Vehicle sounds
 T37|M|sonnet-builder|T36|done|Vehicle HUD
-T38|S|haiku-scout|T35,T37|todo|Publish v0.5.0 for Gate 4
+T38|S|haiku-scout|T35,T37|done|Publish v0.5.0 for Gate 4
 G4|-|egor|T38|gate|Gate 4: tank battle with friends (manual.md G4)
 T39|M|sonnet-builder|G4|todo|Army truck
 T40|L|sonnet-builder|T39|todo|Field artillery
@@ -61,6 +61,7 @@ T49|S|haiku-scout|T48|todo|Publish v1.0.0 for the final gate
 G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
 
 ## log (newest first, keep 8)
+- 2026-11-10 T38: v0.5.0 published: jar on GitHub Releases, pack at https://forziq.github.io/TeatralPlugin/pack/forzammilmod-pack-0.5.0.zip (SHA-1 6d8dc957db90ca33729cb5675eb6375e705ce310). manual.md G4 checklist added.
 - 2026-11-10 T37: everyone in a vehicle sees a health bar at the top. Driver sees speed, gunner sees reload. Clears on exit, death, quit or removal. 223 tests pass, not tried in game. G4: check bars appear and clear, and bottom text doesn't flicker.
 - 2026-11-10 T36: vehicles use our own sounds. Jeep: engine, horn on jump. Tank: idle, rev, tracks, turret, shot, whistle, reload, hits, explosions. Unwired: ricochet, repair, old turret. 210 tests pass, not heard in game. T37: jump is the horn.
 - 2026-11-10 Extra: tank sounds redone (old in sounds/old/). Redone: armour_hit, explosion_small, reload_clank, shell_whistle. New: cannon_fire_tank, turret_traverse_loop, turret_traverse_stop, armour_ricochet. Unheard, unwired.
@@ -68,7 +69,6 @@ G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
 - 2026-11-09 T35: new T-34 style tank (red star, 10 road wheels) and jeep. Made by scripts/make-vehicle-models.py, overwriting Blockbench edits. Tank wheels spin via WheelSpin. BARREL_LENGTH 42/16. Pack 16.1 MB. 182 tests pass, not tried in game.
 - 2026-11-09 T35 check in game: wheels roll the right way (WHEEL_SPIN_SIGN), log shows 10 wheel bones, seats sit right, slopes lean right. No scrolling tracks (BetterModel can't tie texture to speed). T36: wheel bones resent each tick; slow if laggy.
 - 2026-11-08 T34: tank gunner seat, jeep two passenger seats. Right-click takes first free seat, sneak exits. Gunner aims and fires; with no gunner the driver does both. All ejected when destroyed. Jeep punches via arm swing; blasts don't punch.
-- 2026-11-08 T34: 181 tests pass, not tried in game. T35 check: seat positions are guesses, and BetterModel mounting on sp_ bones is unconfirmed ('Seat check' in log). BetterModel's shutdown error isn't ours.
 
 ## blockers
 none
