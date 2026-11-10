@@ -61,6 +61,7 @@ T49|S|haiku-scout|T48|todo|Publish v1.0.0 for the final gate
 G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
 
 ## log (newest first, keep 8)
+- 2026-11-09 Extra (no task id): bulkier look-alikes tank_heavy and jeep_heavy beside the plain ones, for Egor to pick. `/fmod vehicle spawn tank_heavy|jeep_heavy`. New VehicleType entries (same driving and health, bigger hit boxes), same script makes all four models. 185 tests pass, models load on the test server, not tried in game. Practice release 0.4.1 built fine with them in the pack (nothing published); the server sees them only after a real release. Drop the losing pair once Egor picks.
 - 2026-11-09 T35: new T-34 style tank (red star, 10 road wheels) and jeep. Made by scripts/make-vehicle-models.py, overwriting Blockbench edits. Tank wheels spin via WheelSpin. BARREL_LENGTH 42/16. Pack 16.1 MB. 182 tests pass, not tried in game.
 - 2026-11-09 T35 check in game: wheels roll the right way (WHEEL_SPIN_SIGN), log shows 10 wheel bones, seats sit right, slopes lean right. No scrolling tracks (BetterModel can't tie texture to speed). T36: wheel bones resent each tick; slow if laggy.
 - 2026-11-08 T34: tank gunner seat, jeep two passenger seats. Right-click takes first free seat, sneak exits. Gunner aims and fires; with no gunner the driver does both. All ejected when destroyed. Jeep punches via arm swing; blasts don't punch.
@@ -68,7 +69,6 @@ G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
 - 2026-11-08 T33: tank 100 HP, jeep 40. Shell hull hits: tank 25 front, 35 side, 50 back. Iron ingot repairs 10%. 170 tests pass, untested in game. T34 check: front/back may flip, jeep melee may miss Interaction, blasts may count as jeep punches.
 - 2026-11-08 G3 passed, no notes from Egor. Next: T33 vehicle health, damage and repairs.
 - 2026-11-08 T32: v0.4.0 released for Gate 3, pack SHA-1 ad7aec7e. manual.md G3 has the checklist. Server: /fmod update, then restart.
-- 2026-11-08 T28: others see an emoter's hands and armour empty while emoting, restored on stop; re-hidden after swaps, clicks, joins. HiddenGear is the state class. 153 tests pass, not tried in game. Greeting arm angle flipped, needs new jar.
 
 ## blockers
 none

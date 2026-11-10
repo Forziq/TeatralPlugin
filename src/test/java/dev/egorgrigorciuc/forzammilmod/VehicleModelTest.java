@@ -104,7 +104,50 @@ class VehicleModelTest {
 
     @Test
     void tankHasBones() throws Exception {
-        Model m = new Model("models/tank.bbmodel");
+        Model m = tank("models/tank.bbmodel", VehicleType.TANK);
+        assertTrue(m.size(0) >= 40 && m.size(0) <= 56, "width " + m.size(0));
+        assertTrue(m.size(2) >= 70 && m.size(2) <= 100, "length " + m.size(2));
+        assertTrue(m.size(1) >= 24 && m.size(1) <= 40, "height " + m.size(1));
+    }
+
+    @Test
+    void heavyTankHasBones() throws Exception {
+        Model m = tank("models/tank_heavy.bbmodel", VehicleType.TANK_HEAVY);
+        assertTrue(m.size(0) >= 50 && m.size(0) <= 60, "width " + m.size(0));
+        assertTrue(m.size(2) >= 80 && m.size(2) <= 104, "length " + m.size(2));
+        assertTrue(m.size(1) >= 30 && m.size(1) <= 40, "height " + m.size(1));
+    }
+
+    @Test
+    void jeepHasBones() throws Exception {
+        Model m = jeep("models/jeep.bbmodel", VehicleType.JEEP);
+        assertTrue(m.size(0) >= 26 && m.size(0) <= 38, "width " + m.size(0));
+        assertTrue(m.size(2) >= 48 && m.size(2) <= 64, "length " + m.size(2));
+    }
+
+    @Test
+    void armouredJeepHasBones() throws Exception {
+        Model m = jeep("models/jeep_heavy.bbmodel", VehicleType.JEEP_HEAVY);
+        assertTrue(m.size(0) >= 36 && m.size(0) <= 44, "width " + m.size(0));
+        assertTrue(m.size(2) >= 60 && m.size(2) <= 74, "length " + m.size(2));
+    }
+
+    @Test
+    void everyTypeHasAModelAndBothNames() throws Exception {
+        for (VehicleType t : VehicleType.values()) {
+            new Model("models/" + t.model() + ".bbmodel");
+            for (String lang : new String[]{"en", "ru"}) {
+                try (InputStream in = getClass().getClassLoader().getResourceAsStream("lang/" + lang + ".yml")) {
+                    String yml = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+                    assertTrue(yml.contains("\n    " + t.id + ": \""), lang + ".yml has no name for " + t.id);
+                }
+            }
+        }
+    }
+
+    /** Bones, pivots and seats every tank model must have, whichever look it is. */
+    private static Model tank(String path, VehicleType type) throws Exception {
+        Model m = new Model(path);
         assertNull(m.parentByName.get("hull"));
         assertTrue(m.parentByName.containsKey("hull"));
         assertEquals("hull", m.parentByName.get("turret"));
@@ -112,11 +155,11 @@ class VehicleModelTest {
         assertEquals("barrel", m.parentByName.get("muzzle"));
         assertEquals("hull", m.parentByName.get("p_driver"));
         assertEquals("turret", m.parentByName.get("sp_gunner"));
-        for (String w : WheelSpin.bones(VehicleType.TANK)) {
+        for (String w : WheelSpin.bones(type)) {
             assertEquals("hull", m.parentByName.get(w), w);
         }
-        seats(m, VehicleType.TANK);
-        wheels(m, VehicleType.TANK);
+        seats(m, type);
+        wheels(m, type);
         // The pivots TurretModel computes the muzzle from.
         assertArrayEquals(new double[]{0, TurretModel.TURRET_PIVOT_UP * 16, 0}, m.origin("turret"), 1e-6);
         assertArrayEquals(new double[]{0, TurretModel.BARREL_PIVOT_UP * 16, -TurretModel.BARREL_PIVOT_FORWARD * 16}, m.origin("barrel"), 1e-6);
@@ -126,29 +169,28 @@ class VehicleModelTest {
         assertEquals(0, m.origin("sp_gunner")[0], 1e-6);
         assertEquals(0, m.origin("sp_gunner")[2], 1e-6);
         basics(m);
-        assertTrue(m.size(0) >= 40 && m.size(0) <= 56, "width " + m.size(0));
-        assertTrue(m.size(2) >= 70 && m.size(2) <= 100, "length " + m.size(2));
-        assertTrue(m.size(1) >= 24 && m.size(1) <= 40, "height " + m.size(1));
-        // Hit box half sizes (blocks) should still sit inside the drawn hull.
-        assertTrue(VehicleType.TANK.halfWidth * 32 <= m.size(0), "tank hit box wider than the model");
+        // Hit box (blocks) should still sit inside the drawn hull.
+        assertTrue(type.halfWidth * 32 <= m.size(0), type + " hit box wider than the model");
+        assertTrue(type.halfLength * 32 <= m.size(2), type + " hit box longer than the model");
+        return m;
     }
 
-    @Test
-    void jeepHasBones() throws Exception {
-        Model m = new Model("models/jeep.bbmodel");
+    private static Model jeep(String path, VehicleType type) throws Exception {
+        Model m = new Model(path);
         assertNull(m.parentByName.get("body"));
         assertTrue(m.parentByName.containsKey("body"));
         for (String w : new String[]{"p_driver", "sp_passenger1", "sp_passenger2"}) {
             assertEquals("body", m.parentByName.get(w), w);
         }
-        for (String w : WheelSpin.bones(VehicleType.JEEP)) {
+        for (String w : WheelSpin.bones(type)) {
             assertEquals("body", m.parentByName.get(w), w);
         }
-        seats(m, VehicleType.JEEP);
-        wheels(m, VehicleType.JEEP);
+        seats(m, type);
+        wheels(m, type);
         basics(m);
-        assertTrue(m.size(0) >= 26 && m.size(0) <= 38, "width " + m.size(0));
-        assertTrue(m.size(2) >= 48 && m.size(2) <= 64, "length " + m.size(2));
+        assertTrue(type.halfWidth * 32 <= m.size(0), type + " hit box wider than the model");
+        assertTrue(type.halfLength * 32 <= m.size(2), type + " hit box longer than the model");
+        return m;
     }
 
     /** Every seat the code uses has a bone: the driver a p_ (seat) bone, the others p_ or sp_. */

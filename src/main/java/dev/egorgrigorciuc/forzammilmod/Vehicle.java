@@ -54,7 +54,7 @@ final class Vehicle {
         this.world = anchor.getWorld();
         this.state = state;
         this.renderYaw = state.yaw() + MODEL_YAW_OFFSET;
-        this.turret = type == VehicleType.TANK ? new TurretModel() : null;
+        this.turret = type.isTank() ? new TurretModel() : null;
     }
 
     void rig(VehicleRig rig) {

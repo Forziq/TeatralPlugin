@@ -26,8 +26,8 @@ final class CrewSeats {
     /** Seats the type has, in the order people fill them. */
     static List<Seat> seatsOf(VehicleType type) {
         return switch (type) {
-            case TANK -> List.of(Seat.DRIVER, Seat.GUNNER);
-            case JEEP -> List.of(Seat.DRIVER, Seat.PASSENGER1, Seat.PASSENGER2);
+            case TANK, TANK_HEAVY -> List.of(Seat.DRIVER, Seat.GUNNER);
+            case JEEP, JEEP_HEAVY -> List.of(Seat.DRIVER, Seat.PASSENGER1, Seat.PASSENGER2);
         };
     }
 
@@ -51,7 +51,7 @@ final class CrewSeats {
 
     /** Seat that aims the turret and fires: the gunner if there is one, else the driver, else nobody. Null for turretless types. */
     static Seat turretController(VehicleType type, Collection<Seat> taken) {
-        if (type != VehicleType.TANK) return null;
+        if (!type.isTank()) return null;
         if (taken.contains(Seat.GUNNER)) return Seat.GUNNER;
         if (taken.contains(Seat.DRIVER)) return Seat.DRIVER;
         return null;

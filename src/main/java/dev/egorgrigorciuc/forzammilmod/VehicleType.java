@@ -10,7 +10,11 @@ import java.util.Locale;
 public enum VehicleType {
     //    id      max   rev   accel   brake  coast  turn  onSpot step  halfW halfL height hp
     TANK("tank", 0.18, 0.08, 0.006, 0.025, 0.010, 2.5, true, 1.0, 1.45, 2.50, 1.7, 100),
-    JEEP("jeep", 0.42, 0.14, 0.014, 0.040, 0.012, 4.5, false, 1.0, 0.95, 1.55, 1.2, 40);
+    JEEP("jeep", 0.42, 0.14, 0.014, 0.040, 0.012, 4.5, false, 1.0, 0.95, 1.55, 1.2, 40),
+    // Bulkier look-alikes, kept beside the plain ones until Egor picks. Same driving and health, bigger hit boxes
+    // (heavy tank model 56 x 90 px, armoured jeep 40 x 68 px).
+    TANK_HEAVY("tank_heavy", 0.18, 0.08, 0.006, 0.025, 0.010, 2.5, true, 1.0, 1.65, 2.65, 1.9, 100),
+    JEEP_HEAVY("jeep_heavy", 0.42, 0.14, 0.014, 0.040, 0.012, 4.5, false, 1.0, 1.15, 1.90, 1.5, 40);
 
     public final String id;
     public final double maxSpeed;
@@ -50,6 +54,11 @@ public enum VehicleType {
     /** BetterModel model name (file name of the .bbmodel). */
     public String model() {
         return id;
+    }
+
+    /** True for both tanks: turret, gunner seat, armour that depends on the side hit. */
+    public boolean isTank() {
+        return this == TANK || this == TANK_HEAVY;
     }
 
     public static VehicleType byId(String s) {

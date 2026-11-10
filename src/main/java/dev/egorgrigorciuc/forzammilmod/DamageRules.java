@@ -14,7 +14,7 @@ final class DamageRules {
 
     /** Direct shell hit. Tanks: front 25, side 35, back 50. Jeeps: 40 from anywhere. */
     static int shell(VehicleType type, HitSide side) {
-        if (type == VehicleType.JEEP) return 40;
+        if (!type.isTank()) return 40;
         return switch (side) {
             case FRONT -> 25;
             case SIDE -> 35;
@@ -29,10 +29,10 @@ final class DamageRules {
     }
 
     static int melee(VehicleType type) {
-        return type == VehicleType.JEEP ? MELEE_JEEP : 0;
+        return !type.isTank() ? MELEE_JEEP : 0;
     }
 
     static int arrow(VehicleType type) {
-        return type == VehicleType.JEEP ? ARROW_JEEP : 0;
+        return !type.isTank() ? ARROW_JEEP : 0;
     }
 }

@@ -39,5 +39,9 @@ class WheelSpinTest {
         assertEquals(10, WheelSpin.bones(VehicleType.TANK).size());
         assertEquals(WheelSpin.JEEP_WHEEL_RADIUS, WheelSpin.radius(VehicleType.JEEP));
         assertEquals(WheelSpin.TANK_WHEEL_RADIUS, WheelSpin.radius(VehicleType.TANK));
+        assertEquals(10, WheelSpin.bones(VehicleType.TANK_HEAVY).size());
+        assertEquals(4, WheelSpin.bones(VehicleType.JEEP_HEAVY).size());
+        assertEquals(WheelSpin.HEAVY_WHEEL_RADIUS, WheelSpin.radius(VehicleType.TANK_HEAVY));
+        assertEquals(WheelSpin.HEAVY_WHEEL_RADIUS, WheelSpin.radius(VehicleType.JEEP_HEAVY));
     }
 }

@@ -66,8 +66,8 @@ class ForzammilCommandTabTest {
     void vehicleSubcommands() {
         assertEquals(List.of("spawn", "remove", "list"), tab("vehicle", ""));
         assertEquals(List.of("remove"), tab("vehicle", "re"));
-        assertEquals(List.of("tank", "jeep"), tab("vehicle", "spawn", ""));
-        assertEquals(List.of("jeep"), tab("vehicle", "spawn", "J"));
+        assertEquals(List.of("tank", "jeep", "tank_heavy", "jeep_heavy"), tab("vehicle", "spawn", ""));
+        assertEquals(List.of("jeep", "jeep_heavy"), tab("vehicle", "spawn", "J"));
         assertTrue(tab("vehicle", "list", "").isEmpty());
     }
 }

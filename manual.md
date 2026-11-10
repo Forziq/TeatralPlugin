@@ -196,7 +196,7 @@ Then type `/next`. It'll take your notes and plan the next phase with you.
 
 Setup on exaroton:
 1. Turn on command blocks: in the exaroton panel open Options and set `enable-command-block` to `true`, or edit `server.properties` by hand. Restart the server.
-2. Join as Forzammil and type `/give @s command_block`. Place it under the floor or in a wall. Open it and set the command to `fmod vehicle spawn tank` (no slash; `jeep` works too). Set the mode to Impulse and turn Needs Redstone on. Put a button on one of its sides.
+2. Join as Forzammil and type `/give @s command_block`. Place it under the floor or in a wall. Open it and set the command to `fmod vehicle spawn tank` (no slash; `jeep`, `tank_heavy` and `jeep_heavy` work too). Set the mode to Impulse and turn Needs Redstone on. Put a button on one of its sides.
 3. Keep the 2 to 5 blocks above the command block clear. Press the button. The vehicle appears 2 blocks above the command block, facing the way the command block points.
 
 What to expect:

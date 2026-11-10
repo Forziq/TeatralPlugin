@@ -10,6 +10,9 @@ final class WheelSpin {
     /** Tank road wheel radius in blocks (10.5 px tall road wheels). */
     static final double TANK_WHEEL_RADIUS = 5.25 / 16.0;
 
+    /** Road wheel radius of the heavy tank and tyre radius of the armoured jeep (12 px tall in both models). */
+    static final double HEAVY_WHEEL_RADIUS = 6.0 / 16.0;
+
     /** Jeep wheel bones. */
     static final List<String> JEEP_WHEELS = List.of("wheel_fl", "wheel_fr", "wheel_rl", "wheel_rr");
     /** Tank road wheel bones, five a side, numbered front to back; l is the tank's left (-X). */
@@ -22,8 +25,8 @@ final class WheelSpin {
     /** Bones that roll with speed on this vehicle type's model. */
     static List<String> bones(VehicleType type) {
         return switch (type) {
-            case TANK -> TANK_WHEELS;
-            case JEEP -> JEEP_WHEELS;
+            case TANK, TANK_HEAVY -> TANK_WHEELS;
+            case JEEP, JEEP_HEAVY -> JEEP_WHEELS;
         };
     }
 
@@ -32,6 +35,7 @@ final class WheelSpin {
         return switch (type) {
             case TANK -> TANK_WHEEL_RADIUS;
             case JEEP -> JEEP_WHEEL_RADIUS;
+            case TANK_HEAVY, JEEP_HEAVY -> HEAVY_WHEEL_RADIUS;
         };
     }
 

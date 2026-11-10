@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Builds the tank and jeep models (shapes plus a painted 128x128 texture) for BetterModel.
+"""Builds the vehicle models (shapes plus a painted 128x128 texture) for BetterModel.
 
 Usage: python3 scripts/make-vehicle-models.py
-Writes src/main/resources/models/tank.bbmodel and jeep.bbmodel. Needs Pillow (pip install pillow).
+Writes tank, jeep, tank_heavy and jeep_heavy .bbmodel files into src/main/resources/models. Needs Pillow
+(pip install pillow). The heavy ones are bulkier alternatives to the plain tank and jeep, kept side by side
+until Egor picks which to keep.
 Re-running overwrites any changes made to those files in Blockbench, so edit this script instead.
 
 Rules the shapes follow (BetterModel 2.2.0 / Minecraft item models):
@@ -203,8 +205,24 @@ def sprocket(r, ang):
     return STEEL
 
 
-def paint():
+# Darker, more worn paint for the heavy variants.
+HEAVY = {"OLIVE": (60, 69, 44), "OLIVE_WORN": (122, 126, 88), "OLIVE_DARK": (37, 44, 28), "GUNMETAL": (46, 50, 42)}
+
+
+def paint(palette=None):
+    """The texture atlas; palette swaps the named colours for this one picture."""
+    saved = {k: globals()[k] for k in (palette or {})}
+    globals().update(palette or {})
+    try:
+        return _paint(1.0 if not palette else 1.8)
+    finally:
+        globals().update(saved)
+
+
+def _paint(wear):
     p = Painter(35)
+    plain_panel = p.panel
+    p.panel = lambda *a, **k: plain_panel(*a, **{**k, "chips": k.get("chips", 0.02) * wear})
     p.panel("olive_sq", OLIVE, OLIVE_WORN, OLIVE_DARK, rivets=True)
     p.star()
     p.panel("olive_long", OLIVE, OLIVE_WORN, OLIVE_DARK, rivets=True)
@@ -286,8 +304,9 @@ TAN225 = math.tan(math.radians(22.5))
 
 
 class Model:
-    def __init__(self, name):
+    def __init__(self, name, palette=None):
         self.name = name
+        self.palette = palette
         self.elements = []
         self.groups = []
         self.roots = []
@@ -335,7 +354,7 @@ class Model:
                     out.append({"uuid": n["uuid"], "isOpen": True, "children": clean(n["children"])})
             return out
 
-        img = paint()
+        img = paint(self.palette)
         return {
             "meta": {"format_version": "5.0", "model_format": "free", "box_uv": False},
             "name": self.name, "model_identifier": "", "visible_box": [1, 1, 0], "variable_placeholders": "",
@@ -419,6 +438,22 @@ def wheel(model, parent, name, axis, centre, radius, x_range, side_region, tread
             rot = [0, 0, angle] if angle else None
             origin = (c_x, c_y, 0)
         model.cube(parent, f"{name}_{i}", frm, to, tread, rot=rot, origin=origin, faces=faces)
+
+
+def chamfer(model, parent, name, p0, p1, y0, y1, thick, mat="olive"):
+    """Upright plate cutting a corner: its outer face runs from p0 to p1 (x, z), a 45 degree line. The inside is towards x = z = 0."""
+    (xa, za), (xb, zb) = p0, p1
+    length = math.hypot(xb - xa, zb - za)
+    mx, mz = (xa + xb) / 2, (za + zb) / 2
+    nx, nz = (zb - za) / length, -(xb - xa) / length
+    if nx * mx + nz * mz < 0:
+        nx, nz = -nx, -nz
+    cx, cz = mx - nx * thick / 2, mz - nz * thick / 2
+    angle = -math.degrees(math.atan2(zb - za, xb - xa))
+    angle = angle - 180 if angle > 90 else angle + 180 if angle <= -90 else angle
+    assert abs(abs(angle) - 45) < 1e-6, f"{name}: {angle} is not a 45 degree corner"
+    model.cube(parent, name, (cx - length / 2, y0, cz - thick / 2), (cx + length / 2, y1, cz + thick / 2), mat,
+               rot=[0, round(angle, 1), 0], origin=(cx, (y0 + y1) / 2, cz))
 
 
 def tank():
@@ -532,9 +567,184 @@ def jeep():
     return m
 
 
+def tank_heavy():
+    """Heavy breakthrough tank: wider tracks, bigger wheels, side skirts, a slab-sided turret with a fat gun and
+    a roof machine gun. Keeps the plain tank's turret, barrel and muzzle pivots so TurretModel fits both."""
+    m = Model("tank_heavy", HEAVY)
+    hull = m.group("hull", (0, 16, 0))
+    m.cube(hull, "lower_hull", (-16, 3, -33), (16, 14, 37), "dark")
+    m.cube(hull, "upper_hull", (-17, 14, -24), (17, 18, 35))
+    # Thick sloped front plate; its end face is the nose.
+    on_glacis = dict(rot=[-22.5, 0, 0], origin=(0, 18, -24))
+    m.cube(hull, "glacis", (-17, 9, -43), (17, 18, -24), **on_glacis)
+    m.cube(hull, "spare_links", (-6, 18, -41), (6, 18.75, -37), "track_top", **on_glacis)
+    m.cube(hull, "driver_visor", (-12, 18, -34), (-4, 19.5, -27), "olive", faces={"up": "hatch"}, **on_glacis)
+    m.cube(hull, "visor_slit", (-10, 18.4, -34.2), (-6, 19, -34), "dark_steel", **on_glacis)
+    m.cube(hull, "headlight", (-16, 18, -39), (-13, 19.75, -37), "dark_steel", faces={"north": "light"}, **on_glacis)
+    m.cube(hull, "headlight", (13, 18, -39), (16, 19.75, -37), "dark_steel", faces={"north": "light"}, **on_glacis)
+    m.cube(hull, "mg_ball", (5, 18, -34), (10, 19.75, -29), "dark", **on_glacis)
+    m.cube(hull, "mg_barrel", (7, 18.5, -40), (8, 19.25, -34), "dark_steel", **on_glacis)
+    for x in (-13, 11):
+        m.cube(hull, "tow_hook", (x, 10, -44.5), (x + 2, 12.5, -43), "dark_steel", **on_glacis)
+    m.cube(hull, "rear_plate", (-17, 8, 35), (17, 18, 41), rot=[22.5, 0, 0], origin=(0, 18, 35))
+    m.cube(hull, "engine_deck", (-11, 18, 17), (11, 18.6, 33), "olive", faces={"up": "engine"})
+    for x in (-12, 7):
+        m.cube(hull, "exhaust", (x, 9, 38), (x + 5, 13, 44.5), "dark_steel")
+    # Two fuel drums across the back.
+    wheel(m, hull, "fuel_drum_l", "x", (19.6, 38.5), 3, (-15, -1.5), "dark_sq", "dark")
+    wheel(m, hull, "fuel_drum_r", "x", (19.6, 38.5), 3, (1.5, 15), "dark_sq", "dark")
+    m.cube(hull, "stowage_box", (-27, 17, 6), (-18, 20.5, 24))
+    m.cube(hull, "tool_box", (18, 17, -8), (27, 19.5, 4), "dark")
+    wheel(m, hull, "tarp_roll", "z", (22.5, 19), 2, (8, 32), "seat", "seat")
+    track = {"up": "track_top", "down": "track_top", "east": "track_side", "west": "track_side"}
+    for s in (-1, 1):
+        x0, x1 = sorted((s * 16.5, s * 27.5))
+        m.cube(hull, "track_bottom", (x0, 0, -34), (x1, 2, 34), "track_side", faces=track)
+        m.cube(hull, "track_top", (x0, 14, -43), (x1, 16, 43), "track_side", faces=track)
+        m.cube(hull, "track_front_slope", (x0, 0, -45.5), (x1, 2, -34), "track_sq", rot=[45, 0, 0], origin=(0, 1, -34))
+        m.cube(hull, "track_front", (x0, 8, -44), (x1, 15, -42), "track_sq")
+        m.cube(hull, "track_rear_slope", (x0, 0, 34), (x1, 2, 45.5), "track_sq", rot=[-45, 0, 0], origin=(0, 1, 34))
+        m.cube(hull, "track_rear", (x0, 8, 42), (x1, 15, 44), "track_sq")
+        wx = sorted((s * 17, s * 27))
+        wheel(m, hull, "idler", "x", (10.5, -38), 3.5, wx, "wheel_road", "dark_steel")
+        wheel(m, hull, "sprocket", "x", (10.5, 38), 3.5, wx, "sprocket", "dark_steel")
+        f0, f1 = sorted((s * 16, s * 28))
+        m.cube(hull, "fender", (f0, 16, -45), (f1, 17, 45))
+        m.cube(hull, "mudguard", (f0, 11, -46), (f1, 17, -45))
+        k0, k1 = sorted((s * 27.5, s * 28.25))
+        for z0, z1 in ((-41, -14.5), (-13.5, 13.5), (14.5, 41)):
+            m.cube(hull, "side_skirt", (k0, 11.5, z0), (k1, 16, z1))
+    side_names = {-1: "l", 1: "r"}
+    for s in (-1, 1):
+        for i, zc in enumerate((-28, -14, 0, 14, 28), start=1):
+            g = m.group(f"wheel_{side_names[s]}{i}", (s * 22, 8, zc), hull)
+            wheel(m, g, f"wheel_{side_names[s]}{i}", "x", (8, zc), 6, sorted((s * 17, s * 27)), "wheel_road")
+
+    turret = m.group("turret", (0, 16, 0), hull)
+    m.cube(turret, "turret_ring", (-12, 18, -12), (12, 19, 12), "dark")
+    m.cube(turret, "turret_body", (-13, 19, -12), (13, 29.5, 14), "olive", faces={"east": "star", "west": "star"})
+    m.cube(turret, "turret_nose", (-9, 19, -16), (9, 29, -12))
+    for s in (-1, 1):
+        chamfer(m, turret, "turret_cheek", (s * 9, -16), (s * 13, -12), 19, 29, 4)
+        chamfer(m, turret, "bustle_corner", (s * 9, 21), (s * 13, 17), 20, 28.5, 4)
+        m.cube(turret, "grab_rail", (s * 13 - 0.4, 27, 3), (s * 13 + 0.4, 27.7, 12), "dark_steel")
+    m.cube(turret, "turret_bustle", (-13, 20, 14), (13, 28.5, 17))
+    m.cube(turret, "turret_bustle_end", (-9, 20, 17), (9, 28.5, 21))
+    m.cube(turret, "bustle_box", (-8, 21, 21), (8, 26, 24), "dark")
+    m.cube(turret, "tarp", (-7, 28.5, 15), (7, 30.5, 20), "seat")
+    m.cube(turret, "turret_roof", (-12, 29.5, -11), (12, 30.5, 13))
+    m.cube(turret, "cupola_ring", (-10.5, 30.5, 2.5), (-3.5, 32.5, 9.5), "dark_steel")
+    m.cube(turret, "cupola", (-10, 32.5, 3), (-4, 33.5, 9), "olive", faces={"up": "hatch"})
+    m.cube(turret, "hatch_lid", (3, 30.5, 3), (9, 31.25, 9), "olive", faces={"up": "hatch"})
+    m.cube(turret, "periscope", (-8, 30.5, -8), (-5, 32, -6), "dark_steel")
+    # Roof machine gun on a pintle.
+    m.cube(turret, "roof_mg_post", (5.5, 30.5, -2), (6.5, 33.5, -1), "dark_steel")
+    m.cube(turret, "roof_mg_body", (5, 33.5, -5), (7, 35, 2), "dark_steel")
+    m.cube(turret, "roof_mg_barrel", (5.6, 33.9, -13), (6.4, 34.6, -5), "dark_steel")
+    m.cube(turret, "roof_mg_ammo", (7, 33, -3), (9.5, 35, 0), "dark")
+    m.group("sp_gunner", (0, 22, 0), turret)  # at the turret pivot, so turning the turret doesn't move the seat
+
+    barrel = m.group("barrel", (0, 21.5, -12), turret)  # the pivot sits inside the turret front
+    m.cube(barrel, "mantlet", (-7, 18.5, -19.5), (7, 26, -15))
+    m.cube(barrel, "gun_sleeve", (-3.25, 18.25, -27), (3.25, 24.75, -19.5))
+    m.cube(barrel, "coax_mg", (4.5, 21, -21.5), (5.5, 22, -19.5), "dark_steel")
+    m.cube(barrel, "gun_tube", (-2.25, 19.25, -52), (2.25, 23.75, -27), "metal")
+    m.cube(barrel, "muzzle_brake", (-3.5, 18, -50.5), (3.5, 25, -48), "dark_steel")
+    m.cube(barrel, "muzzle_brake", (-3.5, 18, -54), (3.5, 25, -51.5), "dark_steel")
+    m.group("muzzle", (0, 21.5, -54), barrel)  # TurretModel: barrel pivot -12, muzzle 42 px further
+
+    m.group("p_driver", (-8, 15.5, -29.5), hull)  # under the driver's visor, front left of the sloped front
+    return m
+
+
+def jeep_heavy():
+    """Armoured scout car: lifted on big tyres, bull bar and wire cutter, armoured screen and doors, roll bar
+    with spotlights and a machine gun. Same seats as the plain jeep."""
+    m = Model("jeep_heavy", HEAVY)
+    body = m.group("body", (0, 11, 0))
+    m.cube(body, "chassis", (-10, 4, -30), (10, 7, 28), "dark")
+    m.cube(body, "floor", (-13, 7, -8), (13, 8, 28), "dark")
+    for z in (-19, 19):
+        m.cube(body, "axle", (-15, 5.25, z - 0.75), (15, 6.75, z + 0.75), "dark_steel")
+    for s in (-1, 1):
+        a, b = sorted((s * 13, s * 12))
+        m.cube(body, "side_low", (a, 8, -8), (b, 12, 28))
+        m.cube(body, "side_rear", (a, 12, 6), (b, 15, 28))
+        m.cube(body, "side_post", (a, 12, -8), (b, 15, -6))
+        da, db = sorted((s * 13, s * 13.75))
+        m.cube(body, "door_armour", (da, 8.5, -7), (db, 16, 7))
+        fa, fb = sorted((s * 20, s * 10))
+        m.cube(body, "front_fender", (fa, 12.5, -29), (fb, 13.5, -9))
+        m.cube(body, "front_fender_lip", (fa, 9.5, -29.75), (fb, 13.5, -29))
+        ra, rb = sorted((s * 20, s * 13))
+        m.cube(body, "rear_fender", (ra, 12.5, 9), (rb, 13.5, 28))
+        m.cube(body, "rear_fender_lip", (ra, 9.5, 28), (rb, 13.5, 28.75))
+        sa, sb = sorted((s * 18.5, s * 13))
+        m.cube(body, "side_step", (sa, 5.5, -11), (sb, 6.5, 11), "dark")
+        ha, hb = sorted((s * 14.5, s * 12))
+        m.cube(body, "headlight", (ha, 13.5, -29), (hb, 16, -27), "dark_steel", faces={"north": "light"})
+    m.cube(body, "rear_wall", (-12, 8, 27), (12, 15, 28))
+    m.cube(body, "dash", (-12, 8, -9), (12, 15, -8))
+    m.cube(body, "bonnet", (-10, 7, -28), (10, 15, -9))
+    m.cube(body, "bonnet_vents", (-5, 15, -26), (5, 16, -11), "olive", faces={"up": "engine"})
+    m.cube(body, "grille", (-10, 6, -30), (10, 15, -28), "olive", faces={"north": "grille"})
+    m.cube(body, "bumper", (-17, 4, -33.5), (17, 7.5, -31), "dark_steel")
+    for x in (-8, 6):
+        m.cube(body, "bumper_mount", (x, 4.5, -31), (x + 2, 6.5, -30), "dark")
+        m.cube(body, "bull_bar_post", (x, 7.5, -33), (x + 2, 17, -31.5), "dark_steel")
+    for y in (10.5, 15.5):
+        m.cube(body, "bull_bar_rail", (-11, y, -33.25), (11, y + 1.5, -31.75), "dark_steel")
+    m.cube(body, "wire_cutter", (-0.5, 7.5, -34.5), (0.5, 26, -33.5), "dark_steel")
+    m.cube(body, "wire_cutter_hook", (-0.5, 25, -36.5), (0.5, 26, -34.5), "dark_steel")
+    m.cube(body, "wire_cutter_brace", (-0.5, 7.5, -33.5), (0.5, 8.5, -30), "dark_steel")
+    m.cube(body, "snorkel", (10, 13.5, -12), (12, 25, -10), "dark_steel")
+    m.cube(body, "snorkel_cap", (9.5, 25, -13.5), (12.5, 27, -9.5), "dark")
+    # Windscreen: glass behind an armour plate that leaves a slit to see through.
+    m.cube(body, "screen_bottom", (-13, 15, -9), (13, 16, -8))
+    m.cube(body, "screen_top", (-13, 22, -9), (13, 23, -8))
+    m.cube(body, "screen_post", (-13, 16, -9), (-12, 22, -8))
+    m.cube(body, "screen_post", (12, 16, -9), (13, 22, -8))
+    m.cube(body, "screen_middle", (-0.5, 16, -9), (0.5, 22, -8))
+    m.cube(body, "glass", (-12, 16, -8.75), (-0.5, 22, -8.25), "glass")
+    m.cube(body, "glass", (0.5, 16, -8.75), (12, 22, -8.25), "glass")
+    m.cube(body, "screen_armour", (-13, 19, -9.75), (13, 23.5, -9))
+    m.cube(body, "steering_wheel", (-9.75, 13, -6.5), (-3.75, 17, -6), "dark_steel", rot=[-22.5, 0, 0], origin=(-6.75, 15, -6.25))
+    m.cube(body, "steering_column", (-7.25, 11, -8), (-6.25, 14, -6.5), "dark_steel")
+    for x0, x1 in ((-11, -2.5), (2.5, 11)):
+        m.cube(body, "front_seat", (x0, 8, -3), (x1, 10.5, 4), "seat")
+        m.cube(body, "front_backrest", (x0, 10.5, 3), (x1, 16, 5), "seat")
+    m.cube(body, "rear_seat", (-11, 8, 14), (11, 10.5, 23), "seat")
+    m.cube(body, "rear_backrest", (-11, 10.5, 23), (11, 15.5, 25), "seat")
+    # Roll bar with four spotlights and a machine gun on top.
+    for s in (-1, 1):
+        a, b = sorted((s * 13, s * 11.5))
+        m.cube(body, "roll_bar_post", (a, 15, 6), (b, 26.5, 7.5), "dark")
+    m.cube(body, "roll_bar", (-13, 25, 6), (13, 26.5, 7.5), "dark")
+    for x in (-11, -6.5, 3.5, 8):
+        m.cube(body, "spotlight", (x, 26.5, 5.5), (x + 3, 29.5, 7.5), "dark_steel", faces={"north": "light"})
+    m.cube(body, "mg_mount", (-0.75, 26.5, 6), (0.75, 28.5, 7.5), "dark_steel")
+    m.cube(body, "mg_body", (-1, 28.5, 2), (1, 30.5, 10), "dark_steel")
+    m.cube(body, "mg_barrel", (-0.4, 29.1, -8), (0.4, 29.9, 2), "dark_steel")
+    m.cube(body, "mg_grips", (-1.75, 28.75, 10), (1.75, 29.75, 10.75), "dark_steel")
+    m.cube(body, "mg_ammo", (1, 27.5, 4.5), (3.25, 30, 8), "dark")
+    m.cube(body, "jerry_can", (-11.5, 8, 28), (-7, 15, 31.5), "dark")
+    m.cube(body, "jerry_can", (7, 8, 28), (11.5, 15, 31.5), "dark")
+    m.cube(body, "spare_bracket", (-2, 11, 28), (2, 13, 28.5), "dark_steel")
+    wheel(m, body, "spare_wheel", "z", (0, 12), 6, (28.5, 33), "wheel_jeep", "tyre")
+    m.cube(body, "ammo_boxes", (-19, 13.5, 13), (-14, 17, 25), "dark")
+    m.cube(body, "tarp_roll", (14, 13.5, 11), (19, 16.5, 26), "seat")
+    for name, x, z in (("wheel_fl", -17, -19), ("wheel_fr", 17, -19), ("wheel_rl", -17, 19), ("wheel_rr", 17, 19)):
+        g = m.group(name, (x, 6, z), body)
+        wheel(m, g, name, "x", (6, z), 6, sorted((x - 2.5, x + 2.5)), "wheel_jeep", "tyre")
+    m.group("p_driver", (-6.75, 10.5, 1), body)
+    m.group("sp_passenger1", (6.75, 10.5, 1), body)  # front passenger
+    m.group("sp_passenger2", (0, 10.5, 18), body)  # back seat, behind the gun
+    return m
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    for model in (tank(), jeep()):
+    for model in (tank(), jeep(), tank_heavy(), jeep_heavy()):
         path = OUT / f"{model.name}.bbmodel"
         path.write_text(json.dumps(model.json(), separators=(",", ":")) + "\n", encoding="utf-8")
         print(f"wrote {path.relative_to(ROOT)} ({path.stat().st_size // 1024} KB, {len(model.elements)} cubes)")

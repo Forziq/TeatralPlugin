@@ -83,13 +83,13 @@ public final class ShellService {
     /** True if this player sits in a tank (any seat), so their left-click never hits blocks or mobs. */
     boolean isTankCrew(Player p) {
         Vehicle v = vehicles.boardedBy(p);
-        return v != null && v.type == VehicleType.TANK;
+        return v != null && v.type.isTank();
     }
 
     /** True if this player aims and fires the tank gun: the gunner, or the driver when there is no gunner. */
     boolean isTurretOperator(Player p) {
         Vehicle v = vehicles.boardedBy(p);
-        return v != null && v.type == VehicleType.TANK && p.getUniqueId().equals(v.turretOperator());
+        return v != null && v.type.isTank() && p.getUniqueId().equals(v.turretOperator());
     }
 
     /** Handles a fire click from one of the three paths ("interact", "swing", "hit"). */
