@@ -63,9 +63,22 @@ final class VehicleHud {
             if (e == null) {
                 e = new Entry();
                 e.vehicle = v;
-                e.bar = Bukkit.createBossBar("", BarColor.GREEN, BarStyle.SOLID);
-                e.bar.addPlayer(p);
+                // The rough plane has no health bar: it is shot down or crashes, nothing in between to show.
+                if (!v.type.isPlane()) {
+                    e.bar = Bukkit.createBossBar("", BarColor.GREEN, BarStyle.SOLID);
+                    e.bar.addPlayer(p);
+                }
                 entries.put(id, e);
+            }
+            if (e.bar == null) {
+                if (sendActionBar) {
+                    String line = actionLine(p, v, seat, controller);
+                    if (line != null) {
+                        e.actionShown = true;
+                        send(p, line);
+                    }
+                }
+                continue;
             }
             String title = lang.msg(p, "vehicle.name." + v.type.id);
             if (!title.equals(e.title)) {
@@ -124,7 +137,7 @@ final class VehicleHud {
     }
 
     private void dispose(Entry e, UUID id) {
-        e.bar.removeAll();
+        if (e.bar != null) e.bar.removeAll();
         if (!e.actionShown) return;
         Player p = Bukkit.getPlayer(id);
         if (p != null && p.isOnline()) send(p, "");
@@ -132,6 +145,12 @@ final class VehicleHud {
 
     private String actionLine(Player p, Vehicle v, Seat seat, Seat controller) {
         String speed = null, reload = null;
+        if (v.type.isPlane()) {
+            // The pilot sees speed and height above the ground, nothing else.
+            if (!HudModel.showsSpeed(seat)) return null;
+            return lang.msg(p, "hud.speed", "n", HudModel.formatSpeed(v.state().speed())) + ChatColor.DARK_GRAY + "  |  "
+                    + lang.msg(p, "hud.height", "n", HudModel.formatHeight(v.heightAboveGround));
+        }
         if (HudModel.showsSpeed(seat) && v.type.moves()) {
             speed = lang.msg(p, "hud.speed", "n", HudModel.formatSpeed(v.state().speed()));
         }

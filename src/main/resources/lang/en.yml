@@ -49,8 +49,8 @@ music:
   list-line: "&7- &f{name} &8({id})"
   list-playing: "&a▶ &f{name} &8({id})"
 vehicle:
-  usage: "&eUsage: &f/{label} vehicle <spawn <tank|jeep|tank_heavy|jeep_heavy|truck|artillery>|remove|list>"
-  bad-type: "&cNo such vehicle. Pick tank, jeep, tank_heavy, jeep_heavy, truck or artillery."
+  usage: "&eUsage: &f/{label} vehicle <spawn <tank|jeep|tank_heavy|jeep_heavy|truck|artillery|plane>|remove|list>"
+  bad-type: "&cNo such vehicle. Pick tank, jeep, tank_heavy, jeep_heavy, truck, artillery or plane."
   unavailable: "&cVehicles aren't available right now."
   model-missing: "&cThe {type} model isn't loaded. Check the server log."
   no-target: "&cLook at a block within 30 blocks to put the vehicle there."
@@ -60,6 +60,7 @@ vehicle:
   full: "&cNo free seats left."
   not-ready: "&cThis vehicle isn't ready yet. Try again in a second."
   entered: "&7You're in the driver's seat. W/S to drive, A/D to turn, sneak to get out."
+  entered-pilot: "&7You're the pilot. W/S for throttle, A/D to bank and turn, look up or down to climb or dive. Sneak to bail out."
   entered-gunner: "&7You're the gunner. Look to aim, click to fire. Sneak to get out."
   entered-passenger: "&7You're a passenger. Enjoy the ride, sneak to get out."
   pad-occupied: "&cThere's already a vehicle on the pad."
@@ -67,6 +68,8 @@ vehicle:
   pad-arrived: "&a{type} has arrived."
   damaged: "&cHull: {percent}%"
   destroyed: "&cYour vehicle was destroyed!"
+  crashed: "&cThe plane crashed!"
+  bailed-out: "&7You bailed out. Your parachute opens."
   repaired: "&aRepaired to {percent}%."
   already-full: "&7Already fully repaired."
   list-empty: "&7No vehicles out right now."
@@ -81,6 +84,7 @@ vehicle:
     jeep_heavy: "Armoured jeep"
     truck: "Army truck"
     artillery: "Field gun"
+    plane: "Fighter plane"
 reload:
   done: "&aSettings reloaded."
   seconds:
@@ -89,3 +93,4 @@ reload:
   ready: "&aReady to fire"
 hud:
   speed: "&fSpeed: &e{n} b/s"
+  height: "&fHeight: &e{n} b"

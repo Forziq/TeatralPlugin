@@ -304,3 +304,30 @@ Then type `/next`.
 ## Before the plane test (G6): exaroton settings (after T42)
 1. On exaroton, open the server's Options page. Check whether you can change `view-distance`, `simulation-distance` and `allow-flight`. Note what you see.
 2. Decide whether it's OK to turn on `allow-flight` for everyone. Pilots may get kicked for flying, and this is the fallback if they do. Tell Claude Code yes or no before T43.
+
+## G6 Gate 6: plane test (after T44)
+
+Get ready:
+1. In game, type `/fmod update`, then restart the server from the exaroton panel. The server must be on v0.7.0 or later.
+2. Pick a flat, open field well away from spawn and builds, at least 40 blocks long. A crash breaks a few blocks.
+3. Build a pad at one end: a command block running `fmod vehicle spawn plane`, with a button next to it. Press it.
+4. Leave `allow-flight` off for now. The plugin lets the pilot fly on their own. Only turn it on in server.properties if the pilot still gets kicked "for flying" (step below).
+
+How to fly: right-click the plane to get in. Hold W to open the throttle and S to close it. Look up a little to lift off once you're going fast enough. A and D bank and turn. Look up to climb and down to dive. Sneak to bail out; above 4 blocks you get a parachute. To land, close the throttle, come in shallow and slow (under 15 on the speed read-out), and look straight ahead as the wheels touch.
+
+Check each of these and jot down a few words:
+- Take-off: the run feels about right (around 15 blocks) and it only leaves the ground when fast enough
+- Turning: banking looks right and the turn feels smooth. If D drops the left wing, tell Claude Code (one sign to flip)
+- Climb and dive: the nose tilts the right way. If it points down when you climb, tell Claude Code
+- Stall: climb steeply until the speed drops; the nose should fall and it should recover with speed
+- Landing: a slow, shallow touchdown lands; a fast or steep one crashes
+- Crash: the blast is about the right size, the pilot is thrown out and hurt but not killed
+- Sounds: the pilot hears the engine; someone on the ground hears the fly-past sound when it passes close
+- Flight kick: nobody is kicked "for flying" while piloting. If someone is, turn on `allow-flight=true` in server.properties on exaroton (this lets everyone double-tap jump to fly, so only do it if you're happy with that) and try again
+- Smoothness: does the plane stutter at your friends' real ping? Try at full speed and in turns
+- New land: flying into unexplored land may make the plane pause for a moment while it loads
+- The Russian text reads naturally
+
+For Claude Code afterwards, copy these lines from the server log: anything starting "Flight check:", and any kick messages.
+
+Then type `/next`.

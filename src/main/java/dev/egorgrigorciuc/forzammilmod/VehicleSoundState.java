@@ -10,6 +10,7 @@ final class VehicleSoundState {
 
     static final int TANK_IDLE_TICKS = 80;
     static final int JEEP_ENGINE_TICKS = 60;
+    static final int PLANE_ENGINE_TICKS = 80;
     static final int TRACKS_TICKS = 80;
     static final int TURRET_TICKS = 60;
     /** Tank "moving" thresholds: blocks per tick (a turn on the spot counts as yaw degrees * {@link #YAW_WEIGHT}). */
@@ -40,8 +41,13 @@ final class VehicleSoundState {
 
     /** {@code pitch} below 1 stretches the engine loop, so it is restarted later. */
     VehicleSoundState(boolean tank, double pitch) {
+        this(tank, pitch, tank ? TANK_IDLE_TICKS : JEEP_ENGINE_TICKS);
+    }
+
+    /** {@code engineTicks} is the length of the engine loop at pitch 1. */
+    VehicleSoundState(boolean tank, double pitch, int engineTicks) {
         this.tank = tank;
-        this.engine = new SoundLoop((int) Math.round((tank ? TANK_IDLE_TICKS : JEEP_ENGINE_TICKS) / pitch));
+        this.engine = new SoundLoop((int) Math.round(engineTicks / pitch));
     }
 
     /**

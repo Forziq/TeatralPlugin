@@ -11,6 +11,7 @@ import kr.toxicity.model.api.mount.MountControllers;
 import kr.toxicity.model.api.nms.HitBox;
 import kr.toxicity.model.api.tracker.EntityTracker;
 import kr.toxicity.model.api.tracker.ModelRotation;
+import kr.toxicity.model.api.tracker.ModelRotator;
 import kr.toxicity.model.api.tracker.TrackerUpdateAction;
 import org.joml.Quaternionf;
 import org.bukkit.entity.Entity;
@@ -116,13 +117,61 @@ final class BetterModelHook {
      * supplier must be thread-safe). {@code wheelBones} roll with speed. Returns null if the model isn't loaded.
      */
     static VehicleRig attachVehicle(LivingEntity anchor, String model, List<String> wheelBones, Supplier<Float> yaw, Logger log) {
+        return attachVehicle(anchor, model, wheelBones, yaw, null, log);
+    }
+
+    /**
+     * As above; a non-null {@code pitch} (Minecraft terms, nose down positive, thread-safe) also tilts the whole
+     * model, which the default yaw-only rotator would drop. The plane uses it.
+     */
+    static VehicleRig attachVehicle(LivingEntity anchor, String model, List<String> wheelBones, Supplier<Float> yaw,
+                                    Supplier<Float> pitch, Logger log) {
         ModelRenderer renderer = BetterModel.modelOrNull(model);
         if (renderer == null) return null;
         EntityTracker tracker = renderer.getOrCreate(BukkitAdapter.adapt(anchor));
-        tracker.rotation(() -> new ModelRotation(0f, yaw.get()));
+        if (pitch == null) {
+            tracker.rotation(() -> new ModelRotation(0f, yaw.get()));
+        } else {
+            tracker.rotator(ModelRotator.DEFAULT);
+            tracker.rotation(() -> new ModelRotation(pitch.get(), yaw.get()));
+        }
         tracker.update(TrackerUpdateAction.moveDuration(MOVE_TICKS));
         Wheels wheels = setupWheels(tracker, wheelBones, log);
-        return new BmRig(tracker, setupTurret(tracker, log), wheels, log);
+        return new BmRig(tracker, setupTurret(tracker, log), wheels, setupPlane(tracker, log), log);
+    }
+
+    /** Flip to -1f if the plane banks the wrong way in game (right wing should drop when D is held). */
+    static final float PLANE_ROLL_SIGN = 1f;
+
+    /** Bank and propeller angles the plane's bone modifiers read. */
+    private static final class PlaneBones {
+        volatile float roll;
+        volatile float prop;
+
+        /**
+         * The model points -Z with +X on its right, so a positive rotateZ lifts the right wing: a right bank
+         * (positive roll) needs the minus.
+         */
+        Quaternionf airframe() {
+            return new Quaternionf().rotateZ((float) Math.toRadians(-roll * PLANE_ROLL_SIGN));
+        }
+
+        /** Children don't inherit a parent's modifier, so the propeller carries the bank itself, then spins. */
+        Quaternionf propeller() {
+            return airframe().rotateZ((float) Math.toRadians(prop));
+        }
+    }
+
+    /** Adds the bank and spin modifiers if the model has airframe and propeller bones (only the plane does). */
+    private static PlaneBones setupPlane(EntityTracker tracker, Logger log) {
+        RenderedBone airframe = tracker.bone("airframe");
+        RenderedBone prop = tracker.bone("propeller");
+        if (airframe == null || prop == null) return null;
+        PlaneBones p = new PlaneBones();
+        airframe.addRotationModifier(b -> true, q -> new Quaternionf(q).mul(p.airframe()));
+        prop.addRotationModifier(b -> true, q -> new Quaternionf(q).mul(p.propeller()));
+        log.info("Flight check: found the airframe and propeller bones, bank and spin added");
+        return p;
     }
 
     /** Flip to -1f if the turret turns the wrong way in game. */
@@ -238,10 +287,23 @@ final class BetterModelHook {
      * and moves it with the anchor. We switch its controller to NONE so BetterModel never steers the anchor or
      * turns it to the rider's look; our tick loop does the driving.
      */
-    private record BmRig(EntityTracker tracker, Angles angles, Wheels wheels, Logger log, boolean[] logged) implements VehicleRig {
+    private record BmRig(EntityTracker tracker, Angles angles, Wheels wheels, PlaneBones plane, Logger log, boolean[] logged)
+            implements VehicleRig {
 
-        BmRig(EntityTracker tracker, Angles angles, Wheels wheels, Logger log) {
-            this(tracker, angles, wheels, log, new boolean[2]);
+        BmRig(EntityTracker tracker, Angles angles, Wheels wheels, PlaneBones plane, Logger log) {
+            this(tracker, angles, wheels, plane, log, new boolean[2]);
+        }
+
+        @Override
+        public void plane(float rollDeg, float propellerDeg) {
+            if (plane == null || tracker.isClosed()) return;
+            boolean rolled = Math.abs(plane.roll - rollDeg) >= 0.01f;
+            boolean spun = Math.abs(plane.prop - propellerDeg) >= 0.01f;
+            if (!rolled && !spun) return;
+            plane.roll = rollDeg;
+            plane.prop = propellerDeg;
+            if (rolled) forceRotation(tracker.bone("airframe"), plane.airframe(), log);
+            forceRotation(tracker.bone("propeller"), plane.propeller(), log);
         }
 
         private HitBox seatBox(Seat seat) {

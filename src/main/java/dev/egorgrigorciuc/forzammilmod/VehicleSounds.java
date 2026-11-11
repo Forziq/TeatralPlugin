@@ -7,6 +7,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -35,6 +36,8 @@ final class VehicleSounds {
     static final String ARMOUR_HIT = PREFIX + "armour_hit";
     static final String JEEP_ENGINE = PREFIX + "jeep_engine_loop";
     static final String JEEP_HORN = PREFIX + "jeep_horn";
+    static final String PLANE_ENGINE = PREFIX + "plane_engine_loop";
+    static final String PLANE_FLYBY = PREFIX + "plane_flyby";
 
     /** Volume 2 carries 32 blocks; loops are only sent to players inside that. */
     static final float LOOP_VOLUME = 2.0f;
@@ -48,7 +51,9 @@ final class VehicleSounds {
         float lastYaw;
 
         Live(Vehicle v) {
-            logic = new VehicleSoundState(v.type.isTank(), v.type.soundPitch());
+            logic = v.type.isPlane()
+                    ? new VehicleSoundState(false, v.type.soundPitch(), VehicleSoundState.PLANE_ENGINE_TICKS)
+                    : new VehicleSoundState(v.type.isTank(), v.type.soundPitch());
             lastYaw = v.state().yaw();
         }
     }
@@ -72,7 +77,7 @@ final class VehicleSounds {
         double metric = VehicleSoundState.moveMetric(v.state().speed(), TurretModel.wrap(yaw - l.lastYaw));
         l.lastYaw = yaw;
         VehicleSoundState.Out out = l.logic.update(now, v.hasCrew(), input.throttle() != 0, metric, v.turretYawDelta);
-        loop(v, l, v.type.isTank() ? TANK_IDLE : JEEP_ENGINE, out.engine());
+        loop(v, l, v.type.isPlane() ? PLANE_ENGINE : v.type.isTank() ? TANK_IDLE : JEEP_ENGINE, out.engine());
         loop(v, l, TANK_TRACKS, out.tracks());
         loop(v, l, TURRET_LOOP, out.turret());
         if (out.rev()) oneShot(v, l, TANK_REV, LOOP_VOLUME);
@@ -81,9 +86,32 @@ final class VehicleSounds {
 
     /** Jeep horn; ignored inside the cooldown and for tanks. */
     void horn(Vehicle v) {
-        if (v.type.isTank() || !v.type.moves() || !v.hasCrew()) return;
+        if (v.type.isTank() || v.type.isPlane() || !v.type.moves() || !v.hasCrew()) return;
         Live l = live.computeIfAbsent(v, Live::new);
         if (l.logic.horn(now)) oneShot(v, l, JEEP_HORN, LOOP_VOLUME);
+    }
+
+    private final Map<UUID, Long> lastFlyby = new HashMap<>();
+
+    /**
+     * Plane only, once per tick: the fly-past sound for anyone on the ground (or in another vehicle) the plane
+     * passes close to, at most once per {@link Flyby#COOLDOWN_TICKS} each.
+     */
+    void flyby(Vehicle v) {
+        if (!Flyby.fastEnough(v.airborne(), v.state().speed())) return;
+        Location at = v.location();
+        for (Player p : v.world.getPlayers()) {
+            UUID id = p.getUniqueId();
+            if (v.seatOf(id) != null) continue;
+            if (!Flyby.due(p.getLocation().distanceSquared(at), lastFlyby.get(id), now)) continue;
+            lastFlyby.put(id, now);
+            p.playSound(at, PLANE_FLYBY, SoundCategory.NEUTRAL, LOOP_VOLUME, 1f);
+        }
+    }
+
+    /** The player left the server. */
+    void forget(UUID id) {
+        lastFlyby.remove(id);
     }
 
     /** Stops every loop of this vehicle for everybody who heard it. Call before the vehicle goes away. */
@@ -93,7 +121,7 @@ final class VehicleSounds {
         for (UUID id : l.heard) {
             Player p = plugin.getServer().getPlayer(id);
             if (p == null) continue;
-            for (String key : new String[] {TANK_IDLE, JEEP_ENGINE, TANK_TRACKS, TURRET_LOOP}) {
+            for (String key : new String[] {TANK_IDLE, JEEP_ENGINE, TANK_TRACKS, TURRET_LOOP, PLANE_ENGINE}) {
                 p.stopSound(key, SoundCategory.NEUTRAL);
             }
         }

@@ -29,4 +29,9 @@ final class BukkitTerrain implements Terrain {
         if (max <= min) return null;
         return new double[] {y + min, y + max};
     }
+
+    @Override
+    public boolean loaded(int x, int z) {
+        return world.isChunkLoaded(x >> 4, z >> 4);
+    }
 }

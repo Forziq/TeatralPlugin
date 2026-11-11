@@ -13,6 +13,8 @@ import org.bukkit.entity.Interaction;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.RayTraceResult;
@@ -21,8 +23,10 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -45,6 +49,23 @@ public final class VehicleService {
     private boolean loggedSeated;
     private boolean loggedPolledInput;
     private boolean loggedInputEvent;
+
+    /** Log what the plane test needs (key events, take-offs, landings, crashes). Set false once Gate 6 is done. */
+    static final boolean FLIGHT_LOG = true;
+    static final int FLIGHT_KEY_LOGS = 12;
+    /** Crash blast: a bit smaller than a tank shell's 2.5. Breaks blocks, no fire. */
+    static final float CRASH_POWER = 2.0f;
+    /** Bailing out (or being shot down) this high up opens a parachute: slow falling for 10 seconds. */
+    static final double PARACHUTE_HEIGHT = 4.0;
+    static final int PARACHUTE_TICKS = 200;
+
+    /** Pilots we gave flight to (so the server doesn't kick them for flying), and what they had before. */
+    private final Map<UUID, Boolean> flightBefore = new HashMap<>();
+    /** Crew of a plane that is blowing up right now: the blast doesn't hurt them, destroy() does its usual 6. */
+    private final Set<UUID> crashShield = new HashSet<>();
+    private long ticks;
+    private int planeKeyLogs;
+    private boolean loggedTakeoff, loggedLanding, loggedWaiting;
 
     public VehicleService(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -112,7 +133,8 @@ public final class VehicleService {
         Vehicle v = new Vehicle(type, anchor, box, new VehicleMover.State(at.getX(), at.getY(), at.getZ(), DriveModel.wrap(yaw), 0, 0));
         VehicleRig rig;
         try {
-            rig = BetterModelHook.attachVehicle(anchor, type.model(), WheelSpin.bones(type), v::renderYaw, plugin.getLogger());
+            rig = BetterModelHook.attachVehicle(anchor, type.model(), WheelSpin.bones(type), v::renderYaw,
+                    type.isPlane() ? v::renderPitch : null, plugin.getLogger());
         } catch (RuntimeException | LinkageError e) {
             plugin.getLogger().log(Level.WARNING, "Could not draw the " + type.id + " model", e);
             rig = null;
@@ -192,6 +214,7 @@ public final class VehicleService {
             }
             if (!ok) continue;
             v.occupy(seat, p.getUniqueId());
+            if (v.type.isPlane() && CrewSeats.drives(seat)) grantFlight(p);
             if (!loggedSeated) {
                 loggedSeated = true;
                 plugin.getLogger().info("Seat check: " + p.getName() + " is seated as " + seat + " in the " + v.type.id
@@ -208,6 +231,7 @@ public final class VehicleService {
         if (v == null) return;
         Seat seat = v.seatOf(p.getUniqueId());
         v.vacate(seat);
+        restoreFlight(p);
         if (hud != null) hud.clear(p);
         try {
             v.rig().unseat(p, seat);
@@ -216,9 +240,71 @@ public final class VehicleService {
         }
     }
 
+    /**
+     * Lets the pilot "fly" while seated, so the server's anti-fly check doesn't kick them (docs/notes/planes.md
+     * section 4). The previous setting comes back when they leave the seat, however they leave it.
+     */
+    private void grantFlight(Player p) {
+        flightBefore.putIfAbsent(p.getUniqueId(), p.getAllowFlight());
+        p.setAllowFlight(true);
+    }
+
+    private void restoreFlight(Player p) {
+        Boolean before = flightBefore.remove(p.getUniqueId());
+        if (before == null) return;
+        p.setAllowFlight(before); // false also stops them flying
+        p.setFallDistance(0f);
+    }
+
+    /** Safety net, once per tick: anyone we gave flight who no longer flies a plane gets their setting back. */
+    private void reconcileFlight() {
+        if (flightBefore.isEmpty()) return;
+        for (UUID id : new ArrayList<>(flightBefore.keySet())) {
+            Player p = plugin.getServer().getPlayer(id);
+            if (p == null) {
+                flightBefore.remove(id); // gone; the quit event already put it back
+                continue;
+            }
+            Vehicle v = drivenBy(p);
+            if (v == null || !v.type.isPlane() || v.destroyed) restoreFlight(p);
+        }
+    }
+
+    /** Out of the plane in mid-air: flight goes back to normal and a parachute opens if it is a long way down. */
+    private void bailOut(Player p, Vehicle v) {
+        restoreFlight(p);
+        if (v.heightAboveGround < PARACHUTE_HEIGHT) return;
+        p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, PARACHUTE_TICKS, 0, false, true, true));
+        if (lang != null) p.sendMessage(lang.msg(p, "vehicle.bailed-out"));
+    }
+
+    /** True while this player's plane is exploding, so the listener can keep the blast off them. */
+    public boolean shieldedFromCrash(Entity e) {
+        return !crashShield.isEmpty() && crashShield.contains(e.getUniqueId());
+    }
+
+    /** Logs a kick of anyone aboard a vehicle or kicked for flying, to answer whether pilots get kicked. */
+    public void noteKick(Player p, String reason) {
+        Vehicle v = boardedBy(p);
+        String r = reason == null ? "" : reason;
+        String low = r.toLowerCase(java.util.Locale.ROOT);
+        if (v == null && !low.contains("fly") && !low.contains("float")) return;
+        plugin.getLogger().warning("Flight check: " + p.getName() + " was kicked (" + r + ")"
+                + (v == null ? " while not in a vehicle" : " while in the " + v.type.id
+                + (v.airborne() ? ", in the air" : "")) + "; allowed to fly: " + p.getAllowFlight());
+    }
+
     /** Logs once whether the input event fires for someone who is driving. */
     public void noteInputEvent(Player p, Input in) {
-        if (loggedInputEvent || drivenBy(p) == null) return;
+        Vehicle driven = drivenBy(p);
+        if (FLIGHT_LOG && planeKeyLogs < FLIGHT_KEY_LOGS && driven != null && driven.type.isPlane()) {
+            planeKeyLogs++;
+            plugin.getLogger().info("Flight check: key event " + planeKeyLogs + "/" + FLIGHT_KEY_LOGS + " at tick " + ticks
+                    + ": forward=" + in.isForward() + " back=" + in.isBackward() + " left=" + in.isLeft()
+                    + " right=" + in.isRight() + " jump=" + in.isJump() + " sneak=" + in.isSneak()
+                    + " sprint=" + in.isSprint() + " (ticks far apart while a key is held = it fires on change only)");
+        }
+        if (loggedInputEvent || driven == null) return;
         loggedInputEvent = true;
         plugin.getLogger().info("Driver check: key-change events arrive while riding (forward=" + in.isForward()
                 + ", back=" + in.isBackward() + ", left=" + in.isLeft() + ", right=" + in.isRight() + ")");
@@ -229,14 +315,36 @@ public final class VehicleService {
         if (amount <= 0 || v.destroyed || !vehicles.contains(v)) return false;
         v.health.damage(amount);
         if (v.health.isDestroyed()) {
-            destroy(v);
+            destroy(v, "vehicle.destroyed", v.airborne());
             return true;
         }
         return false;
     }
 
-    /** Big blast (particles and sound only, no block damage), crew thrown out and hurt, vehicle removed. */
-    private void destroy(Vehicle v) {
+    /** The plane hit the ground or a wall too hard: a real (block-breaking) blast, then the usual wreck. */
+    private void crash(Vehicle v) {
+        FlightModel.State f = v.flight();
+        if (FLIGHT_LOG) {
+            plugin.getLogger().info("Flight check: plane crashed at " + v.world.getName() + " " + (long) Math.floor(f.x()) + " "
+                    + (long) Math.floor(f.y()) + " " + (long) Math.floor(f.z()) + String.format(java.util.Locale.ROOT,
+                    ", speed %.1f b/s, sinking %.1f b/s, bank %.0f, pitch %.0f", HudModel.blocksPerSecond(f.speed()),
+                    -f.verticalSpeed() * HudModel.TICKS_PER_SECOND, f.roll(), f.pitch()));
+        }
+        Location at = v.location().add(0, 0.5, 0);
+        for (Seat seat : v.takenSeats()) crashShield.add(v.occupant(seat));
+        try {
+            v.world.createExplosion(at, CRASH_POWER, false, true);
+        } finally {
+            crashShield.clear();
+        }
+        destroy(v, "vehicle.crashed", false);
+    }
+
+    /**
+     * Big blast (particles and sound only, no block damage), crew thrown out and hurt, vehicle removed.
+     * {@code parachute}: a plane shot down in the air gives its crew a parachute.
+     */
+    private void destroy(Vehicle v, String messageKey, boolean parachute) {
         v.destroyed = true;
         if (hud != null) hud.clear(v);
         Location at = v.location().add(0, v.type.height / 2, 0);
@@ -256,7 +364,9 @@ public final class VehicleService {
             d.teleport(at.clone().add(0, 0.5, 0));
             d.setVelocity(new Vector((Math.random() - 0.5) * 0.6, 0.5, (Math.random() - 0.5) * 0.6));
             d.damage(6.0);
-            if (lang != null) d.sendMessage(lang.msg(d, "vehicle.destroyed"));
+            if (lang != null) d.sendMessage(lang.msg(d, messageKey));
+            if (parachute) bailOut(d, v);
+            else restoreFlight(d);
         }
         remove(v);
     }
@@ -303,6 +413,7 @@ public final class VehicleService {
 
     public void forget(Player p) {
         lastMelee.remove(p.getUniqueId());
+        sounds.forget(p.getUniqueId());
     }
 
     /** Iron ingot repair: returns true if it restored health, false if the vehicle was already full. */
@@ -314,6 +425,13 @@ public final class VehicleService {
     }
 
     public void remove(Vehicle v) {
+        if (v.type.isPlane()) {
+            // Removed with somebody still in it (a command, idle clean-up): don't leave them hovering.
+            for (Seat seat : v.takenSeats()) {
+                Player p = plugin.getServer().getPlayer(v.occupant(seat));
+                if (p != null) bailOut(p, v);
+            }
+        }
         sounds.stop(v);
         if (hud != null) hud.clear(v);
         vehicles.remove(v);
@@ -322,6 +440,11 @@ public final class VehicleService {
 
     public void removeAll() {
         if (task != null) task.cancel();
+        for (UUID id : new ArrayList<>(flightBefore.keySet())) {
+            Player p = plugin.getServer().getPlayer(id);
+            if (p != null) restoreFlight(p);
+        }
+        flightBefore.clear();
         for (Vehicle v : new ArrayList<>(vehicles)) {
             sounds.stop(v);
             v.remove();
@@ -333,6 +456,7 @@ public final class VehicleService {
     private int idleCounter;
 
     private void tickAll() {
+        ticks++;
         sounds.advance();
         if (++idleCounter >= 20) {
             idleCounter = 0;
@@ -348,6 +472,7 @@ public final class VehicleService {
             }
         }
         if (hud != null) hud.endTick();
+        reconcileFlight();
     }
 
     private void checkIdle() {
@@ -376,6 +501,7 @@ public final class VehicleService {
             return;
         }
         DriveInput input = DriveInput.NONE;
+        Player pilot = null;
         v.turretYawDelta = 0f;
         for (Seat seat : v.takenSeats()) {
             Player d = plugin.getServer().getPlayer(v.occupant(seat));
@@ -383,8 +509,10 @@ public final class VehicleService {
                 v.vacate(seat);
             } else if (!v.rig().isSeated(d, seat)) { // sneaked out
                 v.vacate(seat);
-                placeBeside(v, d);
+                if (v.airborne()) bailOut(d, v);
+                else placeBeside(v, d);
             } else if (CrewSeats.drives(seat)) {
+                pilot = d;
                 Input in = d.getCurrentInput();
                 input = new DriveInput(in.isForward(), in.isBackward(), in.isLeft(), in.isRight());
                 if (input.any() && !loggedPolledInput) {
@@ -396,6 +524,10 @@ public final class VehicleService {
             }
         }
         Terrain terrain = terrains.computeIfAbsent(v.world, BukkitTerrain::new);
+        if (v.type.isPlane()) {
+            flyTick(v, terrain, input, pilot);
+            return;
+        }
         v.move(terrain, input);
         v.spinWheels();
         UUID operator = v.turretOperator();
@@ -409,6 +541,45 @@ public final class VehicleService {
             v.world.spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, v.location().add(0, v.type.height, 0), 3, 0.3, 0.1, 0.3, 0.02);
         }
         if (v.state().y() < v.world.getMinHeight() - 64) remove(v); // fell out of the world
+    }
+
+    /** The plane's tick: flight, read-out height, sounds; a crash ends it. */
+    private void flyTick(Vehicle v, Terrain terrain, DriveInput keys, Player pilot) {
+        FlightModel.Input in = pilot == null ? FlightModel.Input.NONE
+                : new FlightModel.Input(keys.throttle(), keys.steer(), -pilot.getLocation().getPitch(), true);
+        FlightModel.Outcome out = v.fly(terrain, in, pilot != null);
+        v.heightAboveGround = heightAboveGround(v);
+        noteFlight(v, out);
+        if (out == FlightModel.Outcome.CRASHED) {
+            crash(v);
+            return;
+        }
+        sounds.tick(v, keys);
+        sounds.flyby(v);
+        if (v.state().y() < v.world.getMinHeight() - 64) remove(v);
+    }
+
+    /** Wheels to the highest block under the plane's centre; keeps the last value over unloaded land. */
+    private static double heightAboveGround(Vehicle v) {
+        VehicleMover.State s = v.state();
+        int bx = (int) Math.floor(s.x()), bz = (int) Math.floor(s.z());
+        if (!v.world.isChunkLoaded(bx >> 4, bz >> 4)) return v.heightAboveGround;
+        return Math.max(0, s.y() - (v.world.getHighestBlockYAt(bx, bz) + 1));
+    }
+
+    private void noteFlight(Vehicle v, FlightModel.Outcome out) {
+        if (!FLIGHT_LOG) return;
+        FlightModel.State f = v.flight();
+        if (out == FlightModel.Outcome.TAKEOFF && !loggedTakeoff) {
+            loggedTakeoff = true;
+            plugin.getLogger().info("Flight check: first take-off at " + HudModel.formatSpeed(f.speed()) + " b/s");
+        } else if (out == FlightModel.Outcome.LANDED && !loggedLanding) {
+            loggedLanding = true;
+            plugin.getLogger().info("Flight check: first landing at " + HudModel.formatSpeed(f.speed()) + " b/s");
+        } else if (out == FlightModel.Outcome.WAITING && !loggedWaiting) {
+            loggedWaiting = true;
+            plugin.getLogger().info("Flight check: the plane waited for land ahead to load (logged once)");
+        }
     }
 
     /** Puts a player who got out next to the vehicle on solid ground, trying the right, left, back and front. */

@@ -20,7 +20,11 @@ public enum VehicleType {
     TRUCK("truck", 0.30, 0.10, 0.009, 0.032, 0.012, 3.0, false, 1.0, 1.15, 2.90, 2.4, 60),
     // ZiS-3 style field gun (model about 40 x 96 px). Cannot move under its own power: A and D swing the whole gun
     // on the spot, slowly (half a degree a tick), the barrel elevates from the gunner's look pitch.
-    ARTILLERY("artillery", 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, true, 0.5, 1.0, 2.2, 1.5, 50);
+    ARTILLERY("artillery", 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, true, 0.5, 1.0, 2.2, 1.5, 50),
+    // Rough fighter plane for the flight test (model 112 px across the wings, 76 px long). It never uses the driving
+    // numbers here: FlightModel moves it. They only describe a slow taxi, so the shared driving checks still hold.
+    // The hit box covers the body and the inner wing; the wing tips stick out past it.
+    PLANE("plane", 0.30, 0.05, 0.010, 0.030, 0.010, 2.5, false, 1.0, 1.5, 2.2, 1.9, 30);
 
     public final String id;
     public final double maxSpeed;
@@ -75,6 +79,11 @@ public enum VehicleType {
     /** True if the type has an aimable gun (both tanks and the field gun). */
     public boolean hasGun() {
         return isTank() || isArtillery();
+    }
+
+    /** True for the plane: it flies with FlightModel instead of driving with VehicleMover. */
+    public boolean isPlane() {
+        return this == PLANE;
     }
 
     /** False for the field gun: W and S do nothing, no engine sounds, no speed read-out. */

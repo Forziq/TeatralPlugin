@@ -46,6 +46,14 @@ final class Vehicle {
     int smokeTick;
     /** Degrees the turret turned in the last tick (for the turning sound). Main thread only. */
     float turretYawDelta;
+    /** Plane only (null otherwise): the flight state FlightModel works on. Main thread only. */
+    private FlightModel.State flight;
+    /** Model pitch in Minecraft terms (nose down positive), read by BetterModel's thread. 0 for ground vehicles. */
+    private volatile float renderPitch;
+    /** Plane only: propeller angle in degrees. */
+    private float propAngle;
+    /** Plane only: blocks between the wheels and the ground below, for the pilot's read-out. */
+    double heightAboveGround;
 
     Vehicle(VehicleType type, ArmorStand anchor, Interaction clickBox, VehicleMover.State state) {
         this.type = type;
@@ -58,6 +66,7 @@ final class Vehicle {
         this.renderYaw = state.yaw() + MODEL_YAW_OFFSET;
         this.turret = type.isArtillery() ? new TurretModel(TurretModel.FIELD_GUN_PITCH_MIN, TurretModel.FIELD_GUN_PITCH_MAX)
                 : type.isTank() ? new TurretModel() : null;
+        if (type.isPlane()) flight = FlightModel.State.parked(state.x(), state.y(), state.z(), state.yaw());
     }
 
     void rig(VehicleRig rig) {
@@ -74,6 +83,20 @@ final class Vehicle {
 
     VehicleMover.State state() {
         return state;
+    }
+
+    float renderPitch() {
+        return renderPitch;
+    }
+
+    /** Plane only; null for ground vehicles. */
+    FlightModel.State flight() {
+        return flight;
+    }
+
+    /** True for a plane that is off the ground. */
+    boolean airborne() {
+        return flight != null && !flight.onGround();
     }
 
     UUID driver() {
@@ -151,6 +174,32 @@ final class Vehicle {
         if (moved) {
             clickBox.teleport(new Location(world, state.x(), state.y(), state.z()));
         }
+    }
+
+    /** Pitch sign for the model: flip to -1 if the nose tilts the wrong way in game. */
+    static final float PLANE_PITCH_SIGN = 1f;
+    /** Propeller turn per tick: idling, plus this much more at full throttle. */
+    static final float PROP_IDLE = 20f, PROP_FULL = 35f;
+
+    /**
+     * Runs one flight tick (plane only) and moves the entities. {@code engineOn} spins the propeller.
+     * The state other code reads ({@link #state()}) mirrors the flight: speed is the airspeed.
+     */
+    FlightModel.Outcome fly(Terrain terrain, FlightModel.Input input, boolean engineOn) {
+        FlightModel.Result r = FlightModel.step(flight, input, terrain);
+        FlightModel.State f = r.state();
+        flight = f;
+        VehicleMover.State old = state;
+        state = new VehicleMover.State(f.x(), f.y(), f.z(), f.yaw(), f.speed(), f.verticalSpeed());
+        renderYaw = f.yaw() + MODEL_YAW_OFFSET;
+        renderPitch = -f.pitch() * PLANE_PITCH_SIGN; // Minecraft pitch: nose up is negative
+        boolean moved = Math.abs(state.x() - old.x()) > 1e-4 || Math.abs(state.y() - old.y()) > 1e-4
+                || Math.abs(state.z() - old.z()) > 1e-4;
+        if (moved || state.yaw() != old.yaw()) anchor.teleport(location());
+        if (moved) clickBox.teleport(new Location(world, state.x(), state.y(), state.z()));
+        if (engineOn) propAngle = (propAngle + PROP_IDLE + PROP_FULL * (float) f.throttle()) % 360f;
+        if (rig != null) rig.plane(f.roll(), propAngle);
+        return r.outcome();
     }
 
     private float wheelAngle;

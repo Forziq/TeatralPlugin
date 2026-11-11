@@ -1,5 +1,5 @@
 # progress
-now: T43 todo | G1 passed | G2 passed
+now: T44 todo | G1 passed | G2 passed
 updated: 2026-11-11
 
 ## tasks
@@ -50,7 +50,7 @@ T40|L|sonnet-builder|T39|done|Field artillery
 T41|S|haiku-scout|T40|done|Publish v0.6.0 for Gate 5
 G5|-|egor|T41|done|Gate 5: truck and artillery (manual.md G5)
 T42|S|haiku-scout|G5|done|Research how to fly a plane
-T43|L|opus-deep|T42|todo|Rough plane
+T43|L|opus-deep|T42|done|Rough plane
 T44|S|haiku-scout|T43|todo|Publish v0.7.0 for Gate 6
 G6|-|egor|T44|gate|Gate 6: plane test, keep or drop (manual.md G6)
 T45|L|sonnet-builder|G6|todo|Finish the plane, or remove it
@@ -61,6 +61,7 @@ T49|S|haiku-scout|T48|todo|Publish v1.0.0 for the final gate
 G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
 
 ## log (newest first, keep 8)
+- 2026-11-11 T43: rough plane (`/fmod vehicle spawn plane`), 30 health. W/S throttle, A/D bank, look to climb. 264 tests pass, not flown. T44: rebuild pack with plane.bbmodel. Wrong nose or bank: flip Vehicle.PLANE_PITCH_SIGN or BetterModelHook.PLANE_ROLL_SIGN.
 - 2026-11-11 T42: plane notes in docs/notes/planes.md. Input via Player#getCurrentInput; move like the tank (BetterModel, 2-3 ticks). Kick: setAllowFlight on pilot, else global allow-flight (unverified). T43: start with open questions.
 - 2026-11-10 T41: v0.6.0 published: jar on GitHub Releases, pack at https://forziq.github.io/TeatralPlugin/pack/forzammilmod-pack-0.6.0.zip (SHA-1 93205b21fbcf7509b484bc3283cf8c707cb7dd65). manual.md G5 checklist added.
 - 2026-11-10 T40: field gun added (`/fmod vehicle spawn artillery`), no driving, A/D turn it, barrel follows gunner's look. Arcing shells, 8 s reload, 50 health. 244 tests pass, not tried in game. T41: pack needs artillery.bbmodel.
@@ -68,7 +69,6 @@ G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
 - 2026-11-10 T38: v0.5.0 published: jar on GitHub Releases, pack at https://forziq.github.io/TeatralPlugin/pack/forzammilmod-pack-0.5.0.zip (SHA-1 6d8dc957db90ca33729cb5675eb6375e705ce310). manual.md G4 checklist added.
 - 2026-11-10 T37: everyone in a vehicle sees a health bar at the top. Driver sees speed, gunner sees reload. Clears on exit, death, quit or removal. 223 tests pass, not tried in game. G4: check bars appear and clear, and bottom text doesn't flicker.
 - 2026-11-10 T36: vehicles use our own sounds. Jeep: engine, horn on jump. Tank: idle, rev, tracks, turret, shot, whistle, reload, hits, explosions. Unwired: ricochet, repair, old turret. 210 tests pass, not heard in game. T37: jump is the horn.
-- 2026-11-10 Extra: tank sounds redone (old in sounds/old/). Redone: armour_hit, explosion_small, reload_clank, shell_whistle. New: cannon_fire_tank, turret_traverse_loop, turret_traverse_stop, armour_ricochet. Unheard, unwired.
 
 ## blockers
 none

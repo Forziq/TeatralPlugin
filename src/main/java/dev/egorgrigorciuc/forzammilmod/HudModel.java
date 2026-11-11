@@ -35,6 +35,12 @@ final class HudModel {
         return String.format(Locale.ROOT, "%.1f", blocksPerSecond(speedPerTick));
     }
 
+    /** Whole blocks, never below zero, e.g. "42". */
+    static String formatHeight(double blocks) {
+        if (Double.isNaN(blocks) || blocks < 0) return "0";
+        return Long.toString(Math.round(blocks));
+    }
+
     /** Only the driver sees speed. */
     static boolean showsSpeed(CrewSeats.Seat seat) {
         return CrewSeats.drives(seat);

@@ -2,7 +2,7 @@
 """Builds the vehicle models (shapes plus a painted 128x128 texture) for BetterModel.
 
 Usage: python3 scripts/make-vehicle-models.py
-Writes tank, jeep, tank_heavy, jeep_heavy, truck and artillery .bbmodel files into src/main/resources/models. Needs Pillow
+Writes tank, jeep, tank_heavy, jeep_heavy, truck, artillery and plane .bbmodel files into src/main/resources/models. Needs Pillow
 (pip install pillow). The heavy ones are bulkier alternatives to the plain tank and jeep, kept side by side
 until Egor picks which to keep.
 Re-running overwrites any changes made to those files in Blockbench, so edit this script instead.
@@ -855,9 +855,48 @@ def jeep_heavy():
     return m
 
 
+def plane():
+    """Rough WWII-style fighter for the flight test (T43): fuselage, low wing, tail, fixed landing gear and a two-blade
+    propeller. Bones: airframe (root; banks with the roll), propeller (spins; its pivot sits on the airframe's roll
+    axis, so banking never moves it off the nose) and the pilot's seat in the cockpit."""
+    m = Model("plane")
+    air = m.group("airframe", (0, 13, 0))
+    # Fuselage: engine cowling, main body, a narrowing tail boom.
+    m.cube(air, "cowling", (-6, 7, -36), (6, 19, -26), "dark")
+    m.cube(air, "fuselage", (-6, 7, -26), (6, 18, 10))
+    m.cube(air, "tail_boom", (-4, 9, 10), (4, 17, 30))
+    m.cube(air, "tail_end", (-2, 11, 30), (2, 16, 36))
+    m.cube(air, "exhaust", (-6.5, 12, -30), (6.5, 13, -27), "dark_steel")
+    # Cockpit: glass canopy with a frame behind it.
+    m.cube(air, "canopy", (-4.5, 18, -6), (4.5, 23, 6), "glass")
+    m.cube(air, "canopy_frame", (-5, 18, 6), (5, 22, 8), "dark_steel")
+    # Low wing, 7 blocks across, with darker tips.
+    m.cube(air, "wing", (-50, 8, -14), (50, 10, 4))
+    for s in (-1, 1):
+        a, b = sorted((s * 50, s * 56))
+        m.cube(air, "wing_tip", (a, 8.25, -12), (b, 9.75, 2), "dark")
+    # Tail: tailplane, fin and rudder.
+    m.cube(air, "tailplane", (-20, 13, 28), (20, 14.5, 36))
+    m.cube(air, "fin", (-1, 16, 26), (1, 30, 34))
+    m.cube(air, "rudder", (-1.25, 16, 34), (1.25, 28, 37), "dark")
+    # Fixed landing gear: two legs with wheels under the wing, and a small tail wheel.
+    for s in (-1, 1):
+        a, b = sorted((s * 15, s * 17))
+        m.cube(air, "gear_leg", (a, 3, -9), (b, 8, -7), "dark_steel")
+        wheel(m, air, "gear_wheel", "x", (3, -8), 3, sorted((s * 14, s * 18)), "wheel_jeep", "tyre")
+    m.cube(air, "tail_leg", (-0.5, 4, 31), (0.5, 9, 32), "dark_steel")
+    wheel(m, air, "tail_wheel", "x", (2, 31.5), 2, (-1, 1), "wheel_jeep", "tyre")
+    # Propeller on the nose: spinner and one long blade through the hub (24 px tip to tip, clear of the ground).
+    prop = m.group("propeller", (0, 13, -38), air)
+    m.cube(prop, "spinner", (-2.5, 10.5, -40), (2.5, 15.5, -36), "dark_steel")
+    m.cube(prop, "blade", (-1.5, 1, -38.5), (1.5, 25, -37.5), "dark_steel")
+    m.group("p_driver", (0, 12, 0), air)  # the pilot, in the cockpit
+    return m
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    for model in (tank(), jeep(), tank_heavy(), jeep_heavy(), truck(), artillery()):
+    for model in (tank(), jeep(), tank_heavy(), jeep_heavy(), truck(), artillery(), plane()):
         path = OUT / f"{model.name}.bbmodel"
         path.write_text(json.dumps(model.json(), separators=(",", ":")) + "\n", encoding="utf-8")
         print(f"wrote {path.relative_to(ROOT)} ({path.stat().st_size // 1024} KB, {len(model.elements)} cubes)")

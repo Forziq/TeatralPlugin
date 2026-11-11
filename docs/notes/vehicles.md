@@ -142,3 +142,19 @@ Result: **none confirmed**. Nothing fits all three of free, Spigot 1.21.4 and a 
 - Model: src/main/resources/models/artillery.bbmodel. The pack must include it (T41).
 - 244 tests pass. Smoke test loads the model on the test server. Not tried in game.
 - G5 checks: trail-leg splay, shell visibility at long range, turning in tight spots.
+
+## Plane (T43, rough, not tried in game)
+- `/fmod vehicle spawn plane` (pads work). One pilot seat. Health 30, no boss bar: one shell brings it down. No guns.
+- Flight is `FlightModel` (pure, unit tested), not `VehicleMover`. The taxi numbers in `VehicleType.PLANE` are only there for the shared driving tests.
+- W/S move the throttle (idle to full in 2 s). A/D bank up to 50 degrees, which turns it at up to 3 degrees a tick. The nose follows the pilot's look, -45 to +35 degrees. Sneak bails out (slow falling for 10 s if 4+ blocks up).
+- Speeds (blocks a second): top speed level 20, dive limit 26, take-off 11 (and the pilot must look up 3+ degrees), stall below 8, recovers above 9.6. Take-off run about 15 blocks.
+- Climbing costs speed (0.025 x sine of pitch per tick), so a steep climb ends in a stall: the nose drops to -30 and it falls until it is fast again.
+- Landing: at most 15 b/s, sinking at most 6 b/s, bank under 30, nose no more than 20 down. Otherwise a crash. Hitting anything taller than 1 block faster than 6 b/s crashes too.
+- Crash: a 2.0 explosion (tank shell is 2.5), breaks blocks, no fire. The crew is shielded from the blast and gets the usual 6 damage instead.
+- The hit box covers the body and inner wing (3 x 4.4 blocks, 1.9 tall); the wing tips poke past it.
+- The plane pauses if the land ahead isn't loaded, rather than crashing into it.
+- Model: `plane.bbmodel` from the model script. Bones: `airframe` (banks), `propeller` (spins, on the bank axis), `p_driver`. Whole-model pitch uses BetterModel's default rotator.
+- Signs to flip if wrong in game: `Vehicle.PLANE_PITCH_SIGN` (nose tilts the wrong way), `BetterModelHook.PLANE_ROLL_SIGN` (banks the wrong way).
+- Pilot gets `setAllowFlight(true)` while seated; the old value comes back on exit, death, quit, removal or shutdown.
+- Sounds: `plane_engine_loop` (4 s) while a pilot is in; `plane_flyby` to anyone within 24 blocks of a plane doing 10+ b/s in the air, once per 10 s each.
+- Log lines (`VehicleService.FLIGHT_LOG`): the first 12 key events with tick numbers and sprint, first take-off, first landing, each crash with its numbers, the first wait for land, and any kick of vehicle crew.

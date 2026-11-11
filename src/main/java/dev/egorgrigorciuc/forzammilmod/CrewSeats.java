@@ -34,6 +34,7 @@ final class CrewSeats {
             case TANK, TANK_HEAVY -> List.of(Seat.DRIVER, Seat.GUNNER);
             // One crew seat, behind the shield: the gunner turns the gun and fires. It is the driver seat so A and D work.
             case ARTILLERY -> List.of(Seat.DRIVER);
+            case PLANE -> List.of(Seat.DRIVER); // the pilot
             case JEEP, JEEP_HEAVY -> List.of(Seat.DRIVER, Seat.PASSENGER1, Seat.PASSENGER2);
             // Driver, cab passenger, then six on the benches in the back.
             case TRUCK -> List.of(Seat.DRIVER, Seat.PASSENGER1, Seat.PASSENGER2, Seat.PASSENGER3, Seat.PASSENGER4,

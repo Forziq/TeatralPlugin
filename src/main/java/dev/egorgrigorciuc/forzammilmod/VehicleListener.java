@@ -21,6 +21,7 @@ import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerInputEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -55,14 +56,15 @@ public final class VehicleListener implements Listener {
         Player p = e.getPlayer();
         if (tryRepair(p, v)) return;
         switch (vehicles.mount(p, v)) {
-            case MOUNTED -> p.sendMessage(lang.msg(p, enteredKey(vehicles.seatOf(p, v))));
+            case MOUNTED -> p.sendMessage(lang.msg(p, enteredKey(v, vehicles.seatOf(p, v))));
             case FULL -> p.sendMessage(lang.msg(p, "vehicle.full"));
             case NOT_READY -> p.sendMessage(lang.msg(p, "vehicle.not-ready"));
             case ALREADY_ABOARD -> { }
         }
     }
 
-    private static String enteredKey(Seat seat) {
+    private static String enteredKey(Vehicle v, Seat seat) {
+        if (seat == Seat.DRIVER && v.type.isPlane()) return "vehicle.entered-pilot";
         if (seat == Seat.DRIVER) return "vehicle.entered";
         if (seat == Seat.GUNNER) return "vehicle.entered-gunner";
         return "vehicle.entered-passenger";
@@ -90,6 +92,12 @@ public final class VehicleListener implements Listener {
     /** Vanilla damage never lands on vehicle entities; players and arrows do our own small damage. */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDamage(EntityDamageEvent e) {
+        if (vehicles.shieldedFromCrash(e.getEntity())
+                && (e.getCause() == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION
+                || e.getCause() == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION)) {
+            e.setCancelled(true); // the crash itself hurts the crew a set amount instead
+            return;
+        }
         Vehicle v = vehicles.find(e.getEntity());
         if (v == null) return;
         e.setCancelled(true);
@@ -123,6 +131,12 @@ public final class VehicleListener implements Listener {
         lastRepair.remove(e.getPlayer().getUniqueId());
         vehicles.forget(e.getPlayer());
         vehicles.crewGone(e.getPlayer());
+    }
+
+    /** Logs kicks of vehicle crew (and kicks for flying), for the plane test. */
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onKick(PlayerKickEvent e) {
+        vehicles.noteKick(e.getPlayer(), e.getReason());
     }
 
     @EventHandler

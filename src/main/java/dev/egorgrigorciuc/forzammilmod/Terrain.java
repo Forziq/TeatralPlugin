@@ -8,4 +8,9 @@ public interface Terrain {
      * Unloaded chunks should report a full block so vehicles never drive into them.
      */
     double[] span(int x, int y, int z);
+
+    /** False if the block column's chunk isn't loaded. The plane waits rather than fly into land that isn't there yet. */
+    default boolean loaded(int x, int z) {
+        return true;
+    }
 }

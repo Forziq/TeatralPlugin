@@ -31,6 +31,7 @@ final class WheelSpin {
             case JEEP, JEEP_HEAVY -> JEEP_WHEELS;
             case TRUCK -> TRUCK_WHEELS;
             case ARTILLERY -> List.of(); // the wheels never roll: the gun is only turned on the spot
+            case PLANE -> List.of(); // rough model: the landing gear doesn't turn
         };
     }
 
@@ -39,7 +40,7 @@ final class WheelSpin {
         return switch (type) {
             case TANK -> TANK_WHEEL_RADIUS;
             case JEEP -> JEEP_WHEEL_RADIUS;
-            case TANK_HEAVY, JEEP_HEAVY, TRUCK, ARTILLERY -> HEAVY_WHEEL_RADIUS;
+            case TANK_HEAVY, JEEP_HEAVY, TRUCK, ARTILLERY, PLANE -> HEAVY_WHEEL_RADIUS;
         };
     }
 

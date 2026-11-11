@@ -112,4 +112,11 @@ class HudModelTest {
         assertTrue(HudModel.showsSpeed(Seat.DRIVER));
         assertFalse(HudModel.showsSpeed(Seat.PASSENGER1));
     }
+
+    @Test
+    void heightIsWholeBlocksAndNeverNegative() {
+        assertEquals("42", HudModel.formatHeight(41.6));
+        assertEquals("0", HudModel.formatHeight(-3));
+        assertEquals("0", HudModel.formatHeight(Double.NaN));
+    }
 }

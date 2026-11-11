@@ -52,8 +52,8 @@ music:
   list-line: "&7- &f{name} &8({id})"
   list-playing: "&a▶ &f{name} &8({id})"
 vehicle:
-  usage: "&eИспользуй: &f/{label} vehicle <spawn <tank|jeep|tank_heavy|jeep_heavy|truck|artillery>|remove|list>"
-  bad-type: "&cТакой техники нет. Выбери tank, jeep, tank_heavy, jeep_heavy, truck или artillery."
+  usage: "&eИспользуй: &f/{label} vehicle <spawn <tank|jeep|tank_heavy|jeep_heavy|truck|artillery|plane>|remove|list>"
+  bad-type: "&cТакой техники нет. Выбери tank, jeep, tank_heavy, jeep_heavy, truck, artillery или plane."
   unavailable: "&cТехника сейчас недоступна."
   model-missing: "&cМодель «{type}» не загрузилась. Загляни в лог сервера."
   no-target: "&cПосмотри на блок не дальше 30 блоков, чтобы поставить туда технику."
@@ -63,6 +63,7 @@ vehicle:
   full: "&cСвободных мест нет."
   not-ready: "&cТехника ещё не готова. Попробуй через секунду."
   entered: "&7Ты за рулём. W/S — ехать, A/D — поворачивать, присядь, чтобы выйти."
+  entered-pilot: "&7Ты за штурвалом. W/S — газ, A/D — крен и поворот, смотри вверх или вниз, чтобы набирать высоту или снижаться. Присядь, чтобы прыгнуть с парашютом."
   entered-gunner: "&7Ты наводчик. Целься взглядом, клик — выстрел. Присядь, чтобы выйти."
   entered-passenger: "&7Ты едешь пассажиром. Присядь, чтобы выйти."
   pad-occupied: "&cНа площадке уже стоит техника."
@@ -70,6 +71,8 @@ vehicle:
   pad-arrived: "&a{type} на месте."
   damaged: "&cКорпус: {percent}%"
   destroyed: "&cМашина уничтожена!"
+  crashed: "&cСамолёт разбился!"
+  bailed-out: "&7Прыжок! Парашют раскрылся."
   repaired: "&aОтремонтировано до {percent}%."
   already-full: "&7Машина уже полностью исправна."
   list-empty: "&7Сейчас на сервере нет техники."
@@ -85,6 +88,7 @@ vehicle:
     jeep_heavy: "Бронированный джип"
     truck: "Армейский грузовик"
     artillery: "Полевая пушка"
+    plane: "Истребитель"
 reload:
   done: "&aНастройки перечитаны."
   seconds:
@@ -94,3 +98,4 @@ reload:
   ready: "&aОрудие заряжено"
 hud:
   speed: "&fСкорость: &e{n} бл/с"
+  height: "&fВысота: &e{n} бл"

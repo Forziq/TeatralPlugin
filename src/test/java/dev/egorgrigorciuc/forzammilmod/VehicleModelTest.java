@@ -178,6 +178,30 @@ class VehicleModelTest {
     }
 
     @Test
+    void planeHasBones() throws Exception {
+        Model m = new Model("models/plane.bbmodel");
+        VehicleType type = VehicleType.PLANE;
+        assertNull(m.parentByName.get("airframe"));
+        assertTrue(m.parentByName.containsKey("airframe"));
+        assertEquals("airframe", m.parentByName.get("propeller"));
+        assertEquals("airframe", m.parentByName.get("p_driver"));
+        assertEquals(1, CrewSeats.seatsOf(type).size());
+        assertTrue(WheelSpin.bones(type).isEmpty());
+        seats(m, type);
+        basics(m);
+        // Banking turns the airframe about its pivot; the propeller sits on that axis so it stays on the nose.
+        double[] air = m.origin("airframe"), prop = m.origin("propeller");
+        assertEquals(air[0], prop[0], 1e-6);
+        assertEquals(air[1], prop[1], 1e-6);
+        assertTrue(m.size(0) >= 100 && m.size(0) <= 120, "wingspan " + m.size(0));
+        assertTrue(m.size(2) >= 70 && m.size(2) <= 84, "length " + m.size(2));
+        assertTrue(m.min[1] >= 0, "nothing below the wheels");
+        assertTrue(type.halfWidth * 32 <= m.size(0), "hit box wider than the model");
+        assertTrue(type.halfLength * 32 <= m.size(2), "hit box longer than the model");
+        assertTrue(type.height * 16 >= m.size(1), "hit box lower than the model");
+    }
+
+    @Test
     void everyTypeHasAModelAndBothNames() throws Exception {
         for (VehicleType t : VehicleType.values()) {
             new Model("models/" + t.model() + ".bbmodel");
