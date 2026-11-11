@@ -1,5 +1,5 @@
 # progress
-now: G6 gate | G1 passed | G2 passed
+now: T45 todo | G1 passed | G2 passed
 updated: 2026-11-11
 
 ## tasks
@@ -52,13 +52,16 @@ G5|-|egor|T41|done|Gate 5: truck and artillery (manual.md G5)
 T42|S|haiku-scout|G5|done|Research how to fly a plane
 T43|L|opus-deep|T42|done|Rough plane
 T44|S|haiku-scout|T43|done|Publish v0.7.0 for Gate 6
-G6|-|egor|T44|gate|Gate 6: plane test, keep or drop (manual.md G6)
+G6|-|egor|T44|done|Gate 6: plane test, keep or drop (manual.md G6)
 T45|L|sonnet-builder|G6|todo|Finish the plane, or remove it
 T46|M|sonnet-builder|T45|todo|Version checks between plugin and pack
 T47|L|sonnet-builder|T46|todo|Performance pass
 T48|M|sonnet-builder|T47|todo|Help, guide and tidy-up
 T49|S|haiku-scout|T48|todo|Publish v1.0.0 for the final gate
 G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
+
+## gate notes
+- G6 (2026-11-11): passed, planes stay. Egor wants climb and dive on keys, not on where you look: Space climbs, Sprint dives (in tasks/T45.md step 1). No other checklist notes given.
 
 ## log (newest first, keep 8)
 - 2026-11-11 T44: v0.7.0 published: jar on GitHub Releases, pack at forziq.github.io/TeatralPlugin/pack/forzammilmod-pack-0.7.0.zip (SHA-1 acb3e758...). Plane model is in (names hidden in pack). G6 checklist in manual.md.
