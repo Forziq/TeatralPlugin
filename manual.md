@@ -300,3 +300,7 @@ Check each of these and jot down a few words for each:
 - The Russian text reads naturally
 
 Then type `/next`.
+
+## Before the plane test (G6): exaroton settings (after T42)
+1. On exaroton, open the server's Options page. Check whether you can change `view-distance`, `simulation-distance` and `allow-flight`. Note what you see.
+2. Decide whether it's OK to turn on `allow-flight` for everyone. Pilots may get kicked for flying, and this is the fallback if they do. Tell Claude Code yes or no before T43.

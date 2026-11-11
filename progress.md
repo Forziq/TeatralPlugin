@@ -1,5 +1,5 @@
 # progress
-now: T42 todo | G1 passed | G2 passed
+now: T43 todo | G1 passed | G2 passed
 updated: 2026-11-11
 
 ## tasks
@@ -49,7 +49,7 @@ T39|M|sonnet-builder|G4|done|Army truck
 T40|L|sonnet-builder|T39|done|Field artillery
 T41|S|haiku-scout|T40|done|Publish v0.6.0 for Gate 5
 G5|-|egor|T41|done|Gate 5: truck and artillery (manual.md G5)
-T42|S|haiku-scout|G5|todo|Research how to fly a plane
+T42|S|haiku-scout|G5|done|Research how to fly a plane
 T43|L|opus-deep|T42|todo|Rough plane
 T44|S|haiku-scout|T43|todo|Publish v0.7.0 for Gate 6
 G6|-|egor|T44|gate|Gate 6: plane test, keep or drop (manual.md G6)
@@ -61,6 +61,7 @@ T49|S|haiku-scout|T48|todo|Publish v1.0.0 for the final gate
 G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
 
 ## log (newest first, keep 8)
+- 2026-11-11 T42: plane notes in docs/notes/planes.md. Input via Player#getCurrentInput; move like the tank (BetterModel, 2-3 ticks). Kick: setAllowFlight on pilot, else global allow-flight (unverified). T43: start with open questions.
 - 2026-11-10 T41: v0.6.0 published: jar on GitHub Releases, pack at https://forziq.github.io/TeatralPlugin/pack/forzammilmod-pack-0.6.0.zip (SHA-1 93205b21fbcf7509b484bc3283cf8c707cb7dd65). manual.md G5 checklist added.
 - 2026-11-10 T40: field gun added (`/fmod vehicle spawn artillery`), no driving, A/D turn it, barrel follows gunner's look. Arcing shells, 8 s reload, 50 health. 244 tests pass, not tried in game. T41: pack needs artillery.bbmodel.
 - 2026-11-10 T39: army truck added: slower than the jeep, faster than the tank, wide turns, 60 health, no gun, 8 seats. T40: the truck model comes from scripts/make-vehicle-models.py. Details in docs/notes/vehicles.md.
@@ -68,7 +69,6 @@ G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
 - 2026-11-10 T37: everyone in a vehicle sees a health bar at the top. Driver sees speed, gunner sees reload. Clears on exit, death, quit or removal. 223 tests pass, not tried in game. G4: check bars appear and clear, and bottom text doesn't flicker.
 - 2026-11-10 T36: vehicles use our own sounds. Jeep: engine, horn on jump. Tank: idle, rev, tracks, turret, shot, whistle, reload, hits, explosions. Unwired: ricochet, repair, old turret. 210 tests pass, not heard in game. T37: jump is the horn.
 - 2026-11-10 Extra: tank sounds redone (old in sounds/old/). Redone: armour_hit, explosion_small, reload_clank, shell_whistle. New: cannon_fire_tank, turret_traverse_loop, turret_traverse_stop, armour_ricochet. Unheard, unwired.
-- 2026-11-09 Extra (no task id): bulkier look-alikes tank_heavy and jeep_heavy beside the plain ones, for Egor to pick. `/fmod vehicle spawn tank_heavy|jeep_heavy`. New VehicleType entries (same driving and health, bigger hit boxes), same script makes all four models. 185 tests pass, models load on the test server, not tried in game. Practice release 0.4.1 built fine with them in the pack (nothing published); the server sees them only after a real release. Drop the losing pair once Egor picks.
 
 ## blockers
 none
