@@ -856,40 +856,65 @@ def jeep_heavy():
 
 
 def plane():
-    """Rough WWII-style fighter for the flight test (T43): fuselage, low wing, tail, fixed landing gear and a two-blade
-    propeller. Bones: airframe (root; banks with the roll), propeller (spins; its pivot sits on the airframe's roll
-    axis, so banking never moves it off the nose) and the pilot's seat in the cockpit."""
+    """Yak-1 style WWII fighter (T45): slim in-line-engine nose with a belly radiator, bubble canopy, tapered low wing,
+    tail wheel and a two-bar propeller. Red stars on the fuselage and wings. Bones: airframe (root; banks with the
+    roll), propeller (spins; its pivot sits on the airframe's roll axis, so banking never moves it off the nose) and
+    the pilot's seat in the cockpit. Size stays close to the T43 plane (112 px across, 77 long) so the hit box fits."""
     m = Model("plane")
     air = m.group("airframe", (0, 13, 0))
-    # Fuselage: engine cowling, main body, a narrowing tail boom.
-    m.cube(air, "cowling", (-6, 7, -36), (6, 19, -26), "dark")
-    m.cube(air, "fuselage", (-6, 7, -26), (6, 18, 10))
-    m.cube(air, "tail_boom", (-4, 9, 10), (4, 17, 30))
-    m.cube(air, "tail_end", (-2, 11, 30), (2, 16, 36))
-    m.cube(air, "exhaust", (-6.5, 12, -30), (6.5, 13, -27), "dark_steel")
-    # Cockpit: glass canopy with a frame behind it.
-    m.cube(air, "canopy", (-4.5, 18, -6), (4.5, 23, 6), "glass")
-    m.cube(air, "canopy_frame", (-5, 18, 6), (5, 22, 8), "dark_steel")
-    # Low wing, 7 blocks across, with darker tips.
-    m.cube(air, "wing", (-50, 8, -14), (50, 10, 4))
+    # Fuselage: narrow nose, deepening towards the cockpit, then tapering to the tail.
+    m.cube(air, "nose", (-3.5, 11, -34), (3.5, 17, -26), "dark")
+    m.cube(air, "engine", (-4.5, 9.5, -26), (4.5, 18, -16))
+    m.cube(air, "fuselage_front", (-5.5, 8, -16), (5.5, 18, 2))
+    m.cube(air, "fuselage_rear", (-4.5, 9, 2), (4.5, 17, 22))
+    m.cube(air, "tail_boom", (-3, 10, 22), (3, 16, 31))
+    m.cube(air, "tail_end", (-1.5, 11, 31), (1.5, 15, 34))
+    m.cube(air, "spine", (-2.5, 17, 4), (2.5, 19.5, 16))
+    m.cube(air, "spine_tail", (-1.5, 17, 16), (1.5, 18.5, 24))
+    # Exhaust stubs and two gun barrels on the cowling, the radiator scoop under the nose.
     for s in (-1, 1):
-        a, b = sorted((s * 50, s * 56))
-        m.cube(air, "wing_tip", (a, 8.25, -12), (b, 9.75, 2), "dark")
-    # Tail: tailplane, fin and rudder.
-    m.cube(air, "tailplane", (-20, 13, 28), (20, 14.5, 36))
-    m.cube(air, "fin", (-1, 16, 26), (1, 30, 34))
-    m.cube(air, "rudder", (-1.25, 16, 34), (1.25, 28, 37), "dark")
+        a_, b_ = sorted((s * 4.5, s * 5.2))
+        m.cube(air, "exhaust", (a_, 13, -24), (b_, 15, -19), "dark_steel")
+        ga, gb = sorted((s * 1.5, s * 2.5))
+        m.cube(air, "gun_barrel", (ga, 16.5, -35.5), (gb, 17.5, -30), "dark_steel")
+    m.cube(air, "radiator", (-3, 5, -12), (3, 8, -2), "dark")
+    m.cube(air, "radiator_lip", (-3.25, 5.5, -12.5), (3.25, 7.5, -12), "dark_steel")
+    # Cockpit: bubble canopy with a frame, windscreen and a rear fairing.
+    m.cube(air, "windscreen", (-4, 18, -9), (4, 21, -7), "glass")
+    m.cube(air, "canopy", (-4, 18, -7), (4, 23, 4), "glass")
+    m.cube(air, "canopy_frame", (-4.25, 22.5, -7), (4.25, 23.5, 4), "dark_steel")
+    m.cube(air, "canopy_rear", (-3.5, 18, 4), (3.5, 21, 10))
+    # Low wing: thick root, tapered middle, narrow tips. Stars on top of each middle section.
+    m.cube(air, "wing_root", (-26, 8, -14), (26, 10.5, 6))
+    for s in (-1, 1):
+        a_, b_ = sorted((s * 26, s * 42))
+        m.cube(air, "wing_mid", (a_, 8.25, -11), (b_, 10, 3))
+        a_, b_ = sorted((s * 27, s * 41))
+        m.cube(air, "wing_star", (a_, 10, -9), (b_, 10.25, -3), "olive", faces={"up": "star"})
+        a_, b_ = sorted((s * 42, s * 56))
+        m.cube(air, "wing_tip", (a_, 8.5, -8), (b_, 9.75, 0), "dark")
+    # Stars on the fuselage sides.
+    for s in (-1, 1):
+        a_, b_ = sorted((s * 4.5, s * 4.75))
+        m.cube(air, "fuselage_star", (a_, 10, 6), (b_, 16, 21), "olive", faces={"east" if s > 0 else "west": "star"})
+    # Tail: tailplane, fin with a fillet, and the rudder.
+    m.cube(air, "tailplane", (-18, 13, 25), (18, 14.5, 33))
+    m.cube(air, "fin_fillet", (-1, 17, 19), (1, 21, 25))
+    m.cube(air, "fin", (-1, 15, 25), (1, 29, 33))
+    m.cube(air, "rudder", (-1.25, 16, 33), (1.25, 28, 37), "dark")
     # Fixed landing gear: two legs with wheels under the wing, and a small tail wheel.
     for s in (-1, 1):
-        a, b = sorted((s * 15, s * 17))
-        m.cube(air, "gear_leg", (a, 3, -9), (b, 8, -7), "dark_steel")
+        a_, b_ = sorted((s * 15, s * 17))
+        m.cube(air, "gear_leg", (a_, 3, -9), (b_, 8, -7), "dark_steel")
         wheel(m, air, "gear_wheel", "x", (3, -8), 3, sorted((s * 14, s * 18)), "wheel_jeep", "tyre")
     m.cube(air, "tail_leg", (-0.5, 4, 31), (0.5, 9, 32), "dark_steel")
     wheel(m, air, "tail_wheel", "x", (2, 31.5), 2, (-1, 1), "wheel_jeep", "tyre")
-    # Propeller on the nose: spinner and one long blade through the hub (24 px tip to tip, clear of the ground).
+    # Propeller on the nose: pointed spinner and two bars through the hub (24 px tip to tip, clear of the ground).
     prop = m.group("propeller", (0, 13, -38), air)
     m.cube(prop, "spinner", (-2.5, 10.5, -40), (2.5, 15.5, -36), "dark_steel")
+    m.cube(prop, "spinner_base", (-3.5, 9.5, -36), (3.5, 16.5, -34.5), "dark_steel")
     m.cube(prop, "blade", (-1.5, 1, -38.5), (1.5, 25, -37.5), "dark_steel")
+    m.cube(prop, "blade_cross", (-12, 11.75, -38.3), (12, 14.25, -37.7), "dark_steel")
     m.group("p_driver", (0, 12, 0), air)  # the pilot, in the cockpit
     return m
 

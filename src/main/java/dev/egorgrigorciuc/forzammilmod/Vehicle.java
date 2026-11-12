@@ -48,6 +48,8 @@ final class Vehicle {
     float turretYawDelta;
     /** Plane only (null otherwise): the flight state FlightModel works on. Main thread only. */
     private FlightModel.State flight;
+    /** Plane only: the machine guns' burst timing. */
+    final MachineGun gun = new MachineGun();
     /** Model pitch in Minecraft terms (nose down positive), read by BetterModel's thread. 0 for ground vehicles. */
     private volatile float renderPitch;
     /** Plane only: propeller angle in degrees. */

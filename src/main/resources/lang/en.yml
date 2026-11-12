@@ -60,7 +60,7 @@ vehicle:
   full: "&cNo free seats left."
   not-ready: "&cThis vehicle isn't ready yet. Try again in a second."
   entered: "&7You're in the driver's seat. W/S to drive, A/D to turn, sneak to get out."
-  entered-pilot: "&7You're the pilot. W/S for throttle, A/D to bank and turn, look up or down to climb or dive. Sneak to bail out."
+  entered-pilot: "&7You're the pilot. W/S throttle, A/D bank and turn, hold Space to climb, Sprint (Ctrl) to dive. Click to fire the guns. Sneak to bail out."
   entered-gunner: "&7You're the gunner. Look to aim, click to fire. Sneak to get out."
   entered-passenger: "&7You're a passenger. Enjoy the ride, sneak to get out."
   pad-occupied: "&cThere's already a vehicle on the pad."

@@ -63,11 +63,8 @@ final class VehicleHud {
             if (e == null) {
                 e = new Entry();
                 e.vehicle = v;
-                // The rough plane has no health bar: it is shot down or crashes, nothing in between to show.
-                if (!v.type.isPlane()) {
-                    e.bar = Bukkit.createBossBar("", BarColor.GREEN, BarStyle.SOLID);
-                    e.bar.addPlayer(p);
-                }
+                e.bar = Bukkit.createBossBar("", BarColor.GREEN, BarStyle.SOLID);
+                e.bar.addPlayer(p);
                 entries.put(id, e);
             }
             if (e.bar == null) {

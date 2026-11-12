@@ -6,7 +6,7 @@ package dev.egorgrigorciuc.forzammilmod;
  * "nose up positive" (the Minecraft look pitch is the other way round). Roll is "right wing down positive".
  *
  * <p>On the ground the plane rolls like a wheeled vehicle and lifts off once it is at {@link #TAKEOFF_SPEED} and
- * the pilot looks up. In the air it flies where its nose points, as long as it is faster than {@link #STALL_SPEED};
+ * the pilot holds Space (nose up). In the air it flies where its nose points, as long as it is faster than {@link #STALL_SPEED};
  * slower than that it stalls: lift goes, the nose drops and it falls until it picks up speed again. Touching the
  * ground slowly with a low sink rate lands it; anything harder, or hitting a wall at speed, crashes it.
  */
@@ -41,7 +41,7 @@ public final class FlightModel {
     /** Taxi steering, degrees per tick, reached at {@link #GROUND_TURN_FULL_SPEED} and above. */
     static final float GROUND_TURN = 2.5f;
     static final double GROUND_TURN_FULL_SPEED = 0.15;
-    /** The nose follows the pilot's look between these, at this rate. */
+    /** Space raises the nose to the top one, Sprint lowers it to the bottom one, at this rate (degrees per tick). */
     static final float PITCH_MIN = -45f, PITCH_MAX = 35f, PITCH_RATE = 2.5f;
     /** On the ground the nose can only come up this far, and must be at least {@link #LIFTOFF_PITCH} up to lift off. */
     static final float GROUND_PITCH_MAX = 12f, LIFTOFF_PITCH = 3f;
@@ -73,11 +73,12 @@ public final class FlightModel {
     public enum Outcome { NONE, TAKEOFF, LANDED, CRASHED, WAITING }
 
     /**
-     * The pilot's controls. {@code throttle} and {@code steer} are -1, 0 or +1 (W/S and D/A); {@code lookPitchUp}
-     * is where the pilot looks, up positive. {@code piloted} false means nobody is at the controls.
+     * The pilot's controls. {@code throttle}, {@code steer} and {@code pitch} are -1, 0 or +1: W/S, D/A and
+     * Sprint (dive, -1) / Space (climb, +1). Neither pitch key, or both, is 0 and the nose eases back to level.
+     * Where the pilot looks does not matter. {@code piloted} false means nobody is at the controls.
      */
-    public record Input(int throttle, int steer, float lookPitchUp, boolean piloted) {
-        public static final Input NONE = new Input(0, 0, 0f, false);
+    public record Input(int throttle, int steer, int pitch, boolean piloted) {
+        public static final Input NONE = new Input(0, 0, 0, false);
     }
 
     /**
@@ -119,10 +120,10 @@ public final class FlightModel {
         }
 
         float target;
-        if (ground) target = in.piloted() ? clamp(in.lookPitchUp(), 0f, GROUND_PITCH_MAX) : 0f;
+        if (ground) target = in.piloted() && in.pitch() > 0 ? GROUND_PITCH_MAX : 0f;
         else if (s.stalled()) target = STALL_NOSE;
         else if (!in.piloted()) target = GLIDE_PITCH;
-        else target = clamp(in.lookPitchUp(), PITCH_MIN, PITCH_MAX);
+        else target = in.pitch() > 0 ? PITCH_MAX : in.pitch() < 0 ? PITCH_MIN : 0f;
         if (!ground && s.y() >= CEILING_Y) target = Math.min(target, 0f);
         float pitch = approach(s.pitch(), target, PITCH_RATE);
 

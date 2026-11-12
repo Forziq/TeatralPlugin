@@ -119,3 +119,10 @@ Suggested hour: install uPlanes (or MTVehicles) on the local test server, fly it
 - `moveDuration` 2 to 3 ticks. Speed capped at 1 block per tick until the ping test says otherwise.
 - Flight: `setAllowFlight(true)` on the pilot first. Global `allow-flight` only if the test needs it, and only after Egor agrees.
 - Keep the flight inside a pre-generated area. Raise display `entity-tracking-range` before long flights.
+
+## T45: finished plane (controls and guns)
+
+- Keys, not the look: W/S throttle, A/D bank, hold Space to climb (`isJump()`), hold Sprint to dive (`isSprint()`), neither or both levels the nose. Sneak bails out. `FlightModel.Input` takes a pitch command -1/0/+1; `DriveInput.pitch()` builds it from `getCurrentInput()` each tick. On the ground Space lifts the nose to 12 degrees (take-off = speed over 0.55 b/tick plus Space), Sprint cannot push it below level.
+- Machine guns: the pilot's left click (same three click paths as the tank, via `ShellService.fireClick`) starts a `MachineGun` burst: 5 bullets over 10 ticks, 30 ticks cooldown after the burst. `PlaneGuns` raytraces each bullet from the nose along the plane's yaw and pitch, range 60. 3.0 damage to mobs and players, 2 health to vehicles via `VehicleService.damage`, no block damage. The plane and its pilot are skipped. Sound `mg_burst`.
+- Health 40, health bar and speed and height read-out for the pilot. `FLIGHT_LOG` is off.
+- Unverified in game: whether `isSprint()` is reported while seated (Sprint is the Ctrl key; on a Mac Ctrl plus click is a right click), and that left click reaches the plane pilot on all three paths.

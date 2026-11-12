@@ -21,10 +21,10 @@ public enum VehicleType {
     // ZiS-3 style field gun (model about 40 x 96 px). Cannot move under its own power: A and D swing the whole gun
     // on the spot, slowly (half a degree a tick), the barrel elevates from the gunner's look pitch.
     ARTILLERY("artillery", 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, true, 0.5, 1.0, 2.2, 1.5, 50),
-    // Rough fighter plane for the flight test (model 112 px across the wings, 76 px long). It never uses the driving
+    // Yak-1 style fighter (model 112 px across the wings, 76 px long), 40 health. It never uses the driving
     // numbers here: FlightModel moves it. They only describe a slow taxi, so the shared driving checks still hold.
     // The hit box covers the body and the inner wing; the wing tips stick out past it.
-    PLANE("plane", 0.30, 0.05, 0.010, 0.030, 0.010, 2.5, false, 1.0, 1.5, 2.2, 1.9, 30);
+    PLANE("plane", 0.30, 0.05, 0.010, 0.030, 0.010, 2.5, false, 1.0, 1.5, 2.2, 1.9, 40);
 
     public final String id;
     public final double maxSpeed;

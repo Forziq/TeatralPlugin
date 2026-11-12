@@ -309,7 +309,7 @@ Get ready:
 3. Pick a flat, open field away from spawn and builds, at least 40 blocks long. A crash breaks a few blocks.
 4. Build a pad at one end: a command block running `fmod vehicle spawn plane`, with a button next to it. Press it.
 
-How to fly: right-click the plane to get in. Hold W to open the throttle and S to close it. Look up a little to lift off once you're going fast enough. A and D bank and turn. Look up to climb and down to dive. Sneak to bail out; above 4 blocks you get a parachute. To land, close the throttle, come in shallow and slow (under 15 on the speed read-out), and look straight ahead as the wheels touch.
+How to fly: right-click the plane to get in. Hold W to open the throttle and S to close it. A and D bank and turn. Hold Space to raise the nose (climb) and Sprint (Ctrl) to lower it (dive); let go of both and the nose levels out. Where you look no longer steers the plane. To take off, get up to speed (about 11 on the speed read-out), then hold Space. Click to fire the machine guns: a short burst of 5 bullets, then a 1.5 second pause. Sneak to bail out; above 4 blocks you get a parachute. To land, close the throttle, come in shallow and slow (under 15 on the speed read-out), and let go of Space and Sprint as the wheels touch.
 
 Checklist, a few words each:
 - Taking off and landing: take-off after a run of about 15 blocks, and a slow, shallow touchdown lands

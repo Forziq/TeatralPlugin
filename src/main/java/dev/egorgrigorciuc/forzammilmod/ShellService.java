@@ -83,7 +83,7 @@ public final class ShellService {
     /** True if this player sits in a tank (any seat), so their left-click never hits blocks or mobs. */
     boolean isTankCrew(Player p) {
         Vehicle v = vehicles.boardedBy(p);
-        return v != null && v.type.hasGun();
+        return v != null && (v.type.hasGun() || v.type.isPlane());
     }
 
     /** True if this player aims and fires the tank gun: the gunner, or the driver when there is no gunner. */
@@ -94,6 +94,10 @@ public final class ShellService {
 
     /** Handles a fire click from one of the three paths ("interact", "swing", "hit"). */
     void fireClick(Player p, String path) {
+        if (vehicles.guns().isPilot(p)) { // a plane's pilot: machine-gun burst (its own cooldown handles the three paths)
+            vehicles.guns().click(p, vehicles.currentTick());
+            return;
+        }
         if (!isTurretOperator(p)) return;
         if (loggedPaths.add(p.getUniqueId() + path)) {
             plugin.getLogger().info("Fire check: click seen via " + path);

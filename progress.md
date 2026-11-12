@@ -1,6 +1,6 @@
 # progress
-now: T45 todo | G1 passed | G2 passed
-updated: 2026-11-11
+now: T45 doing | G1 passed | G2 passed
+updated: 2026-11-12
 
 ## tasks
 id|size|who|deps|status|title
@@ -53,7 +53,7 @@ T42|S|haiku-scout|G5|done|Research how to fly a plane
 T43|L|opus-deep|T42|done|Rough plane
 T44|S|haiku-scout|T43|done|Publish v0.7.0 for Gate 6
 G6|-|egor|T44|done|Gate 6: plane test, keep or drop (manual.md G6)
-T45|L|sonnet-builder|G6|todo|Finish the plane, or remove it
+T45|L|sonnet-builder|G6|doing|Finish the plane, or remove it
 T46|M|sonnet-builder|T45|todo|Version checks between plugin and pack
 T47|L|sonnet-builder|T46|todo|Performance pass
 T48|M|sonnet-builder|T47|todo|Help, guide and tidy-up

@@ -46,12 +46,13 @@ public final class VehicleService {
     private final VehicleSounds sounds;
     private Lang lang;
     private VehicleHud hud;
+    private final PlaneGuns guns = new PlaneGuns(this);
     private boolean loggedSeated;
     private boolean loggedPolledInput;
     private boolean loggedInputEvent;
 
     /** Log what the plane test needs (key events, take-offs, landings, crashes). Set false once Gate 6 is done. */
-    static final boolean FLIGHT_LOG = true;
+    static final boolean FLIGHT_LOG = false;
     static final int FLIGHT_KEY_LOGS = 12;
     /** Crash blast: a bit smaller than a tank shell's 2.5. Breaks blocks, no fire. */
     static final float CRASH_POWER = 2.0f;
@@ -310,6 +311,16 @@ public final class VehicleService {
                 + ", back=" + in.isBackward() + ", left=" + in.isLeft() + ", right=" + in.isRight() + ")");
     }
 
+    /** Vehicle ticks so far; the plane guns time bursts with it. */
+    long currentTick() {
+        return ticks;
+    }
+
+    /** The plane guns (click handling for the listener). */
+    PlaneGuns guns() {
+        return guns;
+    }
+
     /** Applies damage; blows the vehicle up at 0. Returns true if it was destroyed. */
     public boolean damage(Vehicle v, int amount) {
         if (amount <= 0 || v.destroyed || !vehicles.contains(v)) return false;
@@ -514,7 +525,7 @@ public final class VehicleService {
             } else if (CrewSeats.drives(seat)) {
                 pilot = d;
                 Input in = d.getCurrentInput();
-                input = new DriveInput(in.isForward(), in.isBackward(), in.isLeft(), in.isRight());
+                input = new DriveInput(in.isForward(), in.isBackward(), in.isLeft(), in.isRight(), in.isJump(), in.isSprint());
                 if (input.any() && !loggedPolledInput) {
                     loggedPolledInput = true;
                     plugin.getLogger().info("Driver check: the current-input poll reports keys while riding ("
@@ -546,8 +557,9 @@ public final class VehicleService {
     /** The plane's tick: flight, read-out height, sounds; a crash ends it. */
     private void flyTick(Vehicle v, Terrain terrain, DriveInput keys, Player pilot) {
         FlightModel.Input in = pilot == null ? FlightModel.Input.NONE
-                : new FlightModel.Input(keys.throttle(), keys.steer(), -pilot.getLocation().getPitch(), true);
+                : new FlightModel.Input(keys.throttle(), keys.steer(), keys.pitch(), true);
         FlightModel.Outcome out = v.fly(terrain, in, pilot != null);
+        guns.tick(v, pilot, ticks);
         v.heightAboveGround = heightAboveGround(v);
         noteFlight(v, out);
         if (out == FlightModel.Outcome.CRASHED) {

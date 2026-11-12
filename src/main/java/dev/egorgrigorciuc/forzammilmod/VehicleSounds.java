@@ -38,6 +38,7 @@ final class VehicleSounds {
     static final String JEEP_HORN = PREFIX + "jeep_horn";
     static final String PLANE_ENGINE = PREFIX + "plane_engine_loop";
     static final String PLANE_FLYBY = PREFIX + "plane_flyby";
+    static final String MG_BURST = PREFIX + "mg_burst";
 
     /** Volume 2 carries 32 blocks; loops are only sent to players inside that. */
     static final float LOOP_VOLUME = 2.0f;
