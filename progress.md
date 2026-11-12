@@ -1,5 +1,5 @@
 # progress
-now: T49 todo | G1 passed | G2 passed
+now: G7 gate | G1 passed | G2 passed
 updated: 2026-11-12
 
 ## tasks
@@ -57,13 +57,14 @@ T45|L|sonnet-builder|G6|done|Finish the plane, or remove it
 T46|M|sonnet-builder|T45|done|Version checks between plugin and pack
 T47|L|sonnet-builder|T46|done|Performance pass
 T48|M|sonnet-builder|T47|done|Help, guide and tidy-up
-T49|S|haiku-scout|T48|todo|Publish v1.0.0 for the final gate
+T49|S|haiku-scout|T48|done|Publish v1.0.0 for the final gate
 G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
 
 ## gate notes
 - G6 (2026-11-11): passed, planes stay. Egor wants climb and dive on keys, not on where you look: Space climbs, Sprint dives (in tasks/T45.md step 1). No other checklist notes given.
 
 ## log (newest first, keep 8)
+- 2026-11-12 T49: v1.0.0 published, jar on GitHub Releases. Pack at forziq.github.io/TeatralPlugin/pack/forzammilmod-pack-1.0.0.zip, SHA-1 7c1e3c34 (full in docs/notes). G7 checklist in manual.md; next is the G7 evening.
 - 2026-11-12 T48: `/fmod help` lists only what the player can use. First-join guide after 6 s, once per player; `/fmod guide` repeats it. Friends' guides in docs/guide.md and guide.ru.md. 311 tests pass, not tried in game. T49: manual.md needs a G7 checklist.
 - 2026-11-12 T47: speed pass. 20 TPS before and after, 10 vehicles firing. Our cost ~1.1 ms a tick before, 0.8 ms after (budget 50). Hidden `/fmod debug load` and `/fmod debug perf`. 301 tests pass. Not measured: players aboard, music, emotes.
 - 2026-11-12 T46: `/fmod version` shows plugin, pack and BetterModel versions, OK or mismatched. Startup warns on mismatch. Pack has forzammilmod/version.txt; set version= in pack.properties on release. 291 tests pass, not tried on a server.
@@ -71,4 +72,3 @@ G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
 - 2026-11-11 T44: v0.7.0 published: jar on GitHub Releases, pack at forziq.github.io/TeatralPlugin/pack/forzammilmod-pack-0.7.0.zip (SHA-1 acb3e758...). Plane model is in (names hidden in pack). G6 checklist in manual.md.
 - 2026-11-11 T43: rough plane (`/fmod vehicle spawn plane`), 30 health. W/S throttle, A/D bank, look to climb. 264 tests pass, not flown. T44: rebuild pack with plane.bbmodel. Wrong nose or bank: flip Vehicle.PLANE_PITCH_SIGN or BetterModelHook.PLANE_ROLL_SIGN.
 - 2026-11-11 T42: plane notes in docs/notes/planes.md. Input via Player#getCurrentInput; move like the tank (BetterModel, 2-3 ticks). Kick: setAllowFlight on pilot, else global allow-flight (unverified). T43: start with open questions.
-- 2026-11-10 T41: v0.6.0 published: jar on GitHub Releases, pack at https://forziq.github.io/TeatralPlugin/pack/forzammilmod-pack-0.6.0.zip (SHA-1 93205b21fbcf7509b484bc3283cf8c707cb7dd65). manual.md G5 checklist added.

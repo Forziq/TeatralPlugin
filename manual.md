@@ -29,6 +29,20 @@ Local test: on the local server, set `enable-command-block=true` in `server/serv
 4. For a brand-new sound: drop a mono `.ogg` into `assets/sounds/`, make a release, then set the sound to `forzammilmod:<name>`.
 5. The arm movement itself is the `greeting` animation in `src/main/resources/models/players/forzammil_player.bbmodel` (open it in Blockbench). The id in the config never changes the animation name.
 
+### G7 Final gate: a full evening on the server
+
+Get ready:
+1. In game, type `/fmod update`, then restart the server from the exaroton panel.
+2. Type `/fmod version`. Plugin, pack and BetterModel should all say OK. If one doesn't, note which one and stop there.
+
+Checklist, a few words each:
+- Anything that broke, and what you were doing at the time
+- TPS at the busiest moment, and roughly how many people were on
+- Anything friends found confusing
+- Ideas for what to do next. Parked ideas to start from: protected zones, block regrowth, tank ammo
+
+Then type `/next` in Claude Code.
+
 ## Done
 
 Finished one-off steps and gates G1 to G6 (all passed). Kept for reference.
