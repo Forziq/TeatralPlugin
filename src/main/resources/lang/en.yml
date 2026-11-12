@@ -105,3 +105,12 @@ versioncheck:
   missing: "not installed"
   warn-pack: "&cHeads up: resource pack is {pack} but the plugin is {plugin}. Models or sounds may look wrong. Release again so they match."
   warn-bettermodel: "&cHeads up: BetterModel is {found} but we need {expected}. Models may be broken. Install the pinned BetterModel jar."
+
+# Hidden measuring tool (/fmod debug), for the owner and the console only.
+debug:
+  usage: "&e/fmod debug load [count|stop]  |  /fmod debug perf"
+  load-started: "&aLoad test running: {n} vehicles spawned, guns firing."
+  load-stopped: "&aLoad test stopped, {n} vehicles removed."
+  perf-head: "&ePlugin tick cost - shells in the air: {shells} (peak {peak}), vehicles: {vehicles}, asleep: {asleep}"
+  perf-line: "&7{name}: avg {avg} ms, max {max} ms (last {n} ticks)"
+  perf-total: "&aTotal average: {total} ms per tick (the budget is 50 ms)"

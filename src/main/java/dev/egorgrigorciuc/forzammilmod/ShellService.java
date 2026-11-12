@@ -110,19 +110,44 @@ public final class ShellService {
         if (System.currentTimeMillis() - v.joinedMillis(p.getUniqueId()) < MOUNT_GRACE_MILLIS) return;
         TurretModel.Muzzle m = v.muzzle();
         if (m == null) return;
+        if (!ShellCap.canFire(shells.size())) return; // too many shells in the air; refuse quietly
         if (!v.reload.tryFire(tick)) return;
-        launch(p, v, m);
+        launch(p.getUniqueId(), v, m);
     }
 
-    private void launch(Player p, Vehicle v, TurretModel.Muzzle m) {
+    private int peakShells;
+
+    /** Most shells in the air at once since the last call (then resets). */
+    int takePeakShells() {
+        int p = peakShells;
+        peakShells = shells.size();
+        return p;
+    }
+
+    /** Shells in the air right now. */
+    int liveShells() {
+        return shells.size();
+    }
+
+    /** Fires this vehicle's gun with nobody at the controls (load test). Returns true if a shell left the barrel. */
+    boolean fireFrom(Vehicle v) {
+        TurretModel.Muzzle m = v.muzzle();
+        if (m == null || !ShellCap.canFire(shells.size()) || !v.reload.tryFire(tick)) return false;
+        launch(AUTOMATIC_SHOOTER, v, m);
+        return true;
+    }
+
+    private static final UUID AUTOMATIC_SHOOTER = new UUID(0L, 0L);
+
+    private void launch(UUID driver, Vehicle v, TurretModel.Muzzle m) {
         World w = v.world;
         Location at = new Location(w, m.x(), m.y(), m.z());
         ShellPath path = v.type.isArtillery()
                 ? BallisticArc.fire(m.x(), m.y(), m.z(), m.dx(), m.dy(), m.dz())
                 : new ShellModel(m.x(), m.y(), m.z(), m.dx(), m.dy(), m.dz());
-        shells.add(new Shell(path, w, p.getUniqueId(), v));
+        shells.add(new Shell(path, w, driver, v));
         VehicleSounds.boom(w, at, v.type.isArtillery() ? VehicleSounds.CANNON_FIELD : VehicleSounds.CANNON, VehicleSounds.LOUD);
-        w.spawnParticle(Particle.LARGE_SMOKE, at, 6, 0.15, 0.15, 0.15, 0.02);
+        w.spawnParticle(Particle.LARGE_SMOKE, at, 4, 0.15, 0.15, 0.15, 0.02);
         w.spawnParticle(Particle.EXPLOSION, at, 1);
     }
 
@@ -131,6 +156,7 @@ public final class ShellService {
     }
 
     private void tickAll() {
+        long t0 = System.nanoTime();
         tick++;
         for (Iterator<Shell> it = shells.iterator(); it.hasNext(); ) {
             Shell s = it.next();
@@ -143,11 +169,13 @@ public final class ShellService {
             }
             if (!keep) it.remove();
         }
-        for (Vehicle v : vehicles.vehicles()) {
+        for (Vehicle v : vehicles.view()) {
             if (v.hasTurret() && v.reload.pollFinished(tick)) {
                 VehicleSounds.boom(v.world, v.location().add(0, v.type.height / 2, 0), VehicleSounds.RELOAD, 2.0f);
             }
         }
+        peakShells = Math.max(peakShells, shells.size());
+        vehicles.perf().record("shells", System.nanoTime() - t0);
     }
 
     /** Moves one shell along; returns false when it is finished. */
@@ -177,7 +205,7 @@ public final class ShellService {
         boolean skipOrigin = s.model.travelled() < ORIGIN_SAFE_BLOCKS + seg.length();
         Vehicle hitVehicle = null;
         double vehicleDist = Double.MAX_VALUE;
-        for (Vehicle v : vehicles.vehicles()) {
+        for (Vehicle v : vehicles.view()) {
             if (!v.world.equals(w) || v.destroyed || (skipOrigin && v == s.origin)) continue;
             double t = v.hull().rayHit(seg.x(), seg.y(), seg.z(), seg.dx(), seg.dy(), seg.dz(), seg.length());
             if (t >= 0 && t < vehicleDist) {
@@ -213,12 +241,14 @@ public final class ShellService {
         }
         whistle(s, seg);
         // A lobbed shell is far away and moves in small steps, so only draw a trail; the flame rides the tick's last step.
-        for (double d = 0; d < seg.length(); d += 0.5) {
+        int puffs = ShellCap.trailPuffs(seg.length());
+        double stride = seg.length() / puffs;
+        for (double d = 0; d < seg.length(); d += stride) {
             w.spawnParticle(Particle.SMOKE, seg.x() + seg.dx() * d, seg.y() + seg.dy() * d, seg.z() + seg.dz() * d,
                     1, 0, 0, 0, 0);
         }
         w.spawnParticle(Particle.FLAME, seg.endX(), seg.endY(), seg.endZ(), 1, 0, 0, 0, 0);
-        w.spawnParticle(Particle.CRIT, seg.endX(), seg.endY(), seg.endZ(), 2, 0.05, 0.05, 0.05, 0);
+        w.spawnParticle(Particle.CRIT, seg.endX(), seg.endY(), seg.endZ(), 1, 0.05, 0.05, 0.05, 0);
         return true;
     }
 

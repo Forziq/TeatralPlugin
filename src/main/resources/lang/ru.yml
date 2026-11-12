@@ -110,3 +110,12 @@ versioncheck:
   missing: "не установлен"
   warn-pack: "&cВнимание: ресурспак {pack}, а плагин {plugin}. Модели или звуки могут глючить. Выпусти релиз заново, чтобы версии совпали."
   warn-bettermodel: "&cВнимание: стоит BetterModel {found}, а нужен {expected}. Модели могут сломаться. Поставь нужный jar BetterModel."
+
+# Скрытый замер нагрузки (/fmod debug), только для владельца и консоли.
+debug:
+  usage: "&e/fmod debug load [число|stop]  |  /fmod debug perf"
+  load-started: "&aТест нагрузки запущен: появилось машин - {n}, пушки стреляют."
+  load-stopped: "&aТест нагрузки остановлен, убрано машин - {n}."
+  perf-head: "&eНагрузка плагина - снарядов в воздухе: {shells} (пик {peak}), машин: {vehicles}, спит: {asleep}"
+  perf-line: "&7{name}: в среднем {avg} мс, максимум {max} мс (за последние {n} тиков)"
+  perf-total: "&aВ сумме в среднем {total} мс за тик (бюджет - 50 мс)"

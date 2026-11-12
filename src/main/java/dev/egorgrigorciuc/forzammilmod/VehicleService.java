@@ -65,12 +65,23 @@ public final class VehicleService {
     /** Crew of a plane that is blowing up right now: the blast doesn't hurt them, destroy() does its usual 6. */
     private final Set<UUID> crashShield = new HashSet<>();
     private long ticks;
+    private final PerfStats perf = new PerfStats();
+    private int spawnCounter;
     private int planeKeyLogs;
     private boolean loggedTakeoff, loggedLanding, loggedWaiting;
 
     public VehicleService(JavaPlugin plugin) {
         this.plugin = plugin;
         this.sounds = new VehicleSounds(plugin);
+    }
+
+    PerfStats perf() {
+        return perf;
+    }
+
+    /** Live list without copying; do not remove vehicles while looping over it. */
+    List<Vehicle> view() {
+        return java.util.Collections.unmodifiableList(vehicles);
     }
 
     VehicleSounds sounds() {
@@ -146,6 +157,7 @@ public final class VehicleService {
             return SpawnResult.MODEL_MISSING;
         }
         v.rig(rig);
+        v.sleepPhase = spawnCounter++ % SleepRule.WAKE_EVERY;
         vehicles.add(v);
         return SpawnResult.SPAWNED;
     }
@@ -361,7 +373,7 @@ public final class VehicleService {
         Location at = v.location().add(0, v.type.height / 2, 0);
         World w = v.world;
         w.spawnParticle(Particle.EXPLOSION_EMITTER, at, 1);
-        w.spawnParticle(Particle.LARGE_SMOKE, at, 30, 1.0, 0.6, 1.0, 0.05);
+        w.spawnParticle(Particle.LARGE_SMOKE, at, 14, 1.0, 0.6, 1.0, 0.05);
         VehicleSounds.boom(w, at, VehicleSounds.EXPLOSION_BIG, VehicleSounds.LOUD);
         for (Seat seat : v.takenSeats()) {
             Player d = plugin.getServer().getPlayer(v.occupant(seat));
@@ -467,6 +479,7 @@ public final class VehicleService {
     private int idleCounter;
 
     private void tickAll() {
+        long t0 = System.nanoTime();
         ticks++;
         sounds.advance();
         if (++idleCounter >= 20) {
@@ -475,8 +488,9 @@ public final class VehicleService {
         }
         for (Vehicle v : new ArrayList<>(vehicles)) {
             try {
+                if (v.sleep.sleepsNow(isQuiet(v), ticks, v.sleepPhase) && v.isValid()) continue;
                 tick(v);
-                if (hud != null) hud.update(v);
+                if (hud != null && v.hasCrew()) hud.update(v);
             } catch (RuntimeException e) {
                 plugin.getLogger().log(Level.WARNING, "Vehicle tick failed; removing the " + v.type.id, e);
                 remove(v);
@@ -484,6 +498,14 @@ public final class VehicleService {
         }
         if (hud != null) hud.endTick();
         reconcileFlight();
+        perf.record("vehicles", System.nanoTime() - t0);
+    }
+
+    /** Nobody aboard, not moving, falling or flying, not smoking: nothing to simulate. */
+    private static boolean isQuiet(Vehicle v) {
+        VehicleMover.State s = v.state();
+        return !v.hasCrew() && v.testInput == null && !v.destroyed && s.speed() == 0 && s.vy() == 0 && !v.airborne()
+                && v.health.fraction() >= DamageRules.SMOKE_BELOW;
     }
 
     private void checkIdle() {
@@ -534,6 +556,7 @@ public final class VehicleService {
                 }
             }
         }
+        if (pilot == null && v.testInput != null) input = v.testInput;
         Terrain terrain = terrains.computeIfAbsent(v.world, BukkitTerrain::new);
         if (v.type.isPlane()) {
             flyTick(v, terrain, input, pilot);

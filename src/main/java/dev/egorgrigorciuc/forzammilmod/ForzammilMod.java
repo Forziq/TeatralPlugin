@@ -32,6 +32,10 @@ public final class ForzammilMod extends JavaPlugin {
         return radio;
     }
 
+    public ShellService shells() {
+        return shells;
+    }
+
     public VehicleService vehicles() {
         return vehicles;
     }

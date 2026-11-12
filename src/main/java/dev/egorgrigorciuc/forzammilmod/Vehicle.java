@@ -44,6 +44,12 @@ final class Vehicle {
     /** Set once the vehicle has blown up, so it cannot blow up twice. */
     boolean destroyed;
     int smokeTick;
+    /** Decides when this vehicle is parked and quiet enough to skip its tick. */
+    final SleepRule sleep = new SleepRule();
+    /** Spreads the periodic wake-ups of sleeping vehicles over different ticks. */
+    int sleepPhase;
+    /** Load test only: keys pressed by nobody, so an empty vehicle drives anyway. Null normally. */
+    DriveInput testInput;
     /** Degrees the turret turned in the last tick (for the turning sound). Main thread only. */
     float turretYawDelta;
     /** Plane only (null otherwise): the flight state FlightModel works on. Main thread only. */

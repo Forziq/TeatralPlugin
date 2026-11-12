@@ -245,10 +245,63 @@ public final class ForzammilCommand implements TabExecutor {
         }
     }
 
+    private LoadTest load;
+
+    /** /fmod debug load [count|stop] and /fmod debug perf (owner and console only). */
+    private void debug(CommandSender sender, String[] args) {
+        Lang lang = plugin.lang();
+        if (!Access.isOwner(sender)) {
+            sender.sendMessage(lang.msg(sender, "no-permission"));
+            return;
+        }
+        String sub = args.length < 2 ? "" : args[1].toLowerCase(Locale.ROOT);
+        VehicleService vehicles = plugin.vehicles();
+        ShellService shells = plugin.shells();
+        if (vehicles == null || shells == null) return;
+        if (load == null) load = new LoadTest(plugin, vehicles, shells);
+        switch (sub) {
+            case "load" -> {
+                if (args.length >= 3 && args[2].equalsIgnoreCase("stop")) {
+                    sender.sendMessage(lang.msg(sender, "debug.load-stopped", "n", load.stop()));
+                    return;
+                }
+                int count = LoadTest.DEFAULT_COUNT;
+                if (args.length >= 3) {
+                    try {
+                        count = Integer.parseInt(args[2]);
+                    } catch (NumberFormatException e) {
+                        sender.sendMessage(lang.msg(sender, "debug.usage"));
+                        return;
+                    }
+                }
+                sender.sendMessage(lang.msg(sender, "debug.load-started", "n", load.start(sender, count)));
+            }
+            case "perf" -> {
+                int asleep = 0;
+                for (Vehicle v : vehicles.view()) if (v.sleep.asleep()) asleep++;
+                sender.sendMessage(lang.msg(sender, "debug.perf-head", "shells", shells.liveShells(), "peak", shells.takePeakShells(),
+                        "vehicles", vehicles.view().size(), "asleep", asleep));
+                for (Map.Entry<String, TickTimer> e : vehicles.perf().timers().entrySet()) {
+                    TickTimer t = e.getValue();
+                    sender.sendMessage(lang.msg(sender, "debug.perf-line", "name", e.getKey(),
+                            "avg", String.format(Locale.ROOT, "%.3f", t.averageMillis()),
+                            "max", String.format(Locale.ROOT, "%.3f", t.maxMillis()), "n", t.samples()));
+                }
+                sender.sendMessage(lang.msg(sender, "debug.perf-total",
+                        "total", String.format(Locale.ROOT, "%.3f", vehicles.perf().totalAverageMillis())));
+            }
+            default -> sender.sendMessage(lang.msg(sender, "debug.usage"));
+        }
+    }
+
     static final String TEST_SOUND = "forzammilmod:emote_cheer";
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (args.length > 0 && args[0].equalsIgnoreCase("debug")) { // hidden: not in usage or tab-complete
+            debug(sender, args);
+            return true;
+        }
         Sub sub = args.length == 0 ? null : subs.get(args[0].toLowerCase(Locale.ROOT));
         if (sub == null) {
             sender.sendMessage(plugin.lang().msg(sender, "usage", "label", label, "subs", String.join("|", subs.keySet())));

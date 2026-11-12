@@ -32,6 +32,7 @@ final class VehicleHud {
         BossBar bar;
         String title = "";
         boolean actionShown;
+        double fraction = -1;
     }
 
     private final Lang lang;
@@ -83,12 +84,15 @@ final class VehicleHud {
                 e.bar.setTitle(title);
             }
             double fraction = v.health.fraction();
-            e.bar.setProgress(HudModel.progress(fraction));
-            e.bar.setColor(switch (HudModel.band(fraction)) {
-                case GREEN -> BarColor.GREEN;
-                case YELLOW -> BarColor.YELLOW;
-                case RED -> BarColor.RED;
-            });
+            if (fraction != e.fraction) { // the bar only changes when the health does
+                e.fraction = fraction;
+                e.bar.setProgress(HudModel.progress(fraction));
+                e.bar.setColor(switch (HudModel.band(fraction)) {
+                    case GREEN -> BarColor.GREEN;
+                    case YELLOW -> BarColor.YELLOW;
+                    case RED -> BarColor.RED;
+                });
+            }
             if (sendActionBar) {
                 String line = actionLine(p, v, seat, controller);
                 if (line != null) {
