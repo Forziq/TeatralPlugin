@@ -12,6 +12,7 @@ public final class ForzammilMod extends JavaPlugin {
     private Lang lang;
     private UpdateService updates;
     private PackService pack;
+    private VersionService versions;
     private EmoteService emotes;
     private RadioService radio;
     private VehicleService vehicles;
@@ -37,6 +38,15 @@ public final class ForzammilMod extends JavaPlugin {
 
     public UpdateService updates() {
         return updates;
+    }
+
+    public VersionService versions() {
+        return versions;
+    }
+
+    /** Version of the published resource pack, or "" when unknown (dev build). */
+    public String packVersion() {
+        return pack == null ? "" : pack.version();
     }
 
     /** Null in dev builds without pack.properties. */
@@ -71,6 +81,9 @@ public final class ForzammilMod extends JavaPlugin {
             getServer().getPluginManager().registerEvents(pack, this);
         }
         updates.checkOnStartup();
+        versions = new VersionService(this);
+        getServer().getPluginManager().registerEvents(versions, this);
+        getServer().getScheduler().runTask(this, versions::logStartup);
         getServer().getPluginManager().registerEvents(new LangListener(lang), this);
         radio = new RadioService(this);
         getServer().getPluginManager().registerEvents(new RadioListener(radio), this);

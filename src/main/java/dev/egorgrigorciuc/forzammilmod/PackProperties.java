@@ -9,7 +9,7 @@ import java.util.Properties;
 import java.util.regex.Pattern;
 
 /** Parsed pack.properties: public URL plus SHA-1 of the resource pack zip. */
-public record PackProperties(String url, byte[] sha1) {
+public record PackProperties(String url, byte[] sha1, String version) {
 
     private static final Pattern HEX40 = Pattern.compile("[0-9a-fA-F]{40}");
 
@@ -24,10 +24,12 @@ public record PackProperties(String url, byte[] sha1) {
         String url = p.getProperty("url", "").trim();
         String sha = p.getProperty("sha1", "").trim();
         if (url.isEmpty() || !HEX40.matcher(sha).matches()) return Optional.empty();
+        String version = p.getProperty("version", "").trim();
+        if (version.isEmpty()) version = VersionCheck.packVersionFromUrl(url);
         byte[] bytes = new byte[20];
         for (int i = 0; i < 20; i++) {
             bytes[i] = (byte) Integer.parseInt(sha.substring(i * 2, i * 2 + 2), 16);
         }
-        return Optional.of(new PackProperties(url, bytes));
+        return Optional.of(new PackProperties(url, bytes, version));
     }
 }

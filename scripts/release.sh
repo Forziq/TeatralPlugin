@@ -50,7 +50,7 @@ SHA1=$(echo "$BP_OUT" | tail -1 | sed 's/^sha1=//')
 ZIP="build/pack/forzammilmod-pack-$VERSION.zip"
 
 echo "==> Writing pack.properties"
-printf 'url=%s\nsha1=%s\n' "$PACK_URL" "$SHA1" > "$PROPS"
+printf 'url=%s\nsha1=%s\nversion=%s\n' "$PACK_URL" "$SHA1" "$VERSION" > "$PROPS"
 
 echo "==> Building plugin jar"
 ./gradlew build -q

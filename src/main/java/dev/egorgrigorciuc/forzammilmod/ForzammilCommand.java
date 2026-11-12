@@ -31,8 +31,7 @@ public final class ForzammilCommand implements TabExecutor {
 
     public ForzammilCommand(ForzammilMod plugin) {
         this.plugin = plugin;
-        subs.put("version", (sender, args) ->
-                sender.sendMessage(plugin.lang().msg(sender, "version", "version", plugin.getDescription().getVersion())));
+        subs.put("version", (sender, args) -> plugin.versions().show(sender));
         subs.put("update", (sender, args) -> {
             if (!Access.isOwner(sender)) {
                 sender.sendMessage(plugin.lang().msg(sender, "no-permission"));

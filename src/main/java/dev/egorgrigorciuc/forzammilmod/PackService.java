@@ -44,6 +44,10 @@ public final class PackService implements Listener {
         }
     }
 
+    public String version() {
+        return pack.version();
+    }
+
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();

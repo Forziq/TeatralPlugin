@@ -24,7 +24,18 @@ tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }
 
+val pinnedBetterModel: String = run {
+    val row = file("docs/versions.md").readLines().firstOrNull {
+        it.trim().startsWith("|") && it.split("|").getOrNull(1)?.trim().equals("BetterModel", ignoreCase = true)
+    }
+    Regex("""\d+\.\d+\.\d+""").find(row?.split("|")?.getOrNull(2) ?: "")?.value ?: ""
+}
+
 tasks.processResources {
+    inputs.file("docs/versions.md")
+    doLast {
+        destinationDir.resolve("versions.properties").writeText("bettermodel=$pinnedBetterModel\n")
+    }
     from("assets/music/tracks.yml") {
         into("music")
     }

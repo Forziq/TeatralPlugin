@@ -38,6 +38,8 @@ m.pack.description = "forzammilmod resource pack " + process.argv[1];
 fs.writeFileSync(process.argv[2], JSON.stringify(m, null, 2));
 ' "$VERSION" "$STAGE/pack.mcmeta"
 rm -f build/pack/bm-pack.mcmeta
+mkdir -p "$STAGE/forzammilmod"
+printf '%s\n' "$VERSION" > "$STAGE/forzammilmod/version.txt"
 
 echo "==> Zipping"
 rm -f "$OUT"

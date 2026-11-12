@@ -99,3 +99,14 @@ reload:
 hud:
   speed: "&fСкорость: &e{n} бл/с"
   height: "&fВысота: &e{n} бл"
+versioncheck:
+  header: "&7Версии forzammilmod:"
+  plugin: "&7Плагин: &f{version}"
+  pack: "&7Ресурспак: &f{found} {mark} &7(у плагина {expected})"
+  bettermodel: "&7BetterModel: &f{found} {mark} &7(нужен {expected})"
+  ok: "&a[ОК]"
+  bad: "&c[НЕ СОВПАДАЕТ]"
+  unknown: "&e[НЕИЗВЕСТНО]"
+  missing: "не установлен"
+  warn-pack: "&cВнимание: ресурспак {pack}, а плагин {plugin}. Модели или звуки могут глючить. Выпусти релиз заново, чтобы версии совпали."
+  warn-bettermodel: "&cВнимание: стоит BetterModel {found}, а нужен {expected}. Модели могут сломаться. Поставь нужный jar BetterModel."

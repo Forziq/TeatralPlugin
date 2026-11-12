@@ -94,3 +94,14 @@ reload:
 hud:
   speed: "&fSpeed: &e{n} b/s"
   height: "&fHeight: &e{n} b"
+versioncheck:
+  header: "&7forzammilmod versions:"
+  plugin: "&7Plugin: &f{version}"
+  pack: "&7Resource pack: &f{found} {mark} &7(plugin is {expected})"
+  bettermodel: "&7BetterModel: &f{found} {mark} &7(wanted {expected})"
+  ok: "&a[OK]"
+  bad: "&c[MISMATCH]"
+  unknown: "&e[UNKNOWN]"
+  missing: "not installed"
+  warn-pack: "&cHeads up: resource pack is {pack} but the plugin is {plugin}. Models or sounds may look wrong. Release again so they match."
+  warn-bettermodel: "&cHeads up: BetterModel is {found} but we need {expected}. Models may be broken. Install the pinned BetterModel jar."
