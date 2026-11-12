@@ -106,6 +106,34 @@ versioncheck:
   warn-pack: "&cHeads up: resource pack is {pack} but the plugin is {plugin}. Models or sounds may look wrong. Release again so they match."
   warn-bettermodel: "&cHeads up: BetterModel is {found} but we need {expected}. Models may be broken. Install the pinned BetterModel jar."
 
+help:
+  header: "&6forzammilmod commands:"
+  cmd:
+    help: "Show this list."
+    guide: "Show the short guide again."
+    emote-wave: "Wave at everyone."
+    emote-greeting: "Play the greeting emote."
+    emote-stop: "Stop your emote."
+    music: "The shared radio: play a track, stop, shuffle, repeat, or list the tracks."
+    vehicle-list: "List the vehicles out right now."
+    vehicle-spawn: "Put a vehicle where you look (owner only)."
+    vehicle-remove: "Remove the nearest vehicle (owner only)."
+    pack: "Check that your resource pack loaded."
+    version: "Show the plugin, pack and BetterModel versions."
+    update: "Download the newest version (owner only)."
+    reload: "Re-read the settings (owner only)."
+guide:
+  header: "&6&lforzammilmod quick guide"
+  emotes: "&eEmotes: &7type &f/emote wave&7 or &f/emote {greeting}&7. Move, or type &f/emote stop&7, to end one."
+  pads: "&eGetting a vehicle: &7find a pad (a command block with a button) and press the button. The vehicle appears 2 blocks above the pad. Right-click it to get in, sneak to get out."
+  car: "&eJeep and truck: &7W/S drive, A/D steer, Space honks. The jeep seats 3, the truck 8. They have no gun."
+  tank: "&eTank: &7the driver uses W/S and A/D (the tank turns on the spot). The second seat is the gunner: look to aim the turret, left-click to fire, 4 seconds to reload. With no gunner, the driver aims and fires too."
+  gun: "&eField gun: &7sit behind the shield. A/D slowly swing the gun, look up or down to raise the barrel, left-click to fire (8 second reload). It can't move."
+  plane: "&ePlane: &7W/S throttle, A/D bank, hold Space to climb, Sprint (Ctrl) to dive, left-click fires the guns. Sneak to bail out with a parachute."
+  repair: "&eRepairs: &7hold an iron ingot and right-click the vehicle from outside. Each ingot restores 10% of its health."
+  radio: "&eRadio: &f/fmod music play <track>&7, &fstop&7, &fshuffle&7, &floop&7, &flist&7. Everyone hears it."
+  footer: "&7Show this again with &f/fmod guide&7. All commands: &f/fmod help&7."
+
 # Hidden measuring tool (/fmod debug), for the owner and the console only.
 debug:
   usage: "&e/fmod debug load [count|stop]  |  /fmod debug perf"

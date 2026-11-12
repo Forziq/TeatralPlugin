@@ -17,6 +17,7 @@ public final class ForzammilMod extends JavaPlugin {
     private RadioService radio;
     private VehicleService vehicles;
     private ShellService shells;
+    private GuideService guide;
     /** Set when the server-load event fires after our enable; BetterModel loads its models on that event. */
     private volatile boolean serverLoadSeen;
 
@@ -26,6 +27,14 @@ public final class ForzammilMod extends JavaPlugin {
 
     public String jarFileName() {
         return getFile().getName();
+    }
+
+    public EmoteService emotes() {
+        return emotes;
+    }
+
+    public GuideService guide() {
+        return guide;
     }
 
     public RadioService radio() {
@@ -95,6 +104,8 @@ public final class ForzammilMod extends JavaPlugin {
         emotes = new EmoteService(this);
         emotes.loadGreeting();
         getServer().getPluginManager().registerEvents(new EmoteListener(this, emotes, lang), this);
+        guide = new GuideService(this);
+        getServer().getPluginManager().registerEvents(guide, this);
         register("emote", new EmoteCommand(lang, emotes));
         vehicles = new VehicleService(this);
         vehicles.lang(lang);

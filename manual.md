@@ -4,7 +4,36 @@ These are the things Claude Code can't do for you, even with Claude in Chrome an
 
 Claude Code adds to this file whenever it hits something new, so check the bottom now and then.
 
-## M00 Before the first `/next` (once)
+Still open: the G7 checklist for the 1.0 release will be added here when the release is ready. Below are the how-tos you may need again. Everything finished is under "Done" at the bottom.
+
+## Vehicle pads (after T26)
+
+Setup on exaroton:
+1. Turn on command blocks: in the exaroton panel open Options and set `enable-command-block` to `true`, or edit `server.properties` by hand. Restart the server.
+2. Join as Forzammil and type `/give @s command_block`. Place it under the floor or in a wall. Open it and set the command to `fmod vehicle spawn tank` (no slash; `jeep`, `tank_heavy` and `jeep_heavy` work too). Set the mode to Impulse and turn Needs Redstone on. Put a button on one of its sides.
+3. Keep the 2 to 5 blocks above the command block clear. Press the button. The vehicle appears 2 blocks above the command block, facing the way the command block points.
+
+What to expect:
+- Pressing again while a vehicle is still on the pad says "There's already a vehicle on the pad".
+- At 10 vehicles on the server, the pad refuses.
+- A vehicle nobody drives for 10 minutes disappears.
+- Both numbers live in `plugins/forzammilmod/config.yml`: `max-vehicles` (at least 1) and `idle-despawn-minutes` (0 means never). They show up there after the first restart on the new version. Changes take effect straight away, no restart needed.
+- Anyone can press the button. Only Forzammil can type the spawn command by hand.
+
+Local test: on the local server, set `enable-command-block=true` in `server/server.properties`, restart, then follow the same steps. Join as Forzammil for the `/give`.
+
+## Change the greeting
+1. In exaroton, open Files > `plugins/forzammilmod/config.yml` and edit the `greeting:` block (what players type, the English and Russian names, the sound, volume and pitch).
+2. Save, then run `/fmod reload` in the game or the console. No restart or new release needed.
+3. Vanilla sounds work too, for example `minecraft:entity.player.levelup`. A sound key that doesn't exist plays nothing and gives no error, so check the spelling. The server log shows the sound key it picked up after every reload.
+4. For a brand-new sound: drop a mono `.ogg` into `assets/sounds/`, make a release, then set the sound to `forzammilmod:<name>`.
+5. The arm movement itself is the `greeting` animation in `src/main/resources/models/players/forzammil_player.bbmodel` (open it in Blockbench). The id in the config never changes the animation name.
+
+## Done
+
+Finished one-off steps and gates G1 to G6 (all passed). Kept for reference.
+
+### M00 Before the first `/next` (once)
 
 1. Install the Claude Code setup. It couldn't be written straight into the hidden `.claude` folder from the claude.ai app, so it's waiting in `claude-setup/`. Have a look through it if you like, then in Terminal run:
    ```
@@ -27,7 +56,7 @@ If T01 asks for either of these, do them yourself in Terminal:
 - **Java symlink** (optional, T01 did not run it): `sudo ln -sfn /opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-21.jdk`. It needs your Mac password. The scripts don't need it: they use `JAVA_HOME=$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home`.
 - **GitHub login** (T01 could not finish the push without it): run `gh auth login --web --git-protocol https` in Terminal, choose GitHub.com and "Login with a web browser". Then ask Claude Code to finish T01 (repo create or push to `origin main`).
 
-## M01 Restart Claude Code (after T01)
+### M01 Restart Claude Code (after T01)
 
 T01 adds the Context7 documentation server, and Claude Code only loads new servers when it starts.
 
@@ -35,7 +64,7 @@ T01 adds the Context7 documentation server, and Claude Code only loads new serve
 2. Type `/mcp` and check that `context7` shows as connected. Note whether you can see ElevenLabs in the list too.
 3. Type `/next` and answer "Done" when it asks about M01.
 
-## E1 If Claude Code can't see ElevenLabs (only if T04 is blocked)
+### E1 If Claude Code can't see ElevenLabs (only if T04 is blocked)
 
 Option A, using your claude.ai connector:
 1. Make sure Claude Code is logged in with the same Claude account you use in the app (`/login` shows it).
@@ -50,7 +79,7 @@ Option B, if A doesn't work:
 
 Do this soon. The sounds need your ElevenLabs plan while it's still active.
 
-## M02 Put the starter version on exaroton (after T09)
+### M02 Put the starter version on exaroton (after T09)
 
 You only do this once. After that the plugin updates itself.
 
@@ -73,7 +102,7 @@ From now on, new versions download by themselves when the server starts and go l
 
 Claude Code will add any BetterModel setting the server needs here (T07 and T09 find out).
 
-## M03 Try the wave locally (optional, after T12)
+### M03 Try the wave locally (optional, after T12)
 
 1. Run `scripts/server-start.sh` in Terminal, or ask Claude Code to start the local test server.
 2. Open Minecraft 1.21.4 in TLauncher, go to Multiplayer and add the server `localhost`.
@@ -102,7 +131,7 @@ Claude Code will add any BetterModel setting the server needs here (T07 and T09 
 10. Watch for these and note anything odd: a track that cuts out early, two tracks playing at once, or a player who gets no sound after rejoining.
 11. Type `stop` in the server window when you're finished.
 
-## G1 Gate 1: emote and radio test with friends (after T13)
+### G1 Gate 1: emote and radio test with friends (after T13)
 
 Update the server first:
 1. In game on the exaroton server, type `/fmod update`.
@@ -138,11 +167,11 @@ Radio:
 
 Then type `/next` in Claude Code. It'll ask whether the gate passed and take your notes.
 
-## M04 Try a free vehicle plugin for an hour (optional, after T14)
+### M04 Try a free vehicle plugin for an hour (optional, after T14)
 
 T14 checks whether a free Spigot 1.21.4 plugin with drivable vehicles exists. If it finds one, the install steps go here. If not, skip this.
 
-## M05 Try the tank locally (optional, after T16 to T19)
+### M05 Try the tank locally (optional, after T16 to T19)
 
 1. Start the local server (`scripts/smoke-test.sh` only checks it loads; to play, run the server in `server/` as usual) and join `localhost` as `Forzammil`.
 2. Look at a block on flat ground and type `/fmod vehicle spawn tank`. The tank appears on that block, facing away from you.
@@ -165,7 +194,7 @@ What to watch for and tell Claude Code:
 - Does your camera shake while driving or stepping up a block?
 - Getting stuck in or on blocks, or getting out somewhere odd.
 
-## G2 Gate 2: tank test with friends (after T20)
+### G2 Gate 2: tank test with friends (after T20)
 
 Get the server ready:
 1. The server must be on v0.2.1 or later. In game, type `/fmod update`, then restart the server from the exaroton panel.
@@ -192,52 +221,29 @@ If the turret or wheels turn the wrong way, or something looks off, check the se
 
 Then type `/next`. It'll take your notes and plan the next phase with you.
 
-## Vehicle pads (after T26)
-
-Setup on exaroton:
-1. Turn on command blocks: in the exaroton panel open Options and set `enable-command-block` to `true`, or edit `server.properties` by hand. Restart the server.
-2. Join as Forzammil and type `/give @s command_block`. Place it under the floor or in a wall. Open it and set the command to `fmod vehicle spawn tank` (no slash; `jeep`, `tank_heavy` and `jeep_heavy` work too). Set the mode to Impulse and turn Needs Redstone on. Put a button on one of its sides.
-3. Keep the 2 to 5 blocks above the command block clear. Press the button. The vehicle appears 2 blocks above the command block, facing the way the command block points.
-
-What to expect:
-- Pressing again while a vehicle is still on the pad says "There's already a vehicle on the pad".
-- At 10 vehicles on the server, the pad refuses.
-- A vehicle nobody drives for 10 minutes disappears.
-- Both numbers live in `plugins/forzammilmod/config.yml`: `max-vehicles` (at least 1) and `idle-despawn-minutes` (0 means never). They show up there after the first restart on the new version. Changes take effect straight away, no restart needed.
-- Anyone can press the button. Only Forzammil can type the spawn command by hand.
-
-Local test: on the local server, set `enable-command-block=true` in `server/server.properties`, restart, then follow the same steps. Join as Forzammil for the `/give`.
-
-## Added by Claude Code
+### Added by Claude Code
 (nothing yet)
 
-## Swap in the patched BetterModel (2026-11-08)
+### Swap in the patched BetterModel (2026-11-08)
 Emotes crashed with "Emotes aren't available right now" because of a bug in BetterModel's Spigot jar. Claude Code made a fixed copy.
 1. Stop the exaroton server.
 2. In Files > `plugins`, delete `BetterModel-2.2.0-spigot.jar`. Leave the `BetterModel` folder alone.
 3. Upload `/Users/egorgrigorciuc/Projectsnosync/TeatralPlugin/dist/BetterModel-2.2.0-spigot-fmod.jar`.
 4. Start the server and try `/emote wave` again. If it still fails, paste the log into Claude Code.
 
-## M05 (optional): look at the tank and jeep in Blockbench
+### M05 (optional): look at the tank and jeep in Blockbench
 Open tank.bbmodel and jeep.bbmodel in Blockbench to check how they look, if you like.
 1. Open `src/main/resources/models/tank.bbmodel` and `jeep.bbmodel` in Blockbench (free, blockbench.net).
 2. Check they look like a T-34 style tank and a wartime jeep, painted olive with a red star on the turret, and that the turret, barrel and each wheel are separate parts you can select.
 3. Tell Claude Code if anything looks wrong. Don't fix them in Blockbench: both files are made by `scripts/make-vehicle-models.py`, and running it again would undo your changes.
 
-## Change the greeting
-1. In exaroton, open Files > `plugins/forzammilmod/config.yml` and edit the `greeting:` block (what players type, the English and Russian names, the sound, volume and pitch).
-2. Save, then run `/fmod reload` in the game or the console. No restart or new release needed.
-3. Vanilla sounds work too, for example `minecraft:entity.player.levelup`. A sound key that doesn't exist plays nothing and gives no error, so check the spelling. The server log shows the sound key it picked up after every reload.
-4. For a brand-new sound: drop a mono `.ogg` into `assets/sounds/`, make a release, then set the sound to `forzammilmod:<name>`.
-5. The arm movement itself is the `greeting` animation in `src/main/resources/models/players/forzammil_player.bbmodel` (open it in Blockbench). The id in the config never changes the animation name.
-
-## Try the greeting
+### Try the greeting
 1. Join the server, stand still and type `/emote greeting` (or the id you set).
 2. Ask a friend to watch you: the right arm should go up in front of you, about 45 degrees above flat and angled a little towards your body, hold for a moment, then come down.
 3. Check it matches the real gesture. If the arm goes sideways or across the wrong way, tell Claude Code, because the angle signs could not be tested without the game.
 4. Typing another emote within 3 seconds should tell you to wait.
 
-## M03 Check hidden items and the greeting arm (after T28)
+### M03 Check hidden items and the greeting arm (after T28)
 1. Pick up a sword and wear some armour. Ask a friend to watch you from a few blocks away.
 2. Before emoting: your friend should see the sword and armour on you.
 3. Type `/emote greeting`. During it, your friend should see your hands and armour empty. Your own inventory should still show everything.
@@ -245,7 +251,7 @@ Open tank.bbmodel and jeep.bbmodel in Blockbench to check how they look, if you 
 5. Type `/emote wave`, or wait for the emote to end. Your friend should see the sword and armour come back straight away.
 6. Swap items in your hotbar during an emote. Your friend should still see nothing in your hands until the emote stops.
 
-## G3 Gate 3: greeting test with friends (after T32)
+### G3 Gate 3: greeting test with friends (after T32)
 
 Get ready:
 1. In game, type `/fmod update`, then restart the server from the exaroton panel. The server must be on v0.4.0 or later.
@@ -262,7 +268,7 @@ Check each of these and jot down a few words for each:
 
 Then type `/next`.
 
-## G4 Gate 4: tank battle with friends (after T38)
+### G4 Gate 4: tank battle with friends (after T38)
 
 Get ready:
 1. In game, type `/fmod update`, then restart the server from the exaroton panel. The server must be on v0.5.0 or later.
@@ -283,7 +289,7 @@ Check each of these and jot down a few words for each:
 
 Then type `/next`.
 
-## G5 Gate 5: truck and artillery
+### G5 Gate 5: truck and artillery
 
 Get ready:
 1. In game, type `/fmod update`, then restart the server from the exaroton panel. The server must be on v0.6.0 or later.
@@ -301,7 +307,7 @@ Check each of these and jot down a few words for each:
 
 Then type `/next`.
 
-## G6 Gate 6: plane test (keep or drop)
+### G6 Gate 6: plane test (keep or drop)
 
 Get ready:
 1. On exaroton, open the server's Options page and note whether you can change `view-distance`, `simulation-distance` and `allow-flight`. Leave `allow-flight` off unless a pilot gets kicked "for flying" (see the checklist).

@@ -31,6 +31,10 @@ public final class ForzammilCommand implements TabExecutor {
 
     public ForzammilCommand(ForzammilMod plugin) {
         this.plugin = plugin;
+        subs.put("help", (sender, args) -> help(sender));
+        subs.put("guide", (sender, args) -> {
+            if (plugin.guide() != null) plugin.guide().show(sender);
+        });
         subs.put("version", (sender, args) -> plugin.versions().show(sender));
         subs.put("update", (sender, args) -> {
             if (!Access.isOwner(sender)) {
@@ -50,6 +54,17 @@ public final class ForzammilCommand implements TabExecutor {
         subs.put("pack", (sender, args) -> checkPack(sender));
         subs.put("music", this::music);
         subs.put("vehicle", this::vehicle);
+    }
+
+    /** Only the commands this sender may use, one translated line each. */
+    private void help(CommandSender sender) {
+        Lang lang = plugin.lang();
+        String greeting = plugin.emotes() == null ? GreetingSettings.DEFAULT_ID : plugin.emotes().greeting().id();
+        sender.sendMessage(lang.msg(sender, "help.header"));
+        for (HelpList.Entry e : HelpList.visibleTo(Access.isOwner(sender))) {
+            sender.sendMessage("\u00a7e" + HelpList.commandText(e, greeting) + " \u00a78- "
+                    + lang.msg(sender, HelpList.langKey(e), "greeting", greeting));
+        }
     }
 
     static final List<String> VEHICLE_SUBS = List.of("spawn", "remove", "list");
@@ -303,6 +318,10 @@ public final class ForzammilCommand implements TabExecutor {
             return true;
         }
         Sub sub = args.length == 0 ? null : subs.get(args[0].toLowerCase(Locale.ROOT));
+        if (args.length == 0) {
+            help(sender);
+            return true;
+        }
         if (sub == null) {
             sender.sendMessage(plugin.lang().msg(sender, "usage", "label", label, "subs", String.join("|", subs.keySet())));
             return true;
