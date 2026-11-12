@@ -1,5 +1,5 @@
 # progress
-now: T45 doing | G1 passed | G2 passed
+now: T46 todo | G1 passed | G2 passed
 updated: 2026-11-12
 
 ## tasks
@@ -53,7 +53,7 @@ T42|S|haiku-scout|G5|done|Research how to fly a plane
 T43|L|opus-deep|T42|done|Rough plane
 T44|S|haiku-scout|T43|done|Publish v0.7.0 for Gate 6
 G6|-|egor|T44|done|Gate 6: plane test, keep or drop (manual.md G6)
-T45|L|sonnet-builder|G6|doing|Finish the plane, or remove it
+T45|L|sonnet-builder|G6|done|Finish the plane, or remove it
 T46|M|sonnet-builder|T45|todo|Version checks between plugin and pack
 T47|L|sonnet-builder|T46|todo|Performance pass
 T48|M|sonnet-builder|T47|todo|Help, guide and tidy-up
@@ -64,6 +64,7 @@ G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
 - G6 (2026-11-11): passed, planes stay. Egor wants climb and dive on keys, not on where you look: Space climbs, Sprint dives (in tasks/T45.md step 1). No other checklist notes given.
 
 ## log (newest first, keep 8)
+- 2026-11-12 T45: plane finished. Space climbs, Sprint dives, looking no longer steers. Click fires bursts, 40 health. 276 tests pass, not flown. Unverified: Sprint while seated, Ctrl+click on Mac. Tuning in MachineGun.java.
 - 2026-11-11 T44: v0.7.0 published: jar on GitHub Releases, pack at forziq.github.io/TeatralPlugin/pack/forzammilmod-pack-0.7.0.zip (SHA-1 acb3e758...). Plane model is in (names hidden in pack). G6 checklist in manual.md.
 - 2026-11-11 T43: rough plane (`/fmod vehicle spawn plane`), 30 health. W/S throttle, A/D bank, look to climb. 264 tests pass, not flown. T44: rebuild pack with plane.bbmodel. Wrong nose or bank: flip Vehicle.PLANE_PITCH_SIGN or BetterModelHook.PLANE_ROLL_SIGN.
 - 2026-11-11 T42: plane notes in docs/notes/planes.md. Input via Player#getCurrentInput; move like the tank (BetterModel, 2-3 ticks). Kick: setAllowFlight on pilot, else global allow-flight (unverified). T43: start with open questions.
@@ -71,4 +72,3 @@ G7|-|egor|T49|gate|Final gate: a full evening on the server (manual.md G7)
 - 2026-11-10 T40: field gun added (`/fmod vehicle spawn artillery`), no driving, A/D turn it, barrel follows gunner's look. Arcing shells, 8 s reload, 50 health. 244 tests pass, not tried in game. T41: pack needs artillery.bbmodel.
 - 2026-11-10 T39: army truck added: slower than the jeep, faster than the tank, wide turns, 60 health, no gun, 8 seats. T40: the truck model comes from scripts/make-vehicle-models.py. Details in docs/notes/vehicles.md.
 - 2026-11-10 T38: v0.5.0 published: jar on GitHub Releases, pack at https://forziq.github.io/TeatralPlugin/pack/forzammilmod-pack-0.5.0.zip (SHA-1 6d8dc957db90ca33729cb5675eb6375e705ce310). manual.md G4 checklist added.
-- 2026-11-10 T37: everyone in a vehicle sees a health bar at the top. Driver sees speed, gunner sees reload. Clears on exit, death, quit or removal. 223 tests pass, not tried in game. G4: check bars appear and clear, and bottom text doesn't flicker.
