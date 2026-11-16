@@ -35,9 +35,11 @@ public final class UpdateClient {
         this.base = base.endsWith("/") ? base.substring(0, base.length() - 1) : base;
     }
 
-    /** Checks the latest release and, if newer than currentVersion, downloads the jar into updateDir/jarName. */
+    /**
+     * Checks the latest release and, if newer than currentVersion, downloads the jar into updateDir/jarName.
+     * The repo is public, so token may be blank; a token only raises GitHub's rate limit.
+     */
     public UpdateResult checkAndDownload(String token, String currentVersion, Path updateDir, String jarName) {
-        if (token == null || token.isBlank()) return new UpdateResult.NoToken();
         try {
             HttpResponse<String> res = http.send(
                     request(base + "/repos/" + REPO + "/releases/latest", token, "application/vnd.github+json").build(),
@@ -92,11 +94,13 @@ public final class UpdateClient {
     }
 
     private static HttpRequest.Builder request(String url, String token, String accept) {
-        return HttpRequest.newBuilder(URI.create(url))
+        HttpRequest.Builder b = HttpRequest.newBuilder(URI.create(url))
                 .timeout(TIMEOUT)
-                .header("Authorization", "Bearer " + token)
                 .header("Accept", accept)
+                .header("User-Agent", "forzammilmod-updater")
                 .header("X-GitHub-Api-Version", "2022-11-28")
                 .GET();
+        if (token != null && !token.isBlank()) b.header("Authorization", "Bearer " + token.trim());
+        return b;
     }
 }

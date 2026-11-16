@@ -1,5 +1,5 @@
-# GitHub personal access token with read access to the private repo Forziq/TeatralPlugin.
-# Used only to download plugin updates. Leave empty to disable updates.
+# Optional. Updates download from the public GitHub repo without a token.
+# A token only raises GitHub's rate limit; leave it empty unless checks start failing with 403.
 github-token: ""
 
 # Most vehicles that can be out on the server at once. Pads refuse above this. Minimum 1.

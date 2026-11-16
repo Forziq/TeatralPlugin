@@ -8,9 +8,6 @@ public sealed interface UpdateResult {
     record Downloaded(String version) implements UpdateResult {
     }
 
-    record NoToken() implements UpdateResult {
-    }
-
     record Error(String reason) implements UpdateResult {
     }
 }

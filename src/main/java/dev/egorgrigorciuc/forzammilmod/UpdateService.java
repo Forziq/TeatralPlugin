@@ -41,8 +41,6 @@ public final class UpdateService {
                 plugin.getLogger().info("Downloaded forzammilmod v" + d.version() + "; restart the server to apply it.");
             } else if (r instanceof UpdateResult.Error e) {
                 plugin.getLogger().warning("Update check failed: " + e.reason());
-            } else if (r instanceof UpdateResult.NoToken) {
-                plugin.getLogger().info("No github-token in config.yml, update check skipped.");
             }
         });
     }
@@ -57,8 +55,6 @@ public final class UpdateService {
             } else if (r instanceof UpdateResult.Downloaded d) {
                 sender.sendMessage(lang.msg(sender, "update.downloaded", "version", d.version()));
                 plugin.getLogger().info("Downloaded forzammilmod v" + d.version() + "; restart the server to apply it.");
-            } else if (r instanceof UpdateResult.NoToken) {
-                sender.sendMessage(lang.msg(sender, "update.no-token"));
             } else if (r instanceof UpdateResult.Error e) {
                 sender.sendMessage(lang.msg(sender, "update.error", "reason", e.reason()));
                 plugin.getLogger().warning("Update check failed: " + e.reason());

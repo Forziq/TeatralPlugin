@@ -20,7 +20,6 @@ update:
   checking: "&7Проверяю обновления..."
   up-to-date: "&aУ тебя последняя версия (v{version})."
   downloaded: "&aСкачал v{version}. Перезапусти сервер в exaroton, чтобы обновиться."
-  no-token: "&cВ config.yml не указан токен GitHub."
   error: "&cНе вышло обновиться: {reason}"
 players-only: "&cЭто могут делать только игроки."
 pack:

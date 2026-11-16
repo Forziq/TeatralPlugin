@@ -18,7 +18,6 @@ update:
   checking: "&7Checking for updates..."
   up-to-date: "&aAlready up to date (v{version})."
   downloaded: "&aDownloaded v{version}. Restart the server from exaroton to apply it."
-  no-token: "&cNo GitHub token set in config.yml."
   error: "&cUpdate failed: {reason}"
 players-only: "&cOnly players can use this."
 pack:

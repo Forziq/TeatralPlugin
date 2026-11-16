@@ -77,8 +77,12 @@ class UpdateClientTest {
     }
 
     @Test
-    void noToken(@TempDir Path dir) {
-        assertInstanceOf(UpdateResult.NoToken.class, new UpdateClient(base).checkAndDownload("  ", "0.1.0", dir, "a.jar"));
+    void worksWithoutToken(@TempDir Path dir) throws Exception {
+        apiAuth.set("unset");
+        UpdateResult r = new UpdateClient(base).checkAndDownload("  ", "0.1.0", dir, "a.jar");
+        assertEquals(new UpdateResult.Downloaded("0.2.0"), r);
+        assertNull(apiAuth.get());
+        assertEquals("JARBYTES", Files.readString(dir.resolve("a.jar")));
     }
 
     @Test

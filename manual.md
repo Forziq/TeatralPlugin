@@ -105,11 +105,8 @@ You only do this once. After that the plugin updates itself.
    - `SkinsRestorer-15.12.6.jar` from the same folder
    (exact versions are in `docs/versions.md`)
 4. Start the server, wait until it's fully up, then stop it.
-5. Save the GitHub token. Claude Code made it on 2026-11-08 (`forzammilmod-server`, read-only, TeatralPlugin only, expires 2027-11-08) and left the GitHub tab open in Chrome:
-   - Click the copy icon next to the token on that page. GitHub only shows it once.
-   - Save it in 1Password as a new item called `forzammilmod GitHub token`. Don't paste it into any file in the project.
-   - If the tab got closed before you copied it, delete `forzammilmod-server` at https://github.com/settings/personal-access-tokens and make a new one with the same settings (Only select repositories: TeatralPlugin; Contents: Read-only).
-6. Open `plugins/forzammilmod/config.yml` in exaroton's file editor. Paste the token between the quotes on the `github-token:` line (the key is `github-token`). Save.
+5. No GitHub token is needed any more: the repo is public, so updates download without one. Leave `github-token:` in `plugins/forzammilmod/config.yml` empty. (If the old token is still pasted there, it does no harm, but you can delete it and also delete `forzammilmod-server` at https://github.com/settings/personal-access-tokens.)
+6. (Nothing to do here.)
 7. Start the server again and join. You should be asked to download the resource pack; accept it. Type `/fmod version` and check it says 0.1.2. Then type `/fmod pack`: you should hear a cheer, which means our pack loaded. If exaroton also forces its own resource pack, players get both, and ours loads on top.
 
 From now on, new versions download by themselves when the server starts and go live on the next restart. If you want one straight away, type `/fmod update` in game and then restart the server from exaroton.
